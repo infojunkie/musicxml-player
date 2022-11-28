@@ -1,0 +1,1 @@
+{"version":3,"file":"player.d.ts","sourceRoot":"","sources":["../src/player.ts"],"names":[],"mappings":"AAAA,qBAAa,cAAc;IAKX,OAAO,CAAC,QAAQ;IAJ5B,MAAM,CAAC,IAAI,CAAC,QAAQ,EAAE,MAAM,GAAI,cAAc;gBAI1B,QAAQ,EAAE,MAAM;CAGvC"}
