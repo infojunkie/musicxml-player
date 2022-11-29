@@ -1,5 +1,5 @@
 // @ts-check
-/* eslint-env node */
+/* eslint-env browser */
 
 /**
  * An object with Jest options.
@@ -8,6 +8,7 @@
 const options = {
   preset: 'ts-jest',
   resolver: 'ts-jest-resolver',
+  testEnvironment: 'jsdom',
 };
 
 module.exports = options;
