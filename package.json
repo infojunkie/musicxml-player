@@ -43,7 +43,8 @@
     "typescript": "^4.7.4"
   },
   "scripts": {
-    "test": "jest --watch",
+    "test": "jest",
+    "test:dev": "jest --watch",
     "lint": "eslint \"*/**/*.{ts,js,json}\"",
     "lint:fix": "eslint \"*/**/*.{ts,js,json}\" --fix",
     "build": "rollup --config ./rollup.config.js",
