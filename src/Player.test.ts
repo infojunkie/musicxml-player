@@ -11,7 +11,7 @@ const html = `
         <div id="sheet"></div>
     </body>
 </html>
-`;
+`.trim();
 
 describe('Player', () => {
   beforeEach(() => {
