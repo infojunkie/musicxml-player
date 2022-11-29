@@ -50,7 +50,7 @@
     "build": "rollup --config ./rollup.config.js",
     "build:dev": "rollup --watch --config ./rollup.config.js",
     "demo": "http-serve -c0 demo",
-    "prepublishOnly": "npm run doc && npm run lint && npm run test && npm run build"
+    "prepublishOnly": "npm run lint && npm run test && npm run build"
   },
   "repository": {
     "type": "git",
