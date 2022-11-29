@@ -1,12 +1,10 @@
 /*!
- * musicxml-player v0.0.0
+ * musicxml-player v0.0.1
  * (c) Karim Ratib
  * Released under the MIT License.
  */
 
 'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 

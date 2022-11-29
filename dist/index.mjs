@@ -1,5 +1,5 @@
 /*!
- * musicxml-player v0.0.0
+ * musicxml-player v0.0.1
  * (c) Karim Ratib
  * Released under the MIT License.
  */
