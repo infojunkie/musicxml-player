@@ -37,26 +37,26 @@ function createOutputOptions(options) {
 const options = {
   input: './src/index.ts',
   output: [
-    createOutputOptions({
-      file: './dist/index.js',
-      format: 'commonjs',
-    }),
-    createOutputOptions({
-      file: './dist/index.cjs',
-      format: 'commonjs',
-    }),
-    createOutputOptions({
-      file: './dist/index.mjs',
-      format: 'esm',
-    }),
-    createOutputOptions({
-      file: './dist/index.esm.js',
-      format: 'esm',
-    }),
-    createOutputOptions({
-      file: './dist/index.umd.js',
-      format: 'umd',
-    }),
+    // createOutputOptions({
+    //   file: './dist/index.js',
+    //   format: 'commonjs',
+    // }),
+    // createOutputOptions({
+    //   file: './dist/index.cjs',
+    //   format: 'commonjs',
+    // }),
+    // createOutputOptions({
+    //   file: './dist/index.mjs',
+    //   format: 'esm',
+    // }),
+    // createOutputOptions({
+    //   file: './dist/index.esm.js',
+    //   format: 'esm',
+    // }),
+    // createOutputOptions({
+    //   file: './dist/index.umd.js',
+    //   format: 'umd',
+    // }),
     createOutputOptions({
       file: './dist/index.umd.min.js',
       format: 'umd',

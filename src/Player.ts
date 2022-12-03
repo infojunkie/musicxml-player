@@ -1,17 +1,28 @@
-import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
+import type { ISheetPlayback } from "./ISheetPlayback";
+import { OpenSheetMusicDisplayPlayback } from "./OpenSheetMusicDisplayPlayback";
 
 export class Player {
-  static load(musicXml: string, container: HTMLDivElement | string): Player {
-    return new Player(musicXml, container);
+  static async load(musicXml: string, container: HTMLDivElement | string): Promise<Player> {
+    const player = new Player(musicXml, container);
+    await player.initialize();
+    return player;
   }
 
-  private osmd: OpenSheetMusicDisplay;
+  playback: ISheetPlayback;
 
   constructor(
     private musicXml: string,
     private container: HTMLDivElement | string,
   ) {
-    this.osmd = new OpenSheetMusicDisplay(this.container);
-    this.osmd.load(this.musicXml);
+    console.log('here');
+    this.playback = new OpenSheetMusicDisplayPlayback(this);
+  }
+
+  async initialize() {
+    await this.playback.initialize(this.musicXml, this.container);
+  }
+
+  seek(measure: number, millisecs: number) {
+    console.log(measure, millisecs);
   }
 }

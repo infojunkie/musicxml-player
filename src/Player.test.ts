@@ -18,8 +18,8 @@ describe('Player', () => {
     document.documentElement.innerHTML = html.toString();
   });
 
-  it('instantiates the player', () => {
-    const player = Player.load('hello, world!', 'sheet');
+  it('instantiates the player', async () => {
+    const player = await Player.load('hello, world!', 'sheet');
     expect(player).not.toBeNull();
   });
 });

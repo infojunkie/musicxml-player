@@ -1,7 +1,6 @@
 # MusicXML Player
 
-[![Continuous Integrations](https://github.com/infojunkie/musicxml-player/actions/workflows/continuous-integrations.yaml/badge.svg?branch=main)](https://github.com/infojunkie/musicxml-player/actions/workflows/continuous-integrations.yaml)
-[![License](https://badgen.net/github/license/infojunkie/musicxml-player)](./LICENSE)
+[![Build](https://github.com/infojunkie/musicxml-player/actions/workflows/continuous-integrations.yaml/badge.svg?branch=main)](https://github.com/infojunkie/musicxml-player/actions/workflows/continuous-integrations.yaml)
 
 A simple JavaScript component that loads and plays MusicXML files in the browser using Web Audio and Web MIDI.
 
@@ -21,7 +20,3 @@ This module has a UMD bundle available through jsDelivr and Unpkg CDNs.
   console.log(MusicXMLPlayer);
 </script>
 ```
-
-## License
-
-Released under [MIT License](./LICENSE).
