@@ -29,7 +29,6 @@ export class SoundFontOutput {
   //     }
   //     return channels;
   //   }, {});
-
   //   // Perform our own note scheduling.
   //   const scheduleNotes = () => {
   //     const now = performance.now();
@@ -51,7 +50,6 @@ export class SoundFontOutput {
   //   }
   //   workerTimers.setTimeout(scheduleNotes, 25);
   // }
-
   // send(data, timestamp) {
   //   const channel = data[0] & 0xf;
   //   const type = data[0] >> 4;
@@ -74,7 +72,6 @@ export class SoundFontOutput {
   //     this.send(data.slice(3), timestamp);
   //   }
   // }
-
   // noteOn(channel, pitch, timestamp, velocity) {
   //   // Refer to the discussion in `scheduleNotes()` about queuing the notes in `webaudiofont`,
   //   // as opposed to scheduling them ourselves. For now, we're doing the former which drop some notes, but overall works better.
@@ -89,14 +86,12 @@ export class SoundFontOutput {
   //     envelope: this.player.queueWaveTable(this.audioContext, this.audioContext.destination, window[instrument], when, pitch, 100000, velocity / 127)
   //   });
   // }
-
   // noteOff(channel, pitch, timestamp) {
   //   const note = this.notes.find(note => note.pitch === pitch && note.channel === channel && note.off === null);
   //   if (note) {
   //     note.off = timestamp;
   //   }
   // }
-
   // clear() {
   //   this.player.cancelQueue(this.audioContext);
   //   this.notes = [];

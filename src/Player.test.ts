@@ -54,7 +54,7 @@ const musicXml = `
 `.trim();
 
 // https://stackoverflow.com/a/60225417/209184
-window.HTMLElement.prototype.scrollIntoView = jest.fn()
+window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 describe('Player', () => {
   beforeEach(() => {

@@ -1,4 +1,4 @@
-import type { ISheetPlayback } from "./ISheetPlayback";
+import type { ISheetPlayback } from './ISheetPlayback';
 export declare class Player {
     private musicXml;
     private container;

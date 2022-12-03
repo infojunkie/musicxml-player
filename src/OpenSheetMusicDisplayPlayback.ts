@@ -5,7 +5,7 @@ import {
   MusicPartManagerIterator,
   OpenSheetMusicDisplay,
   SourceMeasure,
-  VexFlowVoiceEntry
+  VexFlowVoiceEntry,
 } from 'opensheetmusicdisplay';
 
 export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
@@ -19,7 +19,10 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
     this.currentVoiceEntryIndex = 0;
   }
 
-  async initialize(musicXml: string, container: HTMLDivElement | string) : Promise<void> {
+  async initialize(
+    musicXml: string,
+    container: HTMLDivElement | string,
+  ): Promise<void> {
     this.osmd = new OpenSheetMusicDisplay(container, {
       backend: 'svg',
       drawFromMeasureNumber: 1,
@@ -30,22 +33,36 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
       disableCursor: false,
       autoResize: false,
     });
-    this.osmd.EngravingRules.resetChordAccidentalTexts(this.osmd.EngravingRules.ChordAccidentalTexts, true);
-    this.osmd.EngravingRules.resetChordSymbolLabelTexts(this.osmd.EngravingRules.ChordSymbolLabelTexts);
+    this.osmd.EngravingRules.resetChordAccidentalTexts(
+      this.osmd.EngravingRules.ChordAccidentalTexts,
+      true,
+    );
+    this.osmd.EngravingRules.resetChordSymbolLabelTexts(
+      this.osmd.EngravingRules.ChordSymbolLabelTexts,
+    );
     await this.osmd.load(musicXml);
     this.osmd.render();
     this.osmd.cursor.show();
 
     // Setup event listeners for target stave notes to position the cursor.
-    this.osmd.GraphicSheet.MeasureList.forEach(measureGroup => {
-      measureGroup.forEach(measure => {
+    this.osmd.GraphicSheet.MeasureList.forEach((measureGroup) => {
+      measureGroup.forEach((measure) => {
         measure.staffEntries.forEach((se, v) => {
-          se.graphicalVoiceEntries.forEach(gve => {
+          se.graphicalVoiceEntries.forEach((gve) => {
             const vfve = <VexFlowVoiceEntry>gve;
-            (<HTMLElement>vfve.vfStaveNote.getAttribute('el')).addEventListener('click', () => {
-              this.updateCursor(measure.MeasureNumber-1, v);
-              this.player.seek(measure.MeasureNumber-1, this.timestampToMillisecs(measure.parentSourceMeasure, se.relInMeasureTimestamp));
-            });
+            (<HTMLElement>vfve.vfStaveNote.getAttribute('el')).addEventListener(
+              'click',
+              () => {
+                this.updateCursor(measure.MeasureNumber - 1, v);
+                this.player.seek(
+                  measure.MeasureNumber - 1,
+                  this.timestampToMillisecs(
+                    measure.parentSourceMeasure,
+                    se.relInMeasureTimestamp,
+                  ),
+                );
+              },
+            );
           });
         });
       });
@@ -54,7 +71,7 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
 
   // Staff entry timestamp to actual time relative to measure start.
   timestampToMillisecs(measure: SourceMeasure, timestamp: Fraction) {
-    return timestamp.RealValue * 4 * 60 * 1000 / measure.TempoInBPM;
+    return (timestamp.RealValue * 4 * 60 * 1000) / measure.TempoInBPM;
   }
 
   updateCursor(measureIndex: number, voiceEntryIndex: number) {
@@ -67,11 +84,14 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
 
     if (measureIndex === 0 && voiceEntryIndex === 0) {
       osmd.cursor.reset();
-    }
-    else {
+    } else {
       const startTimestamp = measure.AbsoluteTimestamp.clone();
       startTimestamp.Add(vsse.Timestamp);
-      osmd.cursor.iterator = new MusicPartManagerIterator(osmd.Sheet, startTimestamp, undefined);
+      osmd.cursor.iterator = new MusicPartManagerIterator(
+        osmd.Sheet,
+        startTimestamp,
+        undefined,
+      );
       osmd.cursor.update();
     }
   }
@@ -87,10 +107,17 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
     }
 
     // Same measure, new time.
-    for (let v = measure.VerticalSourceStaffEntryContainers.length-1; v >= 0; v--) {
+    for (
+      let v = measure.VerticalSourceStaffEntryContainers.length - 1;
+      v >= 0;
+      v--
+    ) {
       const vsse = measure.VerticalSourceStaffEntryContainers[v]!;
 
-      if (this.timestampToMillisecs(measure, vsse.Timestamp) <= measureMillisecs + Number.EPSILON) {
+      if (
+        this.timestampToMillisecs(measure, vsse.Timestamp) <=
+        measureMillisecs + Number.EPSILON
+      ) {
         // If same staff entry, do nothing.
         if (this.currentVoiceEntryIndex !== v) {
           this.updateCursor(measureIndex, v);
@@ -98,6 +125,8 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
         return;
       }
     }
-    console.error(`Could not find suitable staff entry at time ${measureMillisecs} for measure ${measure.MeasureNumber}`);
+    console.error(
+      `Could not find suitable staff entry at time ${measureMillisecs} for measure ${measure.MeasureNumber}`,
+    );
   }
 }

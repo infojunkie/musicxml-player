@@ -3,7 +3,6 @@ export class VerovioPlayback {
   //   this.vrv = vrv;
   //   this.ids = [];
   //   this.measures = [];
-
   //   // Build measure timemap and setup event listeners on notes.
   //   this.vrv.renderToTimemap({ includeMeasures: true, includeRests: true }).forEach(event => {
   //     if ('measureOn' in event) {
@@ -20,10 +19,8 @@ export class VerovioPlayback {
   //       });
   //     });
   //   });
-
   //   this.moveToMeasureTime(0, 0);
   // }
-
   // moveToMeasureTime(measureIndex, measureMillisecs) {
   //   const timestamp = Math.max(0,
   //     Math.min(

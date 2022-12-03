@@ -1,8 +1,11 @@
-import type { ISheetPlayback } from "./ISheetPlayback";
-import { OpenSheetMusicDisplayPlayback } from "./OpenSheetMusicDisplayPlayback";
+import type { ISheetPlayback } from './ISheetPlayback';
+import { OpenSheetMusicDisplayPlayback } from './OpenSheetMusicDisplayPlayback';
 
 export class Player {
-  static async load(musicXml: string, container: HTMLDivElement | string): Promise<Player> {
+  static async load(
+    musicXml: string,
+    container: HTMLDivElement | string,
+  ): Promise<Player> {
     const player = new Player(musicXml, container);
     await player.initialize();
     return player;

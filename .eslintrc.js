@@ -3,6 +3,8 @@
 
 'use strict';
 
+const { off } = require('process');
+
 /**
  * An object with ESLint options.
  * @type {import('eslint').Linter.Config}
@@ -23,6 +25,9 @@ const options = {
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
   ],
+  rules: {
+    '@typescript-eslint/no-non-null-assertion': 'off',
+  }
 };
 
 module.exports = options;
