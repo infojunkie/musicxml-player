@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <html>
-    <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
-      <title>MusicXML Player Demo</title>
-        <style>
-          body {
-            background-color: wheat;
-          }
-        </style>
-        <script src="dist/index.umd.min.js"></script>
-        <script>
-            window.addEventListener("load", async () => {
-              const response = await fetch('salma-ya-salama.musicxml');
-              const musicXml = await response.text();
-              const player = await MusicXMLPlayer.Player.load(musicXml, 'sheet');
-              console.log(document.getElementById('vf-auto1108'));
-            });
-        </script>
-    </head>
-    <body>
-        <h1>MusicXML Player</h1>
-        <div id="sheet"></div>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <title>MusicXML Player Demo</title>
+    <style>
+      body {
+        background-color: wheat;
+      }
+    </style>
+    <script src="dist/index.umd.min.js"></script>
+    <script>
+      window.addEventListener("load", async () => {
+        const response = await fetch('salma-ya-salama.musicxml');
+        const musicXml = await response.text();
+        const player = await MusicXMLPlayer.Player.load(musicXml, 'sheet');
+      });
+    </script>
+  </head>
+  <body>
+    <h1>MusicXML Player</h1>
+    <div id="sheet"></div>
   </body>
 </html>

@@ -9,6 +9,9 @@ const options = {
   preset: 'ts-jest',
   resolver: 'ts-jest-resolver',
   testEnvironment: 'jsdom',
+  setupFiles: [
+    'jest-canvas-mock'
+  ],
 };
 
 module.exports = options;

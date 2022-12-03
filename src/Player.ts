@@ -14,7 +14,6 @@ export class Player {
     private musicXml: string,
     private container: HTMLDivElement | string,
   ) {
-    console.log('here');
     this.playback = new OpenSheetMusicDisplayPlayback(this);
   }
 
