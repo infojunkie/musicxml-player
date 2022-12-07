@@ -6,8 +6,8 @@ export declare class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
     private osmd;
     private currentMeasureIndex;
     private currentVoiceEntryIndex;
-    constructor(player: Player);
-    initialize(musicXml: string, container: HTMLDivElement | string): Promise<void>;
+    constructor();
+    initialize(player: Player, container: HTMLDivElement | string, musicXml: string): Promise<void>;
     timestampToMillisecs(measure: SourceMeasure, timestamp: Fraction): number;
     updateCursor(measureIndex: number, voiceEntryIndex: number): void;
     moveToMeasureTime(measureIndex: number, measureMillisecs: number): void;

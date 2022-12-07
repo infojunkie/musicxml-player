@@ -1,5 +1,6 @@
+import type { MeasureNumber, MillisecsTimestamp, Player } from './Player';
 export interface ISheetPlayback {
-    initialize(musicXml: string, container: HTMLDivElement | string): Promise<void>;
-    moveToMeasureTime(measureIndex: number, measureMillisecs: number): void;
+    initialize(player: Player, container: HTMLDivElement | string, musicXml: string): Promise<void>;
+    moveToMeasureTime(measureIndex: MeasureNumber, measureMillisecs: MillisecsTimestamp): void;
 }
 //# sourceMappingURL=ISheetPlayback.d.ts.map

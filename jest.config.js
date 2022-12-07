@@ -6,12 +6,7 @@
  * @type {import('@jest/types').Config.InitialOptions}
  */
 const options = {
-  preset: 'ts-jest',
-  resolver: 'ts-jest-resolver',
-  testEnvironment: 'jsdom',
-  setupFiles: [
-    'jest-canvas-mock'
-  ],
+  "preset": "./jest.preset.js"
 };
 
 module.exports = options;

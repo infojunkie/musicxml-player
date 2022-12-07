@@ -1,7 +1,13 @@
+import type { MeasureNumber, MillisecsTimestamp, Player } from './Player';
+
 export interface ISheetPlayback {
   initialize(
-    musicXml: string,
+    player: Player,
     container: HTMLDivElement | string,
+    musicXml: string,
   ): Promise<void>;
-  moveToMeasureTime(measureIndex: number, measureMillisecs: number): void;
+  moveToMeasureTime(
+    measureIndex: MeasureNumber,
+    measureMillisecs: MillisecsTimestamp,
+  ): void;
 }

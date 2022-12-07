@@ -8,7 +8,7 @@
     // Module settings.
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "moduleResolution": "node",
     "resolveJsonModule": true,
 
@@ -30,7 +30,12 @@
     "lib": ["ES2020", "DOM"],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "types": ["jest"]
+    "types": [
+      "jest",
+      "puppeteer",
+      "jest-environment-puppeteer",
+      "expect-puppeteer"
+    ]
   },
   "include": ["./src/**/*.ts", "./src/**/*.tsx"]
 }

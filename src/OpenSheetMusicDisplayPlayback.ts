@@ -1,5 +1,5 @@
 import type { ISheetPlayback } from './ISheetPlayback';
-import type { Player } from './Player';
+import type { MeasureNumber, Player } from './Player';
 import {
   Fraction,
   MusicPartManagerIterator,
@@ -9,20 +9,24 @@ import {
 } from 'opensheetmusicdisplay';
 
 export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
+  private player: Player | null;
   private osmd: OpenSheetMusicDisplay | null;
-  private currentMeasureIndex: number;
+  private currentMeasureIndex: MeasureNumber;
   private currentVoiceEntryIndex: number;
 
-  constructor(private player: Player) {
+  constructor() {
+    this.player = null;
     this.osmd = null;
     this.currentMeasureIndex = 0;
     this.currentVoiceEntryIndex = 0;
   }
 
   async initialize(
-    musicXml: string,
+    player: Player,
     container: HTMLDivElement | string,
+    musicXml: string,
   ): Promise<void> {
+    this.player = player;
     this.osmd = new OpenSheetMusicDisplay(container, {
       backend: 'svg',
       drawFromMeasureNumber: 1,
@@ -54,7 +58,7 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
               'click',
               () => {
                 this.updateCursor(measure.MeasureNumber - 1, v);
-                this.player.seek(
+                this.player!.handleCursorEvent(
                   measure.MeasureNumber - 1,
                   this.timestampToMillisecs(
                     measure.parentSourceMeasure,
