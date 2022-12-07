@@ -4,6 +4,6 @@ describe('MusicXML Player', () => {
   });
 
   it('should include the OpenSheetMusicDisplay svg element', async () => {
-    await expect(page).toMatchElement('svg#osmdSvgPage1');
+    await expect(page).toMatchElement('svg#osmdSvgPage1', { timeout: 0 });
   });
 });
