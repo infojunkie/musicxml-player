@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
-    // React.js JSX settings.
-    "jsx": "react",
-    "jsxFactory": "React.createElement",
-    "jsxFragmentFactory": "React.Fragment",
+    "target": "es6",
 
     // Module settings.
     "allowSyntheticDefaultImports": true,
@@ -21,13 +18,13 @@
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
-    "noUncheckedIndexedAccess": true,
+    "noUncheckedIndexedAccess": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strict": true,
 
     // Type-checking settings.
-    "lib": ["ES2020", "DOM"],
+    "lib": ["es2020", "dom"],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "types": [

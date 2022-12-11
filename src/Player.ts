@@ -13,6 +13,7 @@ import {
   PlayerState,
 } from 'midi-player';
 import { MidiFileSlicer } from 'midi-file-slicer';
+import { SoundFontOutput } from './SoundFontOutput';
 
 export type MeasureNumber = number;
 export type MillisecsTimestamp = number;
@@ -22,15 +23,13 @@ export class Player {
     container: HTMLDivElement | string,
     musicXml: string,
     midiBuffer: ArrayBuffer,
-    midiOutput: IMidiOutput,
+    midiOutput: IMidiOutput | null,
   ): Promise<Player> {
     const midiJson = await parseMidiBuffer(midiBuffer);
     const sheetPlayback = new OpenSheetMusicDisplayPlayback();
     const player = new Player(
-      container,
-      musicXml,
       midiJson,
-      midiOutput,
+      midiOutput ?? new SoundFontOutput(midiJson),
       sheetPlayback,
     );
     await sheetPlayback.initialize(player, container, musicXml);
@@ -47,8 +46,6 @@ export class Player {
   private midiFileSlicer: MidiFileSlicer;
 
   private constructor(
-    private container: HTMLDivElement | string,
-    private musicXml: string,
     private midiJson: IMidiFile,
     private midiOutput: IMidiOutput,
     private sheetPlayback: ISheetPlayback,
@@ -73,6 +70,17 @@ export class Player {
 
   async play() {
     await this.playMidi();
+  }
+
+  async pause() {
+    this.midiPlayer.pause();
+    this.pauseTime = performance.now();
+  }
+
+  async rewind() {
+    this.midiPlayer.stop();
+    this.sheetPlayback.moveToMeasureTime(0, 0);
+    this.startTime = 0;
   }
 
   /**

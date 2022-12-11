@@ -7,19 +7,48 @@
       body {
         background-color: wheat;
       }
+      #player {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .player {
+        font-size: larger;
+        margin: 5px;
+        height: 35px;
+        width: 35px;
+      }
     </style>
+    <script src='https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js'></script>
     <script src="dist/index.umd.min.js"></script>
     <script>
       window.addEventListener("load", async () => {
         const musicXml = await (await fetch('salma-ya-salama.musicxml')).text();
         const midi = await (await fetch('salma-ya-salama.mid')).arrayBuffer();
-        const player = await MusicXMLPlayer.Player.load('sheet', musicXml, midi, {send: () => {}});
-        await player.play();
+        const player = await MusicXMLPlayer.Player.load('sheet', musicXml, midi);
+        document.getElementById("play").addEventListener("click", async () => {
+          await player.play();
+        });
+        document.getElementById("pause").addEventListener("click", async () => {
+          await player.pause();
+        });
+        document.getElementById("rewind").addEventListener("click", async () => {
+          await player.rewind();
+        });
       });
     </script>
   </head>
   <body>
     <h1>MusicXML Player</h1>
+    <div id="player">
+      <button class="player" id="rewind">⏮</button>
+      <button class="player" id="pause">⏸</button>
+      <button class="player" id="play">▶</button>
+    </div>
     <div id="sheet"></div>
   </body>
 </html>
