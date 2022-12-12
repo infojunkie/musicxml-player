@@ -1,5 +1,6 @@
 import type { ISheetPlayback } from './ISheetPlayback';
 import { OpenSheetMusicDisplayPlayback } from './OpenSheetMusicDisplayPlayback';
+import { VerovioPlayback } from './VerovioPlayback';
 import { parseArrayBuffer as parseMidiBuffer } from 'midi-json-parser';
 import type {
   IMidiFile,
@@ -17,6 +18,10 @@ import { SoundFontOutput } from './SoundFontOutput';
 
 export type MeasureNumber = number;
 export type MillisecsTimestamp = number;
+export enum Renderer {
+  OpenSheetMusicDisplay,
+  Verovio,
+}
 
 export class Player {
   static async load(
@@ -24,9 +29,10 @@ export class Player {
     musicXml: string,
     midiBuffer: ArrayBuffer,
     midiOutput: IMidiOutput | null,
+    renderer: Renderer = Renderer.OpenSheetMusicDisplay,
   ): Promise<Player> {
     const midiJson = await parseMidiBuffer(midiBuffer);
-    const sheetPlayback = new OpenSheetMusicDisplayPlayback();
+    const sheetPlayback = Player.createSheetPlayback(renderer);
     const player = new Player(
       midiJson,
       midiOutput ?? new SoundFontOutput(midiJson),
@@ -34,6 +40,17 @@ export class Player {
     );
     await sheetPlayback.initialize(player, container, musicXml);
     return player;
+  }
+
+  private static createSheetPlayback(renderer: Renderer): ISheetPlayback {
+    switch (renderer) {
+      case Renderer.OpenSheetMusicDisplay:
+        return new OpenSheetMusicDisplayPlayback();
+      case Renderer.Verovio:
+        return new VerovioPlayback();
+      default:
+        throw 'TODO';
+    }
   }
 
   private mapMeasureToTimestamp: Map<MeasureNumber, MillisecsTimestamp[]>;
@@ -65,7 +82,17 @@ export class Player {
   }
 
   handleCursorEvent(measure: MeasureNumber, millisecs: MillisecsTimestamp) {
-    console.log(measure, millisecs);
+    if (typeof this.mapMeasureToTimestamp.get(measure) === 'undefined') {
+      console.error(`Measure ${measure} not found.`);
+      return;
+    }
+    const timestamp = this.mapMeasureToTimestamp.get(measure)![0] + millisecs;
+    this.midiPlayer.seek(timestamp);
+    this.currentMeasureNumber = measure;
+    const now = performance.now();
+    this.currentMeasureStartTime = now - millisecs;
+    this.startTime = now - timestamp;
+    this.pauseTime = now;
   }
 
   async play() {
@@ -81,6 +108,13 @@ export class Player {
     this.midiPlayer.stop();
     this.sheetPlayback.moveToMeasureTime(0, 0);
     this.startTime = 0;
+  }
+
+  version() {
+    return {
+      player: `MusicXML Player v0.0.0`,
+      renderer: this.sheetPlayback.version(),
+    };
   }
 
   /**

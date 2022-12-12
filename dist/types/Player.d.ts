@@ -1,11 +1,16 @@
 import { IMidiOutput } from 'midi-player';
 export declare type MeasureNumber = number;
 export declare type MillisecsTimestamp = number;
+export declare enum Renderer {
+    OpenSheetMusicDisplay = 0,
+    Verovio = 1
+}
 export declare class Player {
     private midiJson;
     private midiOutput;
     private sheetPlayback;
-    static load(container: HTMLDivElement | string, musicXml: string, midiBuffer: ArrayBuffer, midiOutput: IMidiOutput | null): Promise<Player>;
+    static load(container: HTMLDivElement | string, musicXml: string, midiBuffer: ArrayBuffer, midiOutput: IMidiOutput | null, renderer?: Renderer): Promise<Player>;
+    private static createSheetPlayback;
     private mapMeasureToTimestamp;
     private firstMeasureNumber;
     private midiPlayer;
@@ -19,6 +24,10 @@ export declare class Player {
     play(): Promise<void>;
     pause(): Promise<void>;
     rewind(): Promise<void>;
+    version(): {
+        player: string;
+        renderer: string;
+    };
     /**
      * Parse the MIDI file to construct a map linking measures to time offsets.
      */

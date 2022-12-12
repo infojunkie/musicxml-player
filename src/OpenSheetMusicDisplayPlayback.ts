@@ -1,5 +1,5 @@
 import type { ISheetPlayback } from './ISheetPlayback';
-import type { MeasureNumber, Player } from './Player';
+import type { MeasureNumber, MillisecsTimestamp, Player } from './Player';
 import {
   Fraction,
   MusicPartManagerIterator,
@@ -19,6 +19,11 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
     this.osmd = null;
     this.currentMeasureIndex = 0;
     this.currentVoiceEntryIndex = 0;
+  }
+
+  version(): string {
+    if (!this.osmd) throw 'TODO';
+    return `OpenSheetMusicDisplay v${this.osmd.Version}`;
   }
 
   async initialize(
@@ -100,7 +105,10 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
     }
   }
 
-  moveToMeasureTime(measureIndex: number, measureMillisecs: number): void {
+  moveToMeasureTime(
+    measureIndex: MeasureNumber,
+    measureMillisecs: MillisecsTimestamp,
+  ): void {
     const osmd = this.osmd!;
     const measure = osmd.Sheet.SourceMeasures[measureIndex]!;
 

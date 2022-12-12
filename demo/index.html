@@ -29,7 +29,8 @@
       window.addEventListener("load", async () => {
         const musicXml = await (await fetch('salma-ya-salama.musicxml')).text();
         const midi = await (await fetch('salma-ya-salama.mid')).arrayBuffer();
-        const player = await MusicXMLPlayer.Player.load('sheet', musicXml, midi);
+        const player = await MusicXMLPlayer.Player.load('sheet', musicXml, midi, null, MusicXMLPlayer.Renderer.Verovio);
+        document.getElementById("version").textContent = JSON.stringify(player.version());
         document.getElementById("play").addEventListener("click", async () => {
           await player.play();
         });
@@ -43,7 +44,9 @@
     </script>
   </head>
   <body>
-    <h1>MusicXML Player</h1>
+    <div id="controls">
+      <pre></pre><code id="version"></code></pre>
+    </div>
     <div id="player">
       <button class="player" id="rewind">⏮</button>
       <button class="player" id="pause">⏸</button>

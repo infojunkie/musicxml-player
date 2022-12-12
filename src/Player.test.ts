@@ -3,7 +3,7 @@ describe('MusicXML Player', () => {
     await page.goto('http://localhost:8080');
   });
 
-  it('should include the OpenSheetMusicDisplay svg element', async () => {
-    await expect(page).toMatchElement('svg#osmdSvgPage1', { timeout: 0 });
+  it('should include the svg element', async () => {
+    await expect(page).toMatchElement('svg', { timeout: 0 });
   });
 });

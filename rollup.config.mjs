@@ -4,6 +4,7 @@ import terser from '@rollup/plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import externalGlobals from "rollup-plugin-external-globals";
+import nodePolyfills from 'rollup-plugin-polyfill-node';
 
 import pkg from './package.json' assert { type: 'json' };
 
@@ -72,7 +73,8 @@ const options = {
     commonjs(),
     externalGlobals({
       webaudiofont: "WebAudioFontPlayer"
-    })
+    }),
+    nodePolyfills(),
   ],
 };
 
