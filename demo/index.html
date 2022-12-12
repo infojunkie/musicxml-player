@@ -29,6 +29,8 @@
       window.addEventListener("load", async () => {
         const musicXml = await (await fetch('salma-ya-salama.musicxml')).text();
         const midi = await (await fetch('salma-ya-salama.mid')).arrayBuffer();
+        const outputs = await MusicXMLPlayer.midiOutputs();
+        console.log(outputs);
         const player = await MusicXMLPlayer.Player.load('sheet', musicXml, midi, null, MusicXMLPlayer.Renderer.Verovio);
         document.getElementById("version").textContent = JSON.stringify(player.version());
         document.getElementById("play").addEventListener("click", async () => {

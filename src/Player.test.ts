@@ -1,5 +1,8 @@
 describe('MusicXML Player', () => {
   beforeAll(async () => {
+    await browser
+      .defaultBrowserContext()
+      .overridePermissions('http://localhost:8080', ['midi']);
     await page.goto('http://localhost:8080');
   });
 
