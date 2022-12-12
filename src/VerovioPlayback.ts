@@ -29,7 +29,7 @@ export class VerovioPlayback implements ISheetPlayback {
 
   version(): string {
     if (!this.vrv) throw 'TODO';
-    return `Verovio v${this.vrv.getVersion()}`;
+    return `verovio v${this.vrv.getVersion()}`;
   }
 
   async initialize(

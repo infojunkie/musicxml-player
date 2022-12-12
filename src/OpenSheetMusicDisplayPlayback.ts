@@ -23,7 +23,7 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
 
   version(): string {
     if (!this.osmd) throw 'TODO';
-    return `OpenSheetMusicDisplay v${this.osmd.Version}`;
+    return `opensheetmusicdisplay v${this.osmd.Version}`;
   }
 
   async initialize(

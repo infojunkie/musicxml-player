@@ -15,6 +15,7 @@ import {
 } from 'midi-player';
 import { MidiFileSlicer } from 'midi-file-slicer';
 import { SoundFontOutput } from './SoundFontOutput';
+import pkg from '../package.json';
 
 export type MeasureNumber = number;
 export type MillisecsTimestamp = number;
@@ -112,7 +113,7 @@ export class Player {
 
   version() {
     return {
-      player: `MusicXML Player v0.0.0`,
+      player: `${pkg.name} v${pkg.version}`,
       renderer: this.sheetPlayback.version(),
     };
   }

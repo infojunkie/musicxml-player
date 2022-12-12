@@ -5,6 +5,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import externalGlobals from "rollup-plugin-external-globals";
 import nodePolyfills from 'rollup-plugin-polyfill-node';
+import json from '@rollup/plugin-json';
 
 import pkg from './package.json' assert { type: 'json' };
 
@@ -71,6 +72,7 @@ const options = {
     }),
     nodeResolve(),
     commonjs(),
+    json(),
     externalGlobals({
       webaudiofont: "WebAudioFontPlayer"
     }),
