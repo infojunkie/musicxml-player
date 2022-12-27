@@ -23,5 +23,5 @@ runs:
       shell: 'bash'
 
     - name: 'Add current user to audio group'
-      run: sudo usermod -a -G audio $(id -u)
+      run: sudo usermod -a -G audio $USER
       shell: bash
