@@ -78,18 +78,6 @@ export class SoundFontOutput implements IMidiOutput {
     // Perform our own note scheduling.
     const scheduleNotes = () => {
       const now = performance.now();
-      // Module `webaudiofont` seems to drop notes randomly when they become too crowded.
-      // The commented code below was an experiment to rely on our own scheduling to instruct `webaudiofont` to play
-      // the notes immediately, instead of queueing them on the module's side. This experiment worked better in some cases,
-      // but failed miserably in others because more notes were dropped when scheduled immediately as per the commented code below.
-      // The currently used method is to queue the notes in `webaudiofont` when they are received in the method `noteOn()`.
-      //
-      // this.notes.filter(note => note.envelope === null && note.on <= now).forEach(note => {
-      //   const instrument = note.channel === MIDI_DRUMS ?
-      //     this.channels[note.channel].beats[note.pitch].drumInfo.variable :
-      //     this.channels[note.channel].instrumentInfo.variable;
-      //   note.envelope = this.player.queueWaveTable(this.audioContext, this.audioContext.destination, window[instrument], 0, note.pitch, 100000, note.velocity / 127);
-      // })
       this.notes
         .filter((note) => note.off !== null && note.off <= now)
         .forEach((note) => note.envelope.cancel());
@@ -129,10 +117,6 @@ export class SoundFontOutput implements IMidiOutput {
     timestamp: number,
     velocity: number,
   ) {
-    // Refer to the discussion in `scheduleNotes()` about queuing the notes in `webaudiofont`,
-    // as opposed to scheduling them ourselves. For now, we're doing the former which drop some notes, but overall works better.
-    //
-    // this.notes.push({ channel, pitch, velocity, on: timestamp, envelope: null, off: null });
     const instrument =
       channel === MIDI_CHANNEL_DRUMS
         ? this.channels[channel].beats![pitch].drumInfo.variable

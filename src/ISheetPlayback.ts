@@ -7,8 +7,5 @@ export interface ISheetPlayback {
     container: HTMLDivElement | string,
     musicXml: string,
   ): Promise<void>;
-  moveToMeasureTime(
-    measureIndex: MeasureNumber,
-    measureMillisecs: MillisecsTimestamp,
-  ): void;
+  seek(measureIndex: MeasureNumber, measureMillisecs: MillisecsTimestamp): void;
 }

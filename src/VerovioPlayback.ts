@@ -67,15 +67,15 @@ export class VerovioPlayback implements ISheetPlayback {
           document.getElementById(noteid)!.addEventListener('click', () => {
             const measureMillisecs =
               event.tstamp - this.measures[measureIndex].timestamp;
-            this.moveToMeasureTime(measureIndex, measureMillisecs + 1);
-            this.player!.handleCursorEvent(measureIndex, measureMillisecs);
+            this.seek(measureIndex, measureMillisecs + 1);
+            this.player!.move(measureIndex, measureMillisecs);
           });
         });
       });
-    this.moveToMeasureTime(0, 0);
+    this.seek(0, 0);
   }
 
-  moveToMeasureTime(
+  seek(
     measureIndex: MeasureNumber,
     measureMillisecs: MillisecsTimestamp,
   ): void {

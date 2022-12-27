@@ -63,7 +63,7 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
               'click',
               () => {
                 this.updateCursor(measure.MeasureNumber - 1, v);
-                this.player!.handleCursorEvent(
+                this.player!.move(
                   measure.MeasureNumber - 1,
                   this.timestampToMillisecs(
                     measure.parentSourceMeasure,
@@ -105,7 +105,7 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
     }
   }
 
-  moveToMeasureTime(
+  seek(
     measureIndex: MeasureNumber,
     measureMillisecs: MillisecsTimestamp,
   ): void {

@@ -82,7 +82,7 @@ export class Player {
     this.parseMidi();
   }
 
-  handleCursorEvent(measure: MeasureNumber, millisecs: MillisecsTimestamp) {
+  move(measure: MeasureNumber, millisecs: MillisecsTimestamp) {
     if (typeof this.mapMeasureToTimestamp.get(measure) === 'undefined') {
       console.error(`Measure ${measure} not found.`);
       return;
@@ -107,7 +107,7 @@ export class Player {
 
   async rewind() {
     this.midiPlayer.stop();
-    this.sheetPlayback.moveToMeasureTime(0, 0);
+    this.sheetPlayback.seek(0, 0);
     this.startTime = 0;
   }
 
@@ -187,7 +187,7 @@ export class Player {
             }
           }
         });
-      this.sheetPlayback.moveToMeasureTime(
+      this.sheetPlayback.seek(
         this.currentMeasureNumber,
         Math.max(0, now - this.currentMeasureStartTime),
       );
