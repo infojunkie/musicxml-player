@@ -26,4 +26,5 @@ runs:
       run: |
         sudo modprobe snd_seq
         sudo usermod -a -G audio $USER
+        su - $USER
       shell: bash
