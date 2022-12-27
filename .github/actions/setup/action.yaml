@@ -23,5 +23,7 @@ runs:
       shell: 'bash'
 
     - name: 'Add current user to audio group'
-      run: sudo usermod -a -G audio $USER
+      run: |
+        modprobe snd_seq
+        sudo usermod -a -G audio $USER
       shell: bash
