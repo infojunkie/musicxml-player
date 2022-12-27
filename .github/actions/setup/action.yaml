@@ -24,6 +24,6 @@ runs:
 
     - name: 'Add current user to audio group'
       run: |
-        modprobe snd_seq
+        sudo modprobe snd_seq
         sudo usermod -a -G audio $USER
       shell: bash
