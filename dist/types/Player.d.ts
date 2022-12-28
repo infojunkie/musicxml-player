@@ -20,7 +20,7 @@ export declare class Player {
     private currentMeasureNumber;
     private midiFileSlicer;
     private constructor();
-    handleCursorEvent(measure: MeasureNumber, millisecs: MillisecsTimestamp): void;
+    move(measure: MeasureNumber, millisecs: MillisecsTimestamp): void;
     play(): Promise<void>;
     pause(): Promise<void>;
     rewind(): Promise<void>;

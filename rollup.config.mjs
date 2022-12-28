@@ -68,7 +68,7 @@ const options = {
   ],
   plugins: [
     typescript({
-      tsconfig: './tsconfig.bundle.json',
+      tsconfig: './tsconfig.json',
     }),
     nodeResolve(),
     commonjs(),

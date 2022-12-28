@@ -11,6 +11,6 @@ export declare class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
     initialize(player: Player, container: HTMLDivElement | string, musicXml: string): Promise<void>;
     timestampToMillisecs(measure: SourceMeasure, timestamp: Fraction): number;
     updateCursor(measureIndex: number, voiceEntryIndex: number): void;
-    moveToMeasureTime(measureIndex: MeasureNumber, measureMillisecs: MillisecsTimestamp): void;
+    seek(measureIndex: MeasureNumber, measureMillisecs: MillisecsTimestamp): void;
 }
 //# sourceMappingURL=OpenSheetMusicDisplayPlayback.d.ts.map

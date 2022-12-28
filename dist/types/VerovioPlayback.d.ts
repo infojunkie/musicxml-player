@@ -18,6 +18,6 @@ export declare class VerovioPlayback implements ISheetPlayback {
     constructor();
     version(): string;
     initialize(player: Player, container: HTMLDivElement | string, musicXml: string): Promise<void>;
-    moveToMeasureTime(measureIndex: MeasureNumber, measureMillisecs: MillisecsTimestamp): void;
+    seek(measureIndex: MeasureNumber, measureMillisecs: MillisecsTimestamp): void;
 }
 //# sourceMappingURL=VerovioPlayback.d.ts.map

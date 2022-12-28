@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    // Transpilation settings.
+    "module": "es2020",
     "target": "es6",
 
     // Module settings.
@@ -7,7 +9,7 @@
     "esModuleInterop": true,
     "isolatedModules": false,
     "moduleResolution": "node",
-    "resolveJsonModule": true,
+    "resolveJsonModule": false,
 
     // Strictness and quality settings.
     "alwaysStrict": true,
@@ -33,7 +35,20 @@
       "jest-environment-puppeteer",
       "expect-puppeteer",
       "webmidi",
-    ]
+    ],
+
+    // Output settings.
+    "charset": "utf-8",
+    "newLine": "LF",
+    "sourceMap": true,
+
+    // Type declaration settings.
+    "declaration": true,
+    "declarationDir": "./types",
+    "declarationMap": true,
+    "rootDir": "./src",
+    "outDir": "./dist"
   },
-  "include": ["./src/**/*.ts"]
+  "include": ["./src/**/*.ts"],
+  "exclude": ["./src/**/*.test.ts"],
 }
