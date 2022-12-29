@@ -55,8 +55,7 @@
   },
   "scripts": {
     "test": "jest",
-    "lint": "eslint \"*/**/*.{ts,js,json}\"",
-    "lint:fix": "eslint \"*/**/*.{ts,js,json}\" --fix",
+    "lint": "eslint \"*/**/*.{ts,js,json}\" --fix",
     "build": "rollup --config ./rollup.config.mjs",
     "develop": "rollup --watch --config ./rollup.config.mjs",
     "demo": "http-serve -c0 -p8080 demo",

@@ -97,10 +97,12 @@ export class Player {
   }
 
   async play() {
+    if (this.midiPlayer.state === PlayerState.Playing) return;
     await this.playMidi();
   }
 
   async pause() {
+    if (this.midiPlayer.state !== PlayerState.Playing) return;
     this.midiPlayer.pause();
     this.pauseTime = performance.now();
   }
@@ -178,11 +180,19 @@ export class Player {
         .forEach((event) => {
           if ('marker' in event.event) {
             const marker = (<IMidiMarkerEvent>event.event).marker.split(':');
-            if (marker[0] === 'Measure') {
+            if (
+              marker[0].localeCompare('Measure', undefined, {
+                sensitivity: 'accent',
+              }) === 0
+            ) {
               this.currentMeasureNumber =
                 Number(marker[1]) - this.firstMeasureNumber;
               this.currentMeasureStartTime = now;
-            } else if (marker[0] === 'Groove') {
+            } else if (
+              marker[0].localeCompare('Groove', undefined, {
+                sensitivity: 'accent',
+              }) === 0
+            ) {
               // TODO Update listeners that the groove has changed.
             }
           }
@@ -196,15 +206,19 @@ export class Player {
       lastTime = now;
       requestAnimationFrame(synchronizeMidi);
     };
+
+    // Schedule first cursor movement.
+    lastTime = now;
     requestAnimationFrame(synchronizeMidi);
 
+    // Activate the MIDI player.
     if (this.midiPlayer.state === PlayerState.Paused) {
       await this.midiPlayer.resume();
     } else {
       await this.midiPlayer.play();
     }
 
-    // Reset.
+    // Reset when done.
     if (this.midiPlayer.state !== PlayerState.Paused) {
       this.startTime = 0;
     }
