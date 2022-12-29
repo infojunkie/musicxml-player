@@ -58,7 +58,7 @@
     "lint": "eslint \"*/**/*.{ts,js,json}\"",
     "lint:fix": "eslint \"*/**/*.{ts,js,json}\" --fix",
     "build": "rollup --config ./rollup.config.mjs",
-    "build:dev": "rollup --watch --config ./rollup.config.mjs",
+    "develop": "rollup --watch --config ./rollup.config.mjs",
     "demo": "http-serve -c0 -p8080 demo",
     "prepublishOnly": "npm run lint && npm run test && npm run build"
   },
