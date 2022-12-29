@@ -126,7 +126,7 @@ export class Player {
       // TODO Warn or throw exception that there are no MIDI tracks.
     }
 
-    let microsecondsPerQuarter = 500000;
+    let microsecondsPerQuarter = 500000; // 60,000,000 microseconds per minute / 120 beats per minute
     let offset = 0;
     this.midiJson.tracks[0]!.forEach((event) => {
       if ('setTempo' in event) {
@@ -183,7 +183,7 @@ export class Player {
                 Number(marker[1]) - this.firstMeasureNumber;
               this.currentMeasureStartTime = now;
             } else if (marker[0] === 'Groove') {
-              // TODO Update listeners that the groover has changed.
+              // TODO Update listeners that the groove has changed.
             }
           }
         });
