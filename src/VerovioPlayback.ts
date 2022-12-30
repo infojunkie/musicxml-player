@@ -3,7 +3,7 @@ import type { MeasureNumber, MillisecsTimestamp, Player } from './Player';
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
 
-export interface TimeMapEntryFixed {
+interface TimeMapEntryFixed {
   tstamp: number;
   qstamp: number;
   on?: string[];
@@ -14,16 +14,24 @@ export interface TimeMapEntryFixed {
   measureOn: string;
 }
 
+interface ElementsAtTimeFixed {
+  notes: string[];
+  rests: string[];
+  chords: string[];
+  page: number;
+  measure: string;
+}
+
 export class VerovioPlayback implements ISheetPlayback {
   private vrv: VerovioToolkit | null;
   private player: Player | null;
-  private ids: Array<string>;
+  private notes: Array<string>;
   private measures: Array<{ timestamp: MillisecsTimestamp }>;
 
   constructor() {
     this.vrv = null;
     this.player = null;
-    this.ids = [];
+    this.notes = [];
     this.measures = [];
   }
 
@@ -88,17 +96,20 @@ export class VerovioPlayback implements ISheetPlayback {
         this.measures[measureIndex].timestamp + measureMillisecs,
       ),
     );
-    const elements = this.vrv!.getElementsAtTime(timestamp);
-    if (elements.notes.length > 0 && this.ids != elements.notes) {
-      this.ids.forEach((noteid) => {
-        if (!elements.notes.includes(noteid)) {
+    const elements = <ElementsAtTimeFixed>(
+      this.vrv!.getElementsAtTime(timestamp)
+    );
+    const notes = [...elements.notes, ...elements.rests];
+    if (notes.length > 0 && this.notes != notes) {
+      this.notes.forEach((noteid) => {
+        if (!notes.includes(noteid)) {
           const note = document.getElementById(noteid)!;
           note.setAttribute('fill', '#000');
           note.setAttribute('stroke', '#000');
         }
       });
-      this.ids = elements.notes;
-      this.ids.forEach((noteid) => {
+      this.notes = notes;
+      this.notes.forEach((noteid) => {
         const note = document.getElementById(noteid)!;
         note.setAttribute('fill', '#c00');
         note.setAttribute('stroke', '#c00');
