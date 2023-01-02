@@ -4,7 +4,7 @@ export declare class VerovioPlayback implements ISheetPlayback {
     private vrv;
     private player;
     private notes;
-    private measures;
+    private timestamps;
     constructor();
     version(): string;
     initialize(player: Player, container: HTMLDivElement | string, musicXml: string): Promise<void>;

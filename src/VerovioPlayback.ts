@@ -26,13 +26,13 @@ export class VerovioPlayback implements ISheetPlayback {
   private vrv: VerovioToolkit | null;
   private player: Player | null;
   private notes: Array<string>;
-  private measures: Array<{ timestamp: MillisecsTimestamp }>;
+  private timestamps: Array<MillisecsTimestamp>;
 
   constructor() {
     this.vrv = null;
     this.player = null;
     this.notes = [];
-    this.measures = [];
+    this.timestamps = [];
   }
 
   version(): string {
@@ -66,15 +66,13 @@ export class VerovioPlayback implements ISheetPlayback {
       .forEach((e) => {
         const event = <TimeMapEntryFixed>e;
         if ('measureOn' in event) {
-          this.measures.push({
-            timestamp: event.tstamp,
-          });
+          this.timestamps.push(event.tstamp);
         }
-        const measureIndex = this.measures.length - 1;
+        const measureIndex = this.timestamps.length - 1;
         [...(event.on || []), ...(event.restsOn || [])].forEach((noteid) => {
           document.getElementById(noteid)!.addEventListener('click', () => {
             const measureMillisecs =
-              event.tstamp - this.measures[measureIndex].timestamp;
+              event.tstamp - this.timestamps[measureIndex];
             this.seek(measureIndex, measureMillisecs + 1);
             this.player!.move(measureIndex, measureMillisecs);
           });
@@ -90,10 +88,10 @@ export class VerovioPlayback implements ISheetPlayback {
     const timestamp = Math.max(
       0,
       Math.min(
-        measureIndex < this.measures.length - 1
-          ? this.measures[measureIndex + 1].timestamp
-          : this.measures[measureIndex].timestamp + measureMillisecs,
-        this.measures[measureIndex].timestamp + measureMillisecs,
+        measureIndex < this.timestamps.length - 1
+          ? this.timestamps[measureIndex + 1]
+          : this.timestamps[measureIndex] + measureMillisecs,
+        this.timestamps[measureIndex] + measureMillisecs,
       ),
     );
     const elements = <ElementsAtTimeFixed>(
