@@ -1,15 +1,22 @@
 import { IMidiOutput } from 'midi-player';
 export declare type MeasureNumber = number;
 export declare type MillisecsTimestamp = number;
-export declare enum Renderer {
+export declare enum SheetRenderer {
     OpenSheetMusicDisplay = 0,
     Verovio = 1
+}
+export interface PlayerOptions {
+    container: HTMLDivElement | string;
+    musicXml: string;
+    renderer: SheetRenderer;
+    midiBuffer: ArrayBuffer;
+    midiOutput?: IMidiOutput;
 }
 export declare class Player {
     private midiJson;
     private midiOutput;
     private sheetPlayback;
-    static load(container: HTMLDivElement | string, musicXml: string, midiBuffer: ArrayBuffer, midiOutput: IMidiOutput | null, renderer?: Renderer): Promise<Player>;
+    static load(options: PlayerOptions): Promise<Player>;
     private static createSheetPlayback;
     private mapMeasureToTimestamp;
     private firstMeasureNumber;

@@ -52,19 +52,20 @@ const options = {
     //   file: './dist/index.mjs',
     //   format: 'esm',
     // }),
-    // createOutputOptions({
-    //   file: './dist/index.esm.js',
-    //   format: 'esm',
-    // }),
+    createOutputOptions({
+      file: './dist/index.esm.js',
+      format: 'esm',
+      inlineDynamicImports: true,
+    }),
     // createOutputOptions({
     //   file: './dist/index.umd.js',
     //   format: 'umd',
     // }),
-    createOutputOptions({
-      file: './dist/index.umd.min.js',
-      format: 'umd',
-      plugins: [terser()],
-    }),
+    // createOutputOptions({
+    //   file: './dist/index.umd.min.js',
+    //   format: 'umd',
+    //   plugins: [terser()],
+    // }),
   ],
   plugins: [
     typescript({

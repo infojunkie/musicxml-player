@@ -24,14 +24,19 @@
       }
     </style>
     <script src='https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js'></script>
-    <script src="dist/index.umd.min.js"></script>
-    <script>
+    <script type="module">
+      import * as MusicXMLPlayer from './dist/index.esm.js';
       window.addEventListener("load", async () => {
         const musicXml = await (await fetch('salma-ya-salama.musicxml')).text();
-        const midi = await (await fetch('salma-ya-salama.mid')).arrayBuffer();
+        const midiBuffer = await (await fetch('salma-ya-salama.mid')).arrayBuffer();
         const outputs = await MusicXMLPlayer.midiOutputs();
         console.log(outputs);
-        const player = await MusicXMLPlayer.Player.load('sheet', musicXml, midi, null, MusicXMLPlayer.Renderer.Verovio);
+        const player = await MusicXMLPlayer.Player.load({
+          container: 'sheet',
+          renderer: MusicXMLPlayer.SheetRenderer.Verovio,
+          musicXml,
+          midiBuffer,
+        });
         document.getElementById("version").textContent = JSON.stringify(player.version());
         document.getElementById("play").addEventListener("click", async () => {
           await player.play();

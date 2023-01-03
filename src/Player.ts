@@ -19,35 +19,34 @@ import pkg from '../package.json';
 
 export type MeasureNumber = number;
 export type MillisecsTimestamp = number;
-export enum Renderer {
+export enum SheetRenderer {
   OpenSheetMusicDisplay,
   Verovio,
 }
 
+export interface PlayerOptions {
+  container: HTMLDivElement | string;
+  musicXml: string;
+  renderer: SheetRenderer;
+  midiBuffer: ArrayBuffer;
+  midiOutput?: IMidiOutput;
+}
+
 export class Player {
-  static async load(
-    container: HTMLDivElement | string,
-    musicXml: string,
-    midiBuffer: ArrayBuffer,
-    midiOutput: IMidiOutput | null,
-    renderer: Renderer = Renderer.OpenSheetMusicDisplay,
-  ): Promise<Player> {
-    const midiJson = await parseMidiBuffer(midiBuffer);
-    const sheetPlayback = Player.createSheetPlayback(renderer);
-    const player = new Player(
-      midiJson,
-      midiOutput ?? new SoundFontOutput(midiJson),
-      sheetPlayback,
-    );
-    await sheetPlayback.initialize(player, container, musicXml);
+  static async load(options: PlayerOptions): Promise<Player> {
+    const midiJson = await parseMidiBuffer(options.midiBuffer);
+    const midiOutput = options.midiOutput ?? new SoundFontOutput(midiJson);
+    const sheetPlayback = Player.createSheetPlayback(options.renderer);
+    const player = new Player(midiJson, midiOutput, sheetPlayback);
+    await sheetPlayback.initialize(player, options.container, options.musicXml);
     return player;
   }
 
-  private static createSheetPlayback(renderer: Renderer): ISheetPlayback {
+  private static createSheetPlayback(renderer: SheetRenderer): ISheetPlayback {
     switch (renderer) {
-      case Renderer.OpenSheetMusicDisplay:
+      case SheetRenderer.OpenSheetMusicDisplay:
         return new OpenSheetMusicDisplayPlayback();
-      case Renderer.Verovio:
+      case SheetRenderer.Verovio:
         return new VerovioPlayback();
       default:
         throw 'TODO';
