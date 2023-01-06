@@ -31,7 +31,7 @@
     "@types/jest-environment-puppeteer": "^5.0.3",
     "@types/node": "^18.11.9",
     "@types/prettier": "^2.6.3",
-    "@types/verovio": "^3.11.0",
+    "@types/verovio": "^3.13.0",
     "@types/webmidi": "^2.0.6",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
     "@typescript-eslint/parser": "^5.30.6",
@@ -78,9 +78,9 @@
     "midi-file-slicer": "^6.0.71",
     "midi-json-parser": "^8.1.14",
     "midi-player": "github:infojunkie/midi-player#infojunkie",
-    "opensheetmusicdisplay": "^1.6.1",
+    "opensheetmusicdisplay": "^1.7.1",
     "standardized-audio-context": "^25.3.35",
-    "verovio": "^3.13.1-1",
+    "verovio": "^3.14.0",
     "webaudiofont": "^3.0.4",
     "worker-timers": "^7.0.59"
   }
