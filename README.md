@@ -8,6 +8,7 @@ A simple JavaScript component that loads and plays MusicXML files in the browser
 ```
 npm install
 npm run build
+npm test
 npm run demo
 ```
 Then open http://localhost:8080
