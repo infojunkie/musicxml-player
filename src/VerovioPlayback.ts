@@ -70,7 +70,7 @@ export class VerovioPlayback implements ISheetPlayback {
         }
         const measureIndex = this.timestamps.length - 1;
         [...(event.on || []), ...(event.restsOn || [])].forEach((noteid) => {
-          document.getElementById(noteid)!.addEventListener('click', () => {
+          document.getElementById(noteid)?.addEventListener('click', () => {
             const measureMillisecs =
               event.tstamp - this.timestamps[measureIndex];
             this.seek(measureIndex, measureMillisecs + 1);
@@ -101,16 +101,16 @@ export class VerovioPlayback implements ISheetPlayback {
     if (notes.length > 0 && this.notes != notes) {
       this.notes.forEach((noteid) => {
         if (!notes.includes(noteid)) {
-          const note = document.getElementById(noteid)!;
-          note.setAttribute('fill', '#000');
-          note.setAttribute('stroke', '#000');
+          const note = document.getElementById(noteid);
+          note?.setAttribute('fill', '#000');
+          note?.setAttribute('stroke', '#000');
         }
       });
       this.notes = notes;
       this.notes.forEach((noteid) => {
-        const note = document.getElementById(noteid)!;
-        note.setAttribute('fill', '#c00');
-        note.setAttribute('stroke', '#c00');
+        const note = document.getElementById(noteid);
+        note?.setAttribute('fill', '#c00');
+        note?.setAttribute('stroke', '#c00');
       });
     }
   }

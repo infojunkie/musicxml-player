@@ -54,12 +54,12 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
     this.osmd.cursor.show();
 
     // Setup event listeners for target stave notes to position the cursor.
-    this.osmd.GraphicSheet.MeasureList.forEach((measureGroup) => {
-      measureGroup.forEach((measure) => {
-        measure.staffEntries.forEach((se, v) => {
-          se.graphicalVoiceEntries.forEach((gve) => {
+    this.osmd.GraphicSheet.MeasureList?.forEach((measureGroup) => {
+      measureGroup?.forEach((measure) => {
+        measure?.staffEntries?.forEach((se, v) => {
+          se.graphicalVoiceEntries?.forEach((gve) => {
             const vfve = <VexFlowVoiceEntry>gve;
-            (<HTMLElement>vfve.vfStaveNote.getAttribute('el')).addEventListener(
+            (<HTMLElement>vfve.vfStaveNote?.getAttribute('el'))?.addEventListener(
               'click',
               () => {
                 this.updateCursor(measure.MeasureNumber - 1, v);

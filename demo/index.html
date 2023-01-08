@@ -27,8 +27,8 @@
     <script type="module">
       import * as MusicXMLPlayer from './dist/index.esm.js';
       window.addEventListener("load", async () => {
-        const musicXml = await (await fetch('salma-ya-salama.musicxml')).text();
-        const midiBuffer = await (await fetch('salma-ya-salama.mid')).arrayBuffer();
+        const musicXml = await (await fetch('data/salma-ya-salama.musicxml')).text();
+        const midiBuffer = await (await fetch('data/salma-ya-salama.mid')).arrayBuffer();
         const outputs = await MusicXMLPlayer.midiOutputs();
         console.log(outputs);
         const player = await MusicXMLPlayer.Player.load({

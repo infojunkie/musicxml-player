@@ -4,8 +4,8 @@ let jest_puppeteer_conf = {
         dumpio: true
     },
     server: {
-        command: `npm run demo`,
-        port: 8080,
+        command: `npm run test:server`,
+        port: 8081,
         usedPortAction: 'kill',
         host: '127.0.0.1',
     }
