@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
-    <title>MusicXML Player Test - SVG Element</title>
+    <title>MusicXML Player Test</title>
     <style>
       body {
         background-color: wheat;
@@ -27,11 +27,15 @@
     <script type="module">
       import * as MusicXMLPlayer from './dist/index.esm.js';
       window.addEventListener("load", async () => {
-        const musicXml = await (await fetch('data/salma-ya-salama.musicxml')).text();
-        const midiBuffer = await (await fetch('data/salma-ya-salama.mid')).arrayBuffer();
+        // Parse query arguments.
+        const params = new URLSearchParams(document.location.search);
+        const renderer = params.get('renderer') === 'osmd' ? MusicXMLPlayer.SheetRenderer.OpenSheetMusicDisplay : MusicXMLPlayer.SheetRenderer.Verovio;
+        const sheet = params.get('sheet');
+        const musicXml = await (await fetch(`data/${sheet}.musicxml`)).text();
+        const midiBuffer = await (await fetch(`data/${sheet}.mid`)).arrayBuffer();
         const player = await MusicXMLPlayer.Player.load({
           container: 'sheet',
-          renderer: MusicXMLPlayer.SheetRenderer.Verovio,
+          renderer,
           musicXml,
           midiBuffer,
         });

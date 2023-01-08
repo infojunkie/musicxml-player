@@ -6,14 +6,14 @@ describe('MusicXML Player', () => {
   });
 
   it('should include the svg element', async () => {
-    await page.goto('http://localhost:8081/test-svg.html');
+    await page.goto('http://localhost:8081/index.html?renderer=vrv&sheet=salma-ya-salama');
     await expect(page).toMatchElement('svg', { timeout: 0 });
   });
 
   it('should not crash on multiple staves', async () => {
-    await page.goto('http://localhost:8081/test-staves.html?renderer=osmd');
+    await page.goto('http://localhost:8081/index.html?renderer=osmd&sheet=neville-san');
     await expect(page).toMatchElement('svg', { timeout: 0 });
-    await page.goto('http://localhost:8081/test-staves.html?renderer=vrv');
+    await page.goto('http://localhost:8081/index.html?renderer=vrv&sheet=neville-san');
     await expect(page).toMatchElement('svg', { timeout: 0 });
   });
 });
