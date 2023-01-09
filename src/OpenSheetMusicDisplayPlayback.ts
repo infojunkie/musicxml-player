@@ -59,19 +59,18 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
         measure?.staffEntries?.forEach((se, v) => {
           se.graphicalVoiceEntries?.forEach((gve) => {
             const vfve = <VexFlowVoiceEntry>gve;
-            (<HTMLElement>vfve.vfStaveNote?.getAttribute('el'))?.addEventListener(
-              'click',
-              () => {
-                this.updateCursor(measure.MeasureNumber - 1, v);
-                this.player!.move(
-                  measure.MeasureNumber - 1,
-                  this.timestampToMillisecs(
-                    measure.parentSourceMeasure,
-                    se.relInMeasureTimestamp,
-                  ),
-                );
-              },
-            );
+            (<HTMLElement>(
+              vfve.vfStaveNote?.getAttribute('el')
+            ))?.addEventListener('click', () => {
+              this.updateCursor(measure.MeasureNumber - 1, v);
+              this.player!.move(
+                measure.MeasureNumber - 1,
+                this.timestampToMillisecs(
+                  measure.parentSourceMeasure,
+                  se.relInMeasureTimestamp,
+                ),
+              );
+            });
           });
         });
       });

@@ -49,11 +49,20 @@ export class VerovioPlayback implements ISheetPlayback {
 
     const VerovioModule = await createVerovioModule();
     this.vrv = new VerovioToolkit(VerovioModule);
-    const svg = this.vrv.renderData(musicXml, {
+    if (!this.vrv.loadData(musicXml)) {
+      throw 'TODO';
+    }
+
+    this.vrv.setOptions({
       breaks: 'encoded',
       adjustPageHeight: true,
       scale: 50,
     });
+    const pages = [];
+    for (let page = 1; page <= this.vrv.getPageCount(); page++) {
+      pages.push(this.vrv.renderToSVG(page));
+    }
+    const svg = pages.join('');
     if (typeof container === 'string') {
       document.getElementById(container)!.innerHTML = svg;
     } else if (container instanceof HTMLDivElement) {
