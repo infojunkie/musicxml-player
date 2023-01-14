@@ -17,7 +17,7 @@ import { MidiFileSlicer } from 'midi-file-slicer';
 import { SoundFontOutput } from './SoundFontOutput';
 import pkg from '../package.json';
 
-export type MeasureNumber = number;
+export type MeasureIndex = number;
 export type MillisecsTimestamp = number;
 export enum SheetRenderer {
   OpenSheetMusicDisplay,
@@ -42,7 +42,7 @@ export class Player {
     return player;
   }
 
-  private static createSheetPlayback(renderer: SheetRenderer): ISheetPlayback {
+  static createSheetPlayback(renderer: SheetRenderer): ISheetPlayback {
     switch (renderer) {
       case SheetRenderer.OpenSheetMusicDisplay:
         return new OpenSheetMusicDisplayPlayback();
@@ -53,13 +53,12 @@ export class Player {
     }
   }
 
-  private mapMeasureToTimestamp: Map<MeasureNumber, MillisecsTimestamp[]>;
-  private firstMeasureNumber: MeasureNumber;
+  private mapMeasureToTimestamp: Array<MillisecsTimestamp[]>;
   private midiPlayer: IMidiPlayer;
   private startTime: MillisecsTimestamp;
   private pauseTime: MillisecsTimestamp;
   private currentMeasureStartTime: MillisecsTimestamp;
-  private currentMeasureNumber: MeasureNumber;
+  private currentMeasureIndex: MeasureIndex;
   private midiFileSlicer: MidiFileSlicer;
 
   private constructor(
@@ -72,23 +71,18 @@ export class Player {
       midiOutput: this.midiOutput,
     });
     this.midiFileSlicer = new MidiFileSlicer({ json: this.midiJson });
-    this.mapMeasureToTimestamp = new Map();
+    this.mapMeasureToTimestamp = [];
     this.startTime = 0;
     this.pauseTime = 0;
-    this.firstMeasureNumber = -1;
-    this.currentMeasureNumber = -1;
+    this.currentMeasureIndex = 0;
     this.currentMeasureStartTime = 0;
     this.parseMidi();
   }
 
-  move(measure: MeasureNumber, millisecs: MillisecsTimestamp) {
-    if (typeof this.mapMeasureToTimestamp.get(measure) === 'undefined') {
-      console.error(`Measure ${measure} not found.`);
-      return;
-    }
-    const timestamp = this.mapMeasureToTimestamp.get(measure)![0] + millisecs;
+  move(measure: MeasureIndex, millisecs: MillisecsTimestamp) {
+    const timestamp = this.mapMeasureToTimestamp[measure][0] + millisecs;
     this.midiPlayer.seek(timestamp);
-    this.currentMeasureNumber = measure;
+    this.currentMeasureIndex = measure;
     const now = performance.now();
     this.currentMeasureStartTime = now - millisecs;
     this.startTime = now - timestamp;
@@ -138,25 +132,15 @@ export class Player {
       if ('marker' in event) {
         const marker = (<IMidiMarkerEvent>event).marker.split(':');
         if (marker[0] === 'Measure') {
-          if (this.firstMeasureNumber === -1) {
-            this.firstMeasureNumber = Number(marker[1]);
-          }
-          const measureNumber = Number(marker[1]) - this.firstMeasureNumber;
+          const measureIndex = Number(marker[1]);
           const timestamp =
             offset * (microsecondsPerQuarter / this.midiJson.division / 1000);
-          const timestamps =
-            this.mapMeasureToTimestamp.get(measureNumber) || [];
-          this.mapMeasureToTimestamp.set(
-            measureNumber,
-            timestamps.concat(timestamp),
-          );
+          const timestamps = this.mapMeasureToTimestamp[measureIndex] || [];
+          this.mapMeasureToTimestamp[measureIndex] =
+            timestamps.concat(timestamp);
         }
       }
     });
-
-    if (this.firstMeasureNumber === -1) {
-      // TODO Warn or throw exception that the MIDI does not contain measure markers.
-    }
   }
 
   private async playMidi() {
@@ -166,7 +150,7 @@ export class Player {
       this.currentMeasureStartTime += now - this.pauseTime;
     } else {
       this.startTime = now;
-      this.currentMeasureNumber = 0;
+      this.currentMeasureIndex = 0;
       this.currentMeasureStartTime = now;
     }
 
@@ -184,8 +168,7 @@ export class Player {
                 sensitivity: 'accent',
               }) === 0
             ) {
-              this.currentMeasureNumber =
-                Number(marker[1]) - this.firstMeasureNumber;
+              this.currentMeasureIndex = Number(marker[1]);
               this.currentMeasureStartTime = now;
             } else if (
               marker[0].localeCompare('Groove', undefined, {
@@ -197,7 +180,7 @@ export class Player {
           }
         });
       this.sheetPlayback.seek(
-        this.currentMeasureNumber,
+        this.currentMeasureIndex,
         Math.max(0, now - this.currentMeasureStartTime),
       );
 

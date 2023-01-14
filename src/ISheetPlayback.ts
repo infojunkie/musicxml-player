@@ -1,4 +1,4 @@
-import type { MeasureNumber, MillisecsTimestamp, Player } from './Player';
+import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 
 export interface ISheetPlayback {
   version(): string;
@@ -7,5 +7,5 @@ export interface ISheetPlayback {
     container: HTMLDivElement | string,
     musicXml: string,
   ): Promise<void>;
-  seek(measureIndex: MeasureNumber, measureMillisecs: MillisecsTimestamp): void;
+  seek(measureIndex: MeasureIndex, measureMillisecs: MillisecsTimestamp): void;
 }

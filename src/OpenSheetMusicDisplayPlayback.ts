@@ -1,5 +1,5 @@
 import type { ISheetPlayback } from './ISheetPlayback';
-import type { MeasureNumber, MillisecsTimestamp, Player } from './Player';
+import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 import {
   Fraction,
   MusicPartManagerIterator,
@@ -11,7 +11,7 @@ import {
 export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
   private player: Player | null;
   private osmd: OpenSheetMusicDisplay | null;
-  private currentMeasureIndex: MeasureNumber;
+  private currentMeasureIndex: MeasureIndex;
   private currentVoiceEntryIndex: number;
 
   constructor() {
@@ -54,27 +54,29 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
     this.osmd.cursor.show();
 
     // Setup event listeners for target stave notes to position the cursor.
-    this.osmd.GraphicSheet.MeasureList?.forEach((measureGroup) => {
-      measureGroup?.forEach((measure) => {
-        measure?.staffEntries?.forEach((se, v) => {
-          se.graphicalVoiceEntries?.forEach((gve) => {
-            const vfve = <VexFlowVoiceEntry>gve;
-            (<HTMLElement>(
-              vfve.vfStaveNote?.getAttribute('el')
-            ))?.addEventListener('click', () => {
-              this.updateCursor(measure.MeasureNumber - 1, v);
-              this.player!.move(
-                measure.MeasureNumber - 1,
-                this.timestampToMillisecs(
-                  measure.parentSourceMeasure,
-                  se.relInMeasureTimestamp,
-                ),
-              );
+    this.osmd.GraphicSheet.MeasureList?.forEach(
+      (measureGroup, measureIndex) => {
+        measureGroup?.forEach((measure) => {
+          measure?.staffEntries?.forEach((se, v) => {
+            se.graphicalVoiceEntries?.forEach((gve) => {
+              const vfve = <VexFlowVoiceEntry>gve;
+              (<HTMLElement>(
+                vfve.vfStaveNote?.getAttribute('el')
+              ))?.addEventListener('click', () => {
+                this.updateCursor(measureIndex, v);
+                this.player!.move(
+                  measureIndex,
+                  this.timestampToMillisecs(
+                    measure.parentSourceMeasure,
+                    se.relInMeasureTimestamp,
+                  ),
+                );
+              });
             });
           });
         });
-      });
-    });
+      },
+    );
   }
 
   // Staff entry timestamp to actual time relative to measure start.
@@ -104,10 +106,7 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
     }
   }
 
-  seek(
-    measureIndex: MeasureNumber,
-    measureMillisecs: MillisecsTimestamp,
-  ): void {
+  seek(measureIndex: MeasureIndex, measureMillisecs: MillisecsTimestamp): void {
     const osmd = this.osmd!;
     const measure = osmd.Sheet.SourceMeasures[measureIndex]!;
 
@@ -137,7 +136,7 @@ export class OpenSheetMusicDisplayPlayback implements ISheetPlayback {
       }
     }
     console.error(
-      `Could not find suitable staff entry at time ${measureMillisecs} for measure ${measure.MeasureNumber}`,
+      `Could not find suitable staff entry at time ${measureMillisecs} for measure ${measureIndex}`,
     );
   }
 }

@@ -6,7 +6,7 @@
  * @type {import('@jest/types').Config.InitialOptions}
  */
 const options = {
-  preset: './jest.preset.js'
+  preset: './jest.preset.cjs'
 };
 
 module.exports = options;

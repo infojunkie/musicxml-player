@@ -1,5 +1,5 @@
 import type { ISheetPlayback } from './ISheetPlayback';
-import type { MeasureNumber, MillisecsTimestamp, Player } from './Player';
+import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 export declare class VerovioPlayback implements ISheetPlayback {
     private vrv;
     private player;
@@ -8,6 +8,6 @@ export declare class VerovioPlayback implements ISheetPlayback {
     constructor();
     version(): string;
     initialize(player: Player, container: HTMLDivElement | string, musicXml: string): Promise<void>;
-    seek(measureIndex: MeasureNumber, measureMillisecs: MillisecsTimestamp): void;
+    seek(measureIndex: MeasureIndex, measureMillisecs: MillisecsTimestamp): void;
 }
 //# sourceMappingURL=VerovioPlayback.d.ts.map

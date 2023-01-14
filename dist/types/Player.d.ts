@@ -1,5 +1,6 @@
+import type { ISheetPlayback } from './ISheetPlayback';
 import { IMidiOutput } from 'midi-player';
-export declare type MeasureNumber = number;
+export declare type MeasureIndex = number;
 export declare type MillisecsTimestamp = number;
 export declare enum SheetRenderer {
     OpenSheetMusicDisplay = 0,
@@ -17,17 +18,16 @@ export declare class Player {
     private midiOutput;
     private sheetPlayback;
     static load(options: PlayerOptions): Promise<Player>;
-    private static createSheetPlayback;
+    static createSheetPlayback(renderer: SheetRenderer): ISheetPlayback;
     private mapMeasureToTimestamp;
-    private firstMeasureNumber;
     private midiPlayer;
     private startTime;
     private pauseTime;
     private currentMeasureStartTime;
-    private currentMeasureNumber;
+    private currentMeasureIndex;
     private midiFileSlicer;
     private constructor();
-    move(measure: MeasureNumber, millisecs: MillisecsTimestamp): void;
+    move(measure: MeasureIndex, millisecs: MillisecsTimestamp): void;
     play(): Promise<void>;
     pause(): Promise<void>;
     rewind(): Promise<void>;

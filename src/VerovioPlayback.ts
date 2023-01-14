@@ -1,5 +1,5 @@
 import type { ISheetPlayback } from './ISheetPlayback';
-import type { MeasureNumber, MillisecsTimestamp, Player } from './Player';
+import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
 
@@ -90,10 +90,7 @@ export class VerovioPlayback implements ISheetPlayback {
     this.seek(0, 0);
   }
 
-  seek(
-    measureIndex: MeasureNumber,
-    measureMillisecs: MillisecsTimestamp,
-  ): void {
+  seek(measureIndex: MeasureIndex, measureMillisecs: MillisecsTimestamp): void {
     const timestamp = Math.max(
       0,
       Math.min(
