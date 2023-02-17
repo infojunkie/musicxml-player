@@ -41,28 +41,28 @@ const options = {
   input: './src/index.ts',
   output: [
     // createOutputOptions({
-    //   file: './dist/index.js',
+    //   file: './dist/musicxml-player.js',
     //   format: 'commonjs',
     // }),
     // createOutputOptions({
-    //   file: './dist/index.cjs',
+    //   file: './dist/musicxml-player.cjs',
     //   format: 'commonjs',
     // }),
     // createOutputOptions({
-    //   file: './dist/index.mjs',
+    //   file: './dist/musicxml-player.mjs',
     //   format: 'esm',
     // }),
     createOutputOptions({
-      file: './dist/index.esm.js',
+      file: './dist/musicxml-player.esm.js',
       format: 'esm',
       inlineDynamicImports: true,
     }),
     // createOutputOptions({
-    //   file: './dist/index.umd.js',
+    //   file: './dist/musicxml-player.umd.js',
     //   format: 'umd',
     // }),
     // createOutputOptions({
-    //   file: './dist/index.umd.min.js',
+    //   file: './dist/musicxml-player.umd.min.js',
     //   format: 'umd',
     //   plugins: [terser()],
     // }),
