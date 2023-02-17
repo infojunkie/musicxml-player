@@ -4,6 +4,7 @@ import type {
   IMidiFile,
   IMidiProgramChangeEvent,
   IMidiNoteOnEvent,
+  TMidiEvent
 } from 'midi-json-parser-worker';
 import { setTimeout } from 'worker-timers';
 import type { IMidiOutput } from 'midi-player';
@@ -12,13 +13,14 @@ const MIDI_CHANNEL_DRUMS = 9;
 const SCHEDULER_TIMEOUT = 25;
 const MIDI_MESSAGE_NOTEOFF = 8;
 const MIDI_MESSAGE_NOTEON = 9;
+const MIDI_PROGRAM_DEFAULT = 1;
 
-type TChannelMap = Record<
+type ChannelMap = Record<
   number,
   { instrumentInfo?: any; beats?: { drumInfo: any }[] }
 >;
 
-type TNote = {
+type Note = {
   channel: number;
   pitch: number;
   velocity: number;
@@ -30,8 +32,8 @@ type TNote = {
 export class SoundFontOutput implements IMidiOutput {
   private audioContext: IAudioContext;
   private player: any;
-  private notes: Array<TNote>;
-  private channels: TChannelMap;
+  private notes: Array<Note>;
+  private channels: ChannelMap;
 
   constructor(midiJson: IMidiFile) {
     this.audioContext = new AudioContext();
@@ -42,6 +44,18 @@ export class SoundFontOutput implements IMidiOutput {
     this.channels = midiJson.tracks.reduce((channels, track) => {
       const pc = <IMidiProgramChangeEvent>(
         track.find((e) => 'programChange' in e)
+      ) || <IMidiProgramChangeEvent>(
+        track.reduce((pc: TMidiEvent | null, e: TMidiEvent) => {
+          if ('noteOn' in e) {
+            return <TMidiEvent>{
+              channel: e.channel,
+              programChange: {
+                programNumber: MIDI_PROGRAM_DEFAULT,
+              }
+            }
+          }
+          return pc;
+        }, null)
       );
       if (pc) {
         if (pc.channel !== MIDI_CHANNEL_DRUMS) {
@@ -77,7 +91,7 @@ export class SoundFontOutput implements IMidiOutput {
         }
       }
       return channels;
-    }, <TChannelMap>{});
+    }, <ChannelMap>{});
 
     // Perform our own note scheduling.
     // Scan the current notes for those whose "off" timestamp has already occurred, and cancel their envelopes.
