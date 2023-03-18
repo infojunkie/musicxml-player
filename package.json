@@ -1,6 +1,6 @@
 {
   "name": "musicxml-player",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A simple JavaScript component that loads and plays MusicXML files in the browser using Web Audio and Web MIDI.",
   "cdn": "dist/musicxml-player.umd.js",
   "main": "dist/musicxml-player.js",
@@ -74,7 +74,7 @@
   },
   "homepage": "https://github.com/infojunkie/musicxml-player#readme",
   "dependencies": {
-    "midi-file-slicer": "^6.0.71",
+    "midi-file-slicer": "^6.0.77",
     "midi-json-parser": "^8.1.14",
     "midi-player": "github:infojunkie/midi-player#infojunkie",
     "opensheetmusicdisplay": "^1.7.1",

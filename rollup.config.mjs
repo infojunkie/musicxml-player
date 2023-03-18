@@ -14,7 +14,7 @@ import pkg from './package.json' assert { type: 'json' };
  */
 const banner = `/*!
  * ${pkg.name} v${pkg.version}
- * (c) ${pkg.author.name}
+ * (c) ${pkg.author}
  * Released under the ${pkg.license} License.
  */
 `;
