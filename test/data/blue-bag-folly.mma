@@ -44,6 +44,7 @@ Plugin Slash
 
 Time 4
 TimeSig 4/4
+Tempo 120
 Chord-Custom Sequence { 1 768t 50; }
 MidiMark Measure:0
  Dm@1 {96tr;96tdn;96ten;96tdn;96ten;96tdn;192tfn;}
@@ -94,7 +95,6 @@ MidiMark Measure:14
  Dm7@1 {96tr;96tdn;96ten;96tdn;192tan;192ten;192ten;}
 Time 3
 TimeSig 3/4
-Tempo 90
 Chord-Custom Sequence { 1 576t 50; }
 MidiMark Measure:15
  C6@1 {1152tan~;}
@@ -119,7 +119,8 @@ MidiMark Measure:21
 Chord-Custom Sequence { 1 576t 50; }
 MidiMark Measure:22
  FM7@1 {~192ten;}
-Tempo 90
+Time 3
+TimeSig 3/4
 Chord-Custom Sequence { 1 576t 50; }
 MidiMark Measure:15
  C6@1 {1152tan~;}
@@ -158,6 +159,7 @@ MidiMark Measure:26
  A@1 {~<>;}
 Time 4
 TimeSig 4/4
+Tempo 120
 Chord-Custom Sequence { 1 768t 50; }
 MidiMark Measure:10
  Em@1 {96tr;96ten;96tf#;96ten;96tf#;96ten;192tgn;}
@@ -178,7 +180,6 @@ MidiMark Measure:14
  Dm7@1 {96tr;96tdn;96ten;96tdn;192tan;192ten;192ten;}
 Time 3
 TimeSig 3/4
-Tempo 90
 Chord-Custom Sequence { 1 576t 50; }
 MidiMark Measure:15
  C6@1 {1152tan~;}

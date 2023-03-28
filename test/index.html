@@ -29,7 +29,9 @@
       window.addEventListener("load", async () => {
         // Parse query arguments.
         const params = new URLSearchParams(document.location.search);
-        const renderer = params.get('renderer') === 'osmd' ? MusicXMLPlayer.SheetRenderer.OpenSheetMusicDisplay : MusicXMLPlayer.SheetRenderer.Verovio;
+        const renderer = params.get('renderer') === 'osmd' ?
+          new MusicXMLPlayer.OpenSheetMusicDisplayRenderer() :
+          new MusicXMLPlayer.VerovioRenderer();
         const sheet = params.get('sheet');
         const musicXml = await (await fetch(`data/${sheet}.musicxml`)).text();
         const midiBuffer = await (await fetch(`data/${sheet}.mid`)).arrayBuffer();

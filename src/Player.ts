@@ -1,6 +1,5 @@
-import type { ISheetPlayback } from './ISheetPlayback';
-import { OpenSheetMusicDisplayPlayback } from './OpenSheetMusicDisplayPlayback';
-import { VerovioPlayback } from './VerovioPlayback';
+import type { ISheetRenderer } from './ISheetRenderer';
+import type { IMidiConverter } from './IMidiConverter';
 import { parseArrayBuffer as parseMidiBuffer } from 'midi-json-parser';
 import type {
   IMidiFile,
@@ -19,38 +18,23 @@ import pkg from '../package.json';
 
 export type MeasureIndex = number;
 export type MillisecsTimestamp = number;
-export enum SheetRenderer {
-  OpenSheetMusicDisplay,
-  Verovio,
-}
 
 export interface PlayerOptions {
   container: HTMLDivElement | string;
   musicXml: string;
-  renderer: SheetRenderer;
-  midiBuffer: ArrayBuffer;
-  midiOutput?: IMidiOutput;
+  renderer: ISheetRenderer;
+  converter: IMidiConverter;
+  output?: IMidiOutput;
 }
 
 export class Player {
   static async load(options: PlayerOptions): Promise<Player> {
-    const midiJson = await parseMidiBuffer(options.midiBuffer);
-    const midiOutput = options.midiOutput ?? new SoundFontOutput(midiJson);
-    const sheetPlayback = Player.createSheetPlayback(options.renderer);
-    const player = new Player(midiJson, midiOutput, sheetPlayback);
-    await sheetPlayback.initialize(player, options.container, options.musicXml);
+    const midiBuffer = await options.converter.convert(options.musicXml);
+    const midiJson = await parseMidiBuffer(midiBuffer);
+    const output = options.output ?? new SoundFontOutput(midiJson);
+    const player = new Player(midiJson, output, options.renderer);
+    await options.renderer.initialize(player, options.container, options.musicXml);
     return player;
-  }
-
-  static createSheetPlayback(renderer: SheetRenderer): ISheetPlayback {
-    switch (renderer) {
-      case SheetRenderer.OpenSheetMusicDisplay:
-        return new OpenSheetMusicDisplayPlayback();
-      case SheetRenderer.Verovio:
-        return new VerovioPlayback();
-      default:
-        throw 'TODO';
-    }
   }
 
   private mapMeasureToTimestamp: Array<MillisecsTimestamp[]>;
@@ -63,12 +47,12 @@ export class Player {
 
   private constructor(
     private midiJson: IMidiFile,
-    private midiOutput: IMidiOutput,
-    private sheetPlayback: ISheetPlayback,
+    private output: IMidiOutput,
+    private sheetPlayback: ISheetRenderer,
   ) {
     this.midiPlayer = createMidiPlayer({
       json: this.midiJson,
-      midiOutput: this.midiOutput,
+      midiOutput: this.output,
     });
     this.midiFileSlicer = new MidiFileSlicer({ json: this.midiJson });
     this.mapMeasureToTimestamp = [];

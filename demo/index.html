@@ -29,15 +29,16 @@
       window.addEventListener("load", async () => {
         // Parse query arguments.
         const params = new URLSearchParams(document.location.search);
-        const renderer = params.get('renderer') === 'osmd' ? MusicXMLPlayer.SheetRenderer.OpenSheetMusicDisplay : MusicXMLPlayer.SheetRenderer.Verovio;
+        const renderer = params.get('renderer') === 'osmd' ?
+          new MusicXMLPlayer.OpenSheetMusicDisplayRenderer() :
+          new MusicXMLPlayer.VerovioRenderer();
         const sheet = params.get('sheet') ?? 'salma-ya-salama';
         const musicXml = await (await fetch(`data/${sheet}.musicxml`)).text();
-        const midiBuffer = await (await fetch(`data/${sheet}.mid`)).arrayBuffer();
         const player = await MusicXMLPlayer.Player.load({
           container: 'sheet',
           renderer,
           musicXml,
-          midiBuffer,
+          converter: new MusicXMLPlayer.FetchConverter(`data/${sheet}.mid`),
         });
         document.getElementById("version").textContent = JSON.stringify(player.version());
         document.getElementById("play").addEventListener("click", async () => {

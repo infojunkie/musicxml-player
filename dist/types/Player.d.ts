@@ -1,24 +1,20 @@
-import type { ISheetPlayback } from './ISheetPlayback';
+import type { ISheetRenderer } from './ISheetRenderer';
+import type { IMidiConverter } from './IMidiConverter';
 import { IMidiOutput } from 'midi-player';
 export declare type MeasureIndex = number;
 export declare type MillisecsTimestamp = number;
-export declare enum SheetRenderer {
-    OpenSheetMusicDisplay = 0,
-    Verovio = 1
-}
 export interface PlayerOptions {
     container: HTMLDivElement | string;
     musicXml: string;
-    renderer: SheetRenderer;
-    midiBuffer: ArrayBuffer;
-    midiOutput?: IMidiOutput;
+    renderer: ISheetRenderer;
+    converter: IMidiConverter;
+    output?: IMidiOutput;
 }
 export declare class Player {
     private midiJson;
-    private midiOutput;
+    private output;
     private sheetPlayback;
     static load(options: PlayerOptions): Promise<Player>;
-    static createSheetPlayback(renderer: SheetRenderer): ISheetPlayback;
     private mapMeasureToTimestamp;
     private midiPlayer;
     private startTime;

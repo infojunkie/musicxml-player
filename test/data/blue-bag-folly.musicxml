@@ -12,7 +12,7 @@ June 2021</creator>
 Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</rights>
     <encoding>
       <software>MuseScore 3.6.2</software>
-      <encoding-date>2023-01-01</encoding-date>
+      <encoding-date>2023-03-26</encoding-date>
       <supports element="accidental" type="yes"/>
       <supports element="beam" type="yes"/>
       <supports element="print" attribute="new-page" type="yes" value="yes"/>
@@ -35,27 +35,22 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</rig
         <bottom-margin>72</bottom-margin>
         </page-margins>
       </page-layout>
-    <word-font font-family="Times New Roman" font-size="11.9365"/>
-    <lyric-font font-family="Times New Roman" font-size="11.4715"/>
+    <word-font font-family="Edwin" font-size="11.9365"/>
+    <lyric-font font-family="Edwin" font-size="11.4715"/>
     </defaults>
   <credit page="1">
     <credit-type>title</credit-type>
-    <credit-words default-x="600" default-y="1625" justify="center" valign="top" font-family="Edwin" font-size="22.0128">Blue Bag Folly</credit-words>
+    <credit-words default-x="600" default-y="1625" justify="center" valign="top" font-size="22.0128">Blue Bag Folly</credit-words>
     </credit>
   <credit page="1">
     <credit-type>composer</credit-type>
-    <credit-words default-x="1128" default-y="1621" justify="right" valign="top" font-family="Edwin" font-size="11.0064">by David Rehorick
+    <credit-words default-x="1128" default-y="1621" justify="right" valign="top" font-size="11.0064">by David Rehorick
 </credit-words>
     <credit-words>www.davidrehorick.com
 </credit-words>
     <credit-words>June 2021</credit-words>
     </credit>
   <credit page="1">
-    <credit-type>rights</credit-type>
-    <credit-words default-x="600" default-y="72" justify="center" valign="bottom">
-Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</credit-words>
-    </credit>
-  <credit page="2">
     <credit-type>rights</credit-type>
     <credit-words default-x="600" default-y="72" justify="center" valign="bottom">
 Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</credit-words>
@@ -76,7 +71,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
       </score-part>
     </part-list>
   <part id="P1">
-    <measure number="1" width="577.49">
+    <measure number="1" width="585.71">
       <print>
         <system-layout>
           <system-margins>
@@ -109,8 +104,17 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         </harmony>
       <direction placement="below">
         <direction-type>
-          <rehearsal default-x="-13.55" default-y="-40.00" relative-y="-40.00" font-weight="bold" font-size="19.9975">A</rehearsal>
+          <rehearsal default-x="-13.55" default-y="-74.65" relative-y="-40.00" font-weight="bold" font-size="19.9975">A</rehearsal>
           </direction-type>
+        </direction>
+      <direction placement="below">
+        <direction-type>
+          <metronome parentheses="no" default-x="-30.68" default-y="-40.00" relative-y="-30.00">
+            <beat-unit>quarter</beat-unit>
+            <per-minute>120</per-minute>
+            </metronome>
+          </direction-type>
+        <sound tempo="120"/>
         </direction>
       <note>
         <rest/>
@@ -120,10 +124,10 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         </note>
       <direction placement="below">
         <direction-type>
-          <words default-y="-95.48" relative-y="-25.00" font-weight="bold" font-size="13.0217">Rubato</words>
+          <words default-y="-97.49" relative-y="-25.00" font-weight="bold" font-size="13.0217">Rubato</words>
           </direction-type>
         </direction>
-      <note default-x="155.50" default-y="-45.00">
+      <note default-x="156.59" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -132,12 +136,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>I</text>
           </lyric>
         </note>
-      <note default-x="219.17" default-y="-40.00">
+      <note default-x="221.33" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -147,12 +151,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>have</text>
           </lyric>
         </note>
-      <note default-x="282.83" default-y="-45.00">
+      <note default-x="286.08" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -162,12 +166,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>an</text>
           </lyric>
         </note>
-      <note default-x="346.50" default-y="-40.00">
+      <note default-x="350.83" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -177,12 +181,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>old</text>
           </lyric>
         </note>
-      <note default-x="410.16" default-y="-45.00">
+      <note default-x="415.57" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -192,12 +196,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>blue</text>
           </lyric>
         </note>
-      <note default-x="473.83" default-y="-35.00">
+      <note default-x="480.32" default-y="-35.00">
         <pitch>
           <step>F</step>
           <octave>4</octave>
@@ -206,13 +210,13 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>bag</text>
           </lyric>
         </note>
       </measure>
-    <measure number="2" width="428.51">
+    <measure number="2" width="420.29">
       <harmony print-frame="no">
         <root>
           <root-step>B</root-step>
@@ -229,7 +233,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         </note>
-      <note default-x="72.61" default-y="-45.00">
+      <note default-x="71.47" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -238,12 +242,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>It</text>
           </lyric>
         </note>
-      <note default-x="129.73" default-y="-40.00">
+      <note default-x="127.44" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -253,12 +257,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>is</text>
           </lyric>
         </note>
-      <note default-x="186.84" default-y="-45.00">
+      <note default-x="183.41" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -268,12 +272,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>so</text>
           </lyric>
         </note>
-      <note default-x="243.95" default-y="-30.00">
+      <note default-x="239.38" default-y="-30.00">
         <pitch>
           <step>G</step>
           <octave>4</octave>
@@ -282,12 +286,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>rag</text>
           </lyric>
         </note>
-      <note default-x="335.33" default-y="-45.00">
+      <note default-x="328.93" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -296,20 +300,20 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>ged</text>
           </lyric>
         </note>
       </measure>
-    <measure number="3" width="528.81">
+    <measure number="3" width="525.42">
       <print new-system="yes">
         <system-layout>
           <system-margins>
             <left-margin>0.00</left-margin>
-            <right-margin>0.00</right-margin>
+            <right-margin>-0.00</right-margin>
             </system-margins>
-          <system-distance>139.37</system-distance>
+          <system-distance>128.18</system-distance>
           </system-layout>
         </print>
       <harmony print-frame="no">
@@ -324,7 +328,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         </note>
-      <note default-x="135.96" default-y="-45.00">
+      <note default-x="135.52" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -333,12 +337,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>This</text>
           </lyric>
         </note>
-      <note default-x="195.21" default-y="-40.00">
+      <note default-x="194.32" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -348,12 +352,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>old</text>
           </lyric>
         </note>
-      <note default-x="254.46" default-y="-45.00">
+      <note default-x="253.13" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -363,12 +367,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>re</text>
           </lyric>
         </note>
-      <note default-x="313.71" default-y="-40.00">
+      <note default-x="311.93" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -378,12 +382,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>middle</syllabic>
           <text>cyc</text>
           </lyric>
         </note>
-      <note default-x="372.96" default-y="-45.00">
+      <note default-x="370.73" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -393,12 +397,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>le</text>
           </lyric>
         </note>
-      <note default-x="432.21" default-y="-35.00">
+      <note default-x="429.54" default-y="-35.00">
         <pitch>
           <step>F</step>
           <octave>4</octave>
@@ -410,13 +414,13 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <notations>
           <fermata type="upright" relative-y="5.00"/>
           </notations>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>bag</text>
           </lyric>
         </note>
       </measure>
-    <measure number="4" width="527.19">
+    <measure number="4" width="530.58">
       <harmony print-frame="no">
         <root>
           <root-step>B</root-step>
@@ -430,7 +434,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         </note>
-      <note default-x="76.79" default-y="-45.00">
+      <note default-x="77.26" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -439,12 +443,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>It</text>
           </lyric>
         </note>
-      <note default-x="138.08" default-y="-40.00">
+      <note default-x="139.02" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -454,12 +458,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>needs</text>
           </lyric>
         </note>
-      <note default-x="199.36" default-y="-45.00">
+      <note default-x="200.77" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -469,12 +473,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>re</text>
           </lyric>
         </note>
-      <note default-x="260.65" default-y="-10.00">
+      <note default-x="262.53" default-y="-10.00">
         <pitch>
           <step>D</step>
           <octave>5</octave>
@@ -483,12 +487,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>middle</syllabic>
           <text>plac</text>
           </lyric>
         </note>
-      <note default-x="358.71" default-y="-25.00">
+      <note default-x="361.34" default-y="-25.00">
         <pitch>
           <step>A</step>
           <octave>4</octave>
@@ -500,7 +504,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <notations>
           <fermata type="upright" default-y="7.05" relative-y="5.00"/>
           </notations>
-        <lyric number="1" default-x="6.50" default-y="-46.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.74" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>ing</text>
           </lyric>
@@ -509,14 +513,14 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <bar-style>light-light</bar-style>
         </barline>
       </measure>
-    <measure number="5" width="597.31">
+    <measure number="5" width="597.07">
       <print new-system="yes">
         <system-layout>
           <system-margins>
             <left-margin>0.00</left-margin>
-            <right-margin>0.00</right-margin>
+            <right-margin>-0.00</right-margin>
             </system-margins>
-          <system-distance>139.37</system-distance>
+          <system-distance>105.88</system-distance>
           </system-layout>
         </print>
       <attributes>
@@ -534,7 +538,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         </harmony>
       <direction placement="below">
         <direction-type>
-          <rehearsal default-x="-25.00" default-y="-48.61" relative-y="-40.00" font-weight="bold" font-size="19.9975">B</rehearsal>
+          <rehearsal default-x="-25.00" default-y="-51.43" relative-y="-40.00" font-weight="bold" font-size="19.9975">B</rehearsal>
           </direction-type>
         </direction>
       <note>
@@ -543,7 +547,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         </note>
-      <note default-x="188.40" default-y="-40.00">
+      <note default-x="188.36" default-y="-40.00">
         <pitch>
           <step>E</step>
           <alter>-1</alter>
@@ -553,12 +557,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-41.93" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>I</text>
           </lyric>
         </note>
-      <note default-x="250.08" default-y="-35.00">
+      <note default-x="250.02" default-y="-35.00">
         <pitch>
           <step>F</step>
           <octave>4</octave>
@@ -568,12 +572,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-41.93" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>called</text>
           </lyric>
         </note>
-      <note default-x="311.77" default-y="-40.00">
+      <note default-x="311.67" default-y="-40.00">
         <pitch>
           <step>E</step>
           <alter>-1</alter>
@@ -584,12 +588,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-41.93" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>a</text>
           </lyric>
         </note>
-      <note default-x="373.45" default-y="-35.00">
+      <note default-x="373.32" default-y="-35.00">
         <pitch>
           <step>F</step>
           <octave>4</octave>
@@ -599,12 +603,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-41.93" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>round</text>
           </lyric>
         </note>
-      <note default-x="435.13" default-y="-40.00">
+      <note default-x="434.97" default-y="-40.00">
         <pitch>
           <step>E</step>
           <alter>-1</alter>
@@ -615,12 +619,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-41.93" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>for</text>
           </lyric>
         </note>
-      <note default-x="496.82" default-y="-30.00">
+      <note default-x="496.63" default-y="-30.00">
         <pitch>
           <step>G</step>
           <alter>-1</alter>
@@ -630,13 +634,13 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-41.93" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>help</text>
           </lyric>
         </note>
       </measure>
-    <measure number="6" width="458.69">
+    <measure number="6" width="458.93">
       <harmony print-frame="no">
         <root>
           <root-step>C</root-step>
@@ -654,7 +658,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         </note>
-      <note default-x="76.80" default-y="-40.00">
+      <note default-x="76.84" default-y="-40.00">
         <pitch>
           <step>E</step>
           <alter>-1</alter>
@@ -664,12 +668,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-41.93" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>But</text>
           </lyric>
         </note>
-      <note default-x="138.11" default-y="-35.00">
+      <note default-x="138.17" default-y="-35.00">
         <pitch>
           <step>F</step>
           <octave>4</octave>
@@ -679,12 +683,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-41.93" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>there</text>
           </lyric>
         </note>
-      <note default-x="199.41" default-y="-40.00">
+      <note default-x="199.51" default-y="-40.00">
         <pitch>
           <step>E</step>
           <alter>-1</alter>
@@ -695,12 +699,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-41.93" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>was</text>
           </lyric>
         </note>
-      <note default-x="260.72" default-y="-25.00">
+      <note default-x="260.85" default-y="-25.00">
         <pitch>
           <step>A</step>
           <alter>-1</alter>
@@ -710,12 +714,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-41.93" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>noth</text>
           </lyric>
         </note>
-      <note default-x="358.80" default-y="-40.00">
+      <note default-x="358.99" default-y="-40.00">
         <pitch>
           <step>E</step>
           <alter>-1</alter>
@@ -725,20 +729,20 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-41.93" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>ing</text>
           </lyric>
         </note>
       </measure>
-    <measure number="7" width="443.35">
+    <measure number="7" width="595.10">
       <print new-system="yes">
         <system-layout>
           <system-margins>
             <left-margin>0.00</left-margin>
-            <right-margin>-0.00</right-margin>
+            <right-margin>0.00</right-margin>
             </system-margins>
-          <system-distance>139.37</system-distance>
+          <system-distance>100.88</system-distance>
           </system-layout>
         </print>
       <harmony print-frame="no">
@@ -754,7 +758,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         </note>
-      <note default-x="165.43" default-y="-40.00">
+      <note default-x="188.11" default-y="-40.00">
         <pitch>
           <step>E</step>
           <alter>-1</alter>
@@ -764,12 +768,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>I</text>
           </lyric>
         </note>
-      <note default-x="204.14" default-y="-35.00">
+      <note default-x="249.50" default-y="-35.00">
         <pitch>
           <step>F</step>
           <octave>4</octave>
@@ -779,12 +783,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>wond</text>
           </lyric>
         </note>
-      <note default-x="256.14" default-y="-40.00">
+      <note default-x="310.89" default-y="-40.00">
         <pitch>
           <step>E</step>
           <alter>-1</alter>
@@ -795,12 +799,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>ered</text>
           </lyric>
         </note>
-      <note default-x="302.17" default-y="-35.00">
+      <note default-x="372.28" default-y="-35.00">
         <pitch>
           <step>F</step>
           <octave>4</octave>
@@ -810,12 +814,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>what</text>
           </lyric>
         </note>
-      <note default-x="340.89" default-y="-40.00">
+      <note default-x="433.68" default-y="-40.00">
         <pitch>
           <step>E</step>
           <alter>-1</alter>
@@ -826,12 +830,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>to</text>
           </lyric>
         </note>
-      <note default-x="379.60" default-y="-30.00">
+      <note default-x="495.07" default-y="-30.00">
         <pitch>
           <step>G</step>
           <alter>-1</alter>
@@ -841,13 +845,13 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>do</text>
           </lyric>
         </note>
       </measure>
-    <measure number="8" width="310.60">
+    <measure number="8" width="460.90">
       <harmony print-frame="no">
         <root>
           <root-step>C</root-step>
@@ -861,7 +865,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         </note>
-      <note default-x="52.10" default-y="-40.00">
+      <note default-x="73.87" default-y="-40.00">
         <pitch>
           <step>E</step>
           <alter>-1</alter>
@@ -871,12 +875,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>Then</text>
           </lyric>
         </note>
-      <note default-x="88.70" default-y="-35.00">
+      <note default-x="132.24" default-y="-35.00">
         <pitch>
           <step>F</step>
           <octave>4</octave>
@@ -886,12 +890,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>it</text>
           </lyric>
         </note>
-      <note default-x="125.29" default-y="-30.00">
+      <note default-x="190.61" default-y="-30.00">
         <pitch>
           <step>G</step>
           <alter>-1</alter>
@@ -902,12 +906,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>oc</text>
           </lyric>
         </note>
-      <note default-x="171.65" default-y="-25.00">
+      <note default-x="248.98" default-y="-25.00">
         <pitch>
           <step>A</step>
           <alter>-1</alter>
@@ -918,12 +922,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>curred</text>
           </lyric>
         </note>
-      <note default-x="213.65" default-y="-20.00">
+      <note default-x="307.34" default-y="-20.00">
         <pitch>
           <step>B</step>
           <alter>-1</alter>
@@ -934,12 +938,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>to</text>
           </lyric>
         </note>
-      <note default-x="250.25" default-y="-25.00">
+      <note default-x="365.71" default-y="-25.00">
         <pitch>
           <step>A</step>
           <alter>-1</alter>
@@ -952,13 +956,22 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <notations>
           <fermata type="upright" default-y="7.05" relative-y="5.00"/>
           </notations>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>me</text>
           </lyric>
         </note>
       </measure>
-    <measure number="9" width="302.05">
+    <measure number="9" width="1056.00">
+      <print new-system="yes">
+        <system-layout>
+          <system-margins>
+            <left-margin>0.00</left-margin>
+            <right-margin>0.00</right-margin>
+            </system-margins>
+          <system-distance>100.48</system-distance>
+          </system-layout>
+        </print>
       <harmony print-frame="no">
         <root>
           <root-step>E</root-step>
@@ -976,7 +989,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         </note>
-      <note default-x="52.97" default-y="-20.00">
+      <note default-x="248.75" default-y="-20.00">
         <pitch>
           <step>B</step>
           <alter>-1</alter>
@@ -986,12 +999,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         <stem>down</stem>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-57.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>My</text>
           </lyric>
         </note>
-      <note default-x="90.43" default-y="-25.00">
+      <note default-x="370.79" default-y="-25.00">
         <pitch>
           <step>A</step>
           <alter>-1</alter>
@@ -1002,12 +1015,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-57.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>old</text>
           </lyric>
         </note>
-      <note default-x="127.90" default-y="-30.00">
+      <note default-x="492.83" default-y="-30.00">
         <pitch>
           <step>G</step>
           <alter>-1</alter>
@@ -1018,12 +1031,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-57.74" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>de</text>
           </lyric>
         </note>
-      <note default-x="165.37" default-y="-35.00">
+      <note default-x="614.86" default-y="-35.00">
         <pitch>
           <step>F</step>
           <octave>4</octave>
@@ -1033,12 +1046,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-57.74" relative-y="-30.00">
           <syllabic>middle</syllabic>
           <text>crep</text>
           </lyric>
         </note>
-      <note default-x="202.84" default-y="-30.00">
+      <note default-x="736.90" default-y="-30.00">
         <pitch>
           <step>G</step>
           <alter>-1</alter>
@@ -1049,12 +1062,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-57.74" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>it</text>
           </lyric>
         </note>
-      <note default-x="240.30" default-y="-55.00">
+      <note default-x="858.94" default-y="-55.00">
         <pitch>
           <step>B</step>
           <alter>-1</alter>
@@ -1067,7 +1080,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <notations>
           <fermata type="upright" relative-y="5.00"/>
           </notations>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-57.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>bag</text>
           </lyric>
@@ -1080,7 +1093,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
             <left-margin>0.00</left-margin>
             <right-margin>0.00</right-margin>
             </system-margins>
-          <system-distance>139.37</system-distance>
+          <system-distance>116.85</system-distance>
           </system-layout>
         </print>
       <harmony print-frame="no">
@@ -1106,7 +1119,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-58.24" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>need</text>
           </lyric>
@@ -1122,7 +1135,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <accidental>natural</accidental>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-58.24" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>not</text>
           </lyric>
@@ -1138,7 +1151,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <accidental>natural</accidental>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-58.24" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>be</text>
           </lyric>
@@ -1163,7 +1176,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <notations>
           <fermata type="upright" relative-y="5.00"/>
           </notations>
-        <lyric number="1" default-x="8.89" default-y="-56.53" relative-y="-30.00">
+        <lyric number="1" default-x="9.13" default-y="-58.24" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>blue.</text>
           </lyric>
@@ -1172,14 +1185,14 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <bar-style>light-light</bar-style>
         </barline>
       </measure>
-    <measure number="11" width="568.17">
+    <measure number="11" width="569.02">
       <print new-system="yes">
         <system-layout>
           <system-margins>
             <left-margin>0.00</left-margin>
-            <right-margin>0.00</right-margin>
+            <right-margin>-0.00</right-margin>
             </system-margins>
-          <system-distance>139.37</system-distance>
+          <system-distance>85.00</system-distance>
           </system-layout>
         </print>
       <attributes>
@@ -1190,7 +1203,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         </attributes>
       <direction placement="above">
         <direction-type>
-          <segno default-x="-5.44" default-y="21.93" relative-y="20.00"/>
+          <segno default-x="-5.44" default-y="23.14" relative-y="20.00"/>
           </direction-type>
         <sound segno="segno"/>
         </direction>
@@ -1202,7 +1215,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         </harmony>
       <direction placement="below">
         <direction-type>
-          <rehearsal default-x="-25.00" default-y="-55.62" relative-y="-40.00" font-weight="bold" font-size="19.9975">C</rehearsal>
+          <rehearsal default-x="-25.00" default-y="-58.44" relative-y="-40.00" font-weight="bold" font-size="19.9975">C</rehearsal>
           </direction-type>
         </direction>
       <note>
@@ -1211,7 +1224,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         </note>
-      <note default-x="142.57" default-y="-40.00">
+      <note default-x="142.68" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -1220,12 +1233,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-41.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>I</text>
           </lyric>
         </note>
-      <note default-x="206.78" default-y="-35.00">
+      <note default-x="207.00" default-y="-35.00">
         <pitch>
           <step>F</step>
           <alter>1</alter>
@@ -1236,12 +1249,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-41.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>hear</text>
           </lyric>
         </note>
-      <note default-x="270.99" default-y="-40.00">
+      <note default-x="271.33" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -1251,12 +1264,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-41.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>a</text>
           </lyric>
         </note>
-      <note default-x="335.21" default-y="-35.00">
+      <note default-x="335.65" default-y="-35.00">
         <pitch>
           <step>F</step>
           <alter>1</alter>
@@ -1267,12 +1280,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-41.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>lit</text>
           </lyric>
         </note>
-      <note default-x="399.42" default-y="-40.00">
+      <note default-x="399.98" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -1282,12 +1295,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-41.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>tle</text>
           </lyric>
         </note>
-      <note default-x="463.63" default-y="-30.00">
+      <note default-x="464.30" default-y="-30.00">
         <pitch>
           <step>G</step>
           <octave>4</octave>
@@ -1296,13 +1309,13 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-41.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>voice</text>
           </lyric>
         </note>
       </measure>
-    <measure number="12" width="487.83">
+    <measure number="12" width="486.98">
       <harmony print-frame="no">
         <root>
           <root-step>C</root-step>
@@ -1318,7 +1331,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         </note>
-      <note default-x="80.85" default-y="-40.00">
+      <note default-x="80.73" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -1327,12 +1340,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-41.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>It</text>
           </lyric>
         </note>
-      <note default-x="146.20" default-y="-35.00">
+      <note default-x="145.97" default-y="-35.00">
         <pitch>
           <step>F</step>
           <alter>1</alter>
@@ -1343,12 +1356,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-41.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>clear</text>
           </lyric>
         </note>
-      <note default-x="211.55" default-y="-40.00">
+      <note default-x="211.20" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -1358,12 +1371,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-41.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>ly</text>
           </lyric>
         </note>
-      <note default-x="276.90" default-y="-25.00">
+      <note default-x="276.43" default-y="-25.00">
         <pitch>
           <step>A</step>
           <octave>4</octave>
@@ -1372,12 +1385,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-41.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>tells</text>
           </lyric>
         </note>
-      <note default-x="381.46" default-y="-40.00">
+      <note default-x="380.81" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -1386,20 +1399,20 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-41.53" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-42.74" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>me</text>
           </lyric>
         </note>
       </measure>
-    <measure number="13" width="575.25">
+    <measure number="13" width="576.54">
       <print new-system="yes">
         <system-layout>
           <system-margins>
             <left-margin>0.00</left-margin>
             <right-margin>0.00</right-margin>
             </system-margins>
-          <system-distance>139.37</system-distance>
+          <system-distance>100.88</system-distance>
           </system-layout>
         </print>
       <harmony print-frame="no">
@@ -1414,7 +1427,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         </note>
-      <note default-x="143.50" default-y="-40.00">
+      <note default-x="143.67" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -1423,12 +1436,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-45.10" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.12" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>You</text>
           </lyric>
         </note>
-      <note default-x="208.64" default-y="-35.00">
+      <note default-x="208.98" default-y="-35.00">
         <pitch>
           <step>F</step>
           <alter>1</alter>
@@ -1439,12 +1452,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-45.10" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.12" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>can</text>
           </lyric>
         </note>
-      <note default-x="273.79" default-y="-40.00">
+      <note default-x="274.30" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -1454,12 +1467,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-45.10" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.12" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>use</text>
           </lyric>
         </note>
-      <note default-x="338.93" default-y="-35.00">
+      <note default-x="339.61" default-y="-35.00">
         <pitch>
           <step>F</step>
           <alter>1</alter>
@@ -1470,12 +1483,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-45.10" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.12" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>shop</text>
           </lyric>
         </note>
-      <note default-x="404.08" default-y="-40.00">
+      <note default-x="404.92" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -1485,12 +1498,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-45.10" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.12" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>ping</text>
           </lyric>
         </note>
-      <note default-x="469.22" default-y="-30.00">
+      <note default-x="470.24" default-y="-30.00">
         <pitch>
           <step>G</step>
           <octave>4</octave>
@@ -1499,13 +1512,13 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-45.10" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.12" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>bags</text>
           </lyric>
         </note>
       </measure>
-    <measure number="14" width="480.75">
+    <measure number="14" width="479.46">
       <harmony print-frame="no">
         <root>
           <root-step>E</root-step>
@@ -1519,7 +1532,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         </note>
-      <note default-x="76.61" default-y="-40.00">
+      <note default-x="76.43" default-y="-40.00">
         <pitch>
           <step>E</step>
           <alter>-1</alter>
@@ -1530,12 +1543,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <accidental>flat</accidental>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-45.10" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.12" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>Head</text>
           </lyric>
         </note>
-      <note default-x="137.73" default-y="-35.00">
+      <note default-x="137.37" default-y="-35.00">
         <pitch>
           <step>F</step>
           <octave>4</octave>
@@ -1546,12 +1559,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <accidental>natural</accidental>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-45.10" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.12" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>to</text>
           </lyric>
         </note>
-      <note default-x="198.84" default-y="-40.00">
+      <note default-x="198.30" default-y="-40.00">
         <pitch>
           <step>E</step>
           <alter>-1</alter>
@@ -1562,12 +1575,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-45.10" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.12" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>the</text>
           </lyric>
         </note>
-      <note default-x="259.95" default-y="-5.00">
+      <note default-x="259.24" default-y="-5.00">
         <pitch>
           <step>E</step>
           <alter>-1</alter>
@@ -1578,12 +1591,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>quarter</type>
         <accidental>flat</accidental>
         <stem>down</stem>
-        <lyric number="1" default-x="6.50" default-y="-45.10" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.12" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>base</text>
           </lyric>
         </note>
-      <note default-x="357.74" default-y="-20.00">
+      <note default-x="356.73" default-y="-20.00">
         <pitch>
           <step>B</step>
           <alter>-1</alter>
@@ -1597,7 +1610,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <notations>
           <fermata type="upright" relative-y="5.00"/>
           </notations>
-        <lyric number="1" default-x="6.50" default-y="-45.10" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.12" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>ment</text>
           </lyric>
@@ -1610,7 +1623,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
             <left-margin>0.00</left-margin>
             <right-margin>0.00</right-margin>
             </system-margins>
-          <system-distance>139.37</system-distance>
+          <system-distance>103.65</system-distance>
           </system-layout>
         </print>
       <attributes>
@@ -1625,6 +1638,15 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
           </root>
         <kind>minor-seventh</kind>
         </harmony>
+      <direction placement="below">
+        <direction-type>
+          <metronome parentheses="no" default-x="-37.68" default-y="-40.00" relative-y="-30.00">
+            <beat-unit>quarter</beat-unit>
+            <per-minute>90</per-minute>
+            </metronome>
+          </direction-type>
+        <sound tempo="90"/>
+        </direction>
       <note>
         <rest/>
         <duration>1</duration>
@@ -1640,7 +1662,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.23" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-48.24" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>ac</text>
           </lyric>
@@ -1656,7 +1678,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <accidental>natural</accidental>
         <stem>up</stem>
         <beam number="1">begin</beam>
-        <lyric number="1" default-x="6.50" default-y="-46.23" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-48.24" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>cept</text>
           </lyric>
@@ -1671,7 +1693,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>eighth</type>
         <stem>up</stem>
         <beam number="1">end</beam>
-        <lyric number="1" default-x="6.50" default-y="-46.23" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-48.24" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>your</text>
           </lyric>
@@ -1688,7 +1710,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <notations>
           <fermata type="upright" default-y="7.05" relative-y="5.00"/>
           </notations>
-        <lyric number="1" default-x="6.50" default-y="-46.23" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-48.24" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>fol</text>
           </lyric>
@@ -1705,20 +1727,11 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <notations>
           <fermata type="upright" relative-y="5.00"/>
           </notations>
-        <lyric number="1" default-x="9.46" default-y="-46.23" relative-y="-30.00">
+        <lyric number="1" default-x="9.73" default-y="-48.24" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>ly!</text>
           </lyric>
         </note>
-      <direction placement="below">
-        <direction-type>
-          <metronome parentheses="no" default-y="-94.61" relative-y="-30.00">
-            <beat-unit>quarter</beat-unit>
-            <per-minute>90</per-minute>
-            </metronome>
-          </direction-type>
-        <sound tempo="90"/>
-        </direction>
       <note default-x="857.13" default-y="-40.00">
         <pitch>
           <step>E</step>
@@ -1728,7 +1741,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.23" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-48.24" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>Good</text>
           </lyric>
@@ -1737,14 +1750,14 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <bar-style>light-light</bar-style>
         </barline>
       </measure>
-    <measure number="16" width="329.29">
-      <print new-page="yes">
+    <measure number="16" width="328.23">
+      <print new-system="yes">
         <system-layout>
           <system-margins>
             <left-margin>0.00</left-margin>
             <right-margin>0.00</right-margin>
             </system-margins>
-          <top-system-distance>70.00</top-system-distance>
+          <system-distance>85.00</system-distance>
           </system-layout>
         </print>
       <barline location="left">
@@ -1765,26 +1778,17 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         </harmony>
       <direction placement="below">
         <direction-type>
-          <rehearsal default-x="-43.85" default-y="-71.43" relative-y="-40.00" font-weight="bold" font-size="19.9975">D</rehearsal>
+          <rehearsal default-x="-43.85" default-y="-41.98" relative-y="-40.00" font-weight="bold" font-size="19.9975">D</rehearsal>
           </direction-type>
         </direction>
       <direction placement="below">
         <direction-type>
-          <words default-y="-101.71" relative-y="-25.00" font-weight="bold" font-size="13.0217">Jazz Waltz Feel</words>
+          <words default-y="-103.33" relative-y="-25.00" font-weight="bold" font-size="13.0217">Jazz Waltz Feel</words>
           </direction-type>
         </direction>
       <direction placement="below">
         <direction-type>
-          <metronome parentheses="no" default-x="-66.52" default-y="-40.00" relative-y="-30.00">
-            <beat-unit>quarter</beat-unit>
-            <per-minute>90</per-minute>
-            </metronome>
-          </direction-type>
-        <sound tempo="90"/>
-        </direction>
-      <direction placement="below">
-        <direction-type>
-          <words default-y="-127.28" relative-y="-25.00" font-weight="bold" font-style="italic" font-size="14.2618">solos</words>
+          <words default-y="-130.10" relative-y="-25.00" font-weight="bold" font-style="italic" font-size="14.2618">solos</words>
           </direction-type>
         </direction>
       <note default-x="129.33" default-y="-25.00">
@@ -1801,14 +1805,14 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <notations>
           <tied type="start"/>
           </notations>
-        <lyric number="1" default-y="-47.93" relative-y="-30.00">
+        <lyric number="1" default-y="-49.14" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>bye</text>
           <extend/>
           </lyric>
         </note>
       </measure>
-    <measure number="17" width="198.80">
+    <measure number="17" width="194.03">
       <note default-x="13.00" default-y="-25.00">
         <pitch>
           <step>A</step>
@@ -1825,14 +1829,14 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
           </notations>
         </note>
       </measure>
-    <measure number="18" width="273.17">
+    <measure number="18" width="280.51">
       <harmony print-frame="no">
         <root>
           <root-step>G</root-step>
           </root>
         <kind>major-seventh</kind>
         </harmony>
-      <note default-x="29.12" default-y="-20.00">
+      <note default-x="31.94" default-y="-20.00">
         <pitch>
           <step>B</step>
           <octave>4</octave>
@@ -1841,12 +1845,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>down</stem>
-        <lyric number="1" default-x="6.50" default-y="-47.93" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-49.14" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>Blue</text>
           </lyric>
         </note>
-      <note default-x="122.29" default-y="-35.00">
+      <note default-x="126.85" default-y="-35.00">
         <pitch>
           <step>F</step>
           <alter>1</alter>
@@ -1860,14 +1864,14 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <notations>
           <tied type="start"/>
           </notations>
-        <lyric number="1" default-y="-47.93" relative-y="-30.00">
+        <lyric number="1" default-y="-49.14" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>Bag</text>
           <extend/>
           </lyric>
         </note>
       </measure>
-    <measure number="19" width="254.74">
+    <measure number="19" width="253.23">
       <note default-x="13.00" default-y="-35.00">
         <pitch>
           <step>F</step>
@@ -1883,7 +1887,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
           <tied type="stop"/>
           </notations>
         </note>
-      <note default-x="160.66" default-y="-45.00">
+      <note default-x="159.72" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -1892,20 +1896,20 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-47.93" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-49.14" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>Good</text>
           </lyric>
         </note>
       </measure>
-    <measure number="20" width="285.42">
+    <measure number="20" width="285.87">
       <print new-system="yes">
         <system-layout>
           <system-margins>
             <left-margin>0.00</left-margin>
-            <right-margin>-0.00</right-margin>
+            <right-margin>0.00</right-margin>
             </system-margins>
-          <system-distance>150.00</system-distance>
+          <system-distance>135.26</system-distance>
           </system-layout>
         </print>
       <harmony print-frame="no">
@@ -1928,14 +1932,14 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <notations>
           <tied type="start"/>
           </notations>
-        <lyric number="1" default-y="-51.85" relative-y="-30.00">
+        <lyric number="1" default-y="-53.47" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>bye</text>
           <extend/>
           </lyric>
         </note>
       </measure>
-    <measure number="21" width="208.40">
+    <measure number="21" width="205.14">
       <harmony print-frame="no">
         <root>
           <root-step>C</root-step>
@@ -1958,14 +1962,14 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
           </notations>
         </note>
       </measure>
-    <measure number="22" width="269.30">
+    <measure number="22" width="272.11">
       <harmony print-frame="no">
         <root>
           <root-step>F</root-step>
           </root>
         <kind>major-seventh</kind>
         </harmony>
-      <note default-x="29.12" default-y="-25.00">
+      <note default-x="31.94" default-y="-25.00">
         <pitch>
           <step>A</step>
           <octave>4</octave>
@@ -1974,12 +1978,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-51.85" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-53.47" relative-y="-30.00">
           <syllabic>begin</syllabic>
           <text>Blue</text>
           </lyric>
         </note>
-      <note default-x="108.58" default-y="-40.00">
+      <note default-x="111.40" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -1992,7 +1996,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <notations>
           <tied type="start"/>
           </notations>
-        <lyric number="1" default-y="-51.85" relative-y="-30.00">
+        <lyric number="1" default-y="-53.47" relative-y="-30.00">
           <syllabic>end</syllabic>
           <text>Bag</text>
           <extend/>
@@ -2000,12 +2004,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         </note>
       <direction placement="below">
         <direction-type>
-          <words default-y="-107.25" relative-y="-25.00" font-weight="bold" font-style="italic" font-size="14.2618">OPEN for SOLOS till CUE</words>
+          <words default-y="-108.06" relative-y="-25.00" font-weight="bold" font-style="italic" font-size="14.2618">OPEN for SOLOS till CUE</words>
           </direction-type>
         <offset>-2</offset>
         </direction>
       </measure>
-    <measure number="23" width="292.88">
+    <measure number="23" width="292.87">
       <note default-x="13.00" default-y="-40.00">
         <pitch>
           <step>E</step>
@@ -2020,7 +2024,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
           <tied type="stop"/>
           </notations>
         </note>
-      <note default-x="173.64" default-y="-40.00">
+      <note default-x="173.63" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -2029,7 +2033,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.78" default-y="-51.85" relative-y="-30.00">
+        <lyric number="1" default-x="6.51" default-y="-53.47" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>(Good)</text>
           </lyric>
@@ -2039,14 +2043,14 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <repeat direction="backward"/>
         </barline>
       </measure>
-    <measure number="24" width="362.39">
+    <measure number="24" width="368.17">
       <print new-system="yes">
         <system-layout>
           <system-margins>
             <left-margin>0.00</left-margin>
             <right-margin>0.00</right-margin>
             </system-margins>
-          <system-distance>150.00</system-distance>
+          <system-distance>141.85</system-distance>
           </system-layout>
         </print>
       <harmony print-frame="no">
@@ -2057,7 +2061,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         </harmony>
       <direction placement="below">
         <direction-type>
-          <words default-y="-96.19" relative-y="-25.00" font-weight="bold" font-style="italic" font-size="14.2618">On Cue</words>
+          <words default-y="-99.41" relative-y="-25.00" font-weight="bold" font-style="italic" font-size="14.2618">On Cue</words>
           </direction-type>
         </direction>
       <note default-x="78.35" default-y="-45.00">
@@ -2069,12 +2073,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.43" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.64" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>You</text>
           </lyric>
         </note>
-      <note default-x="172.43" default-y="-40.00">
+      <note default-x="174.36" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -2083,12 +2087,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.43" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.64" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>were</text>
           </lyric>
         </note>
-      <note default-x="266.51" default-y="-35.00">
+      <note default-x="270.37" default-y="-35.00">
         <pitch>
           <step>F</step>
           <octave>4</octave>
@@ -2098,13 +2102,13 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>quarter</type>
         <accidental>natural</accidental>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.43" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.64" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>so</text>
           </lyric>
         </note>
       </measure>
-    <measure number="25" width="260.47">
+    <measure number="25" width="260.95">
       <harmony print-frame="no">
         <root>
           <root-step>B</root-step>
@@ -2112,7 +2116,7 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
           </root>
         <kind>dominant</kind>
         </harmony>
-      <note default-x="30.53" default-y="-45.00">
+      <note default-x="31.94" default-y="-45.00">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -2121,12 +2125,12 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <voice>1</voice>
         <type>half</type>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.43" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.64" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>good</text>
           </lyric>
         </note>
-      <note default-x="170.93" default-y="-35.00">
+      <note default-x="171.76" default-y="-35.00">
         <pitch>
           <step>F</step>
           <octave>4</octave>
@@ -2136,20 +2140,20 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <type>quarter</type>
         <accidental>natural</accidental>
         <stem>up</stem>
-        <lyric number="1" default-x="6.50" default-y="-46.43" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.64" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>to</text>
           </lyric>
         </note>
       </measure>
-    <measure number="26" width="216.27">
+    <measure number="26" width="214.88">
       <harmony print-frame="no">
         <root>
           <root-step>A</root-step>
           </root>
         <kind>major</kind>
         </harmony>
-      <note default-x="21.26" default-y="-40.00">
+      <note default-x="23.27" default-y="-40.00">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -2163,13 +2167,13 @@ Copyright © 2021 David Rehorick (Arranged by Miles Black - milesblack.com)</cre
         <notations>
           <tied type="start"/>
           </notations>
-        <lyric number="1" default-x="6.50" default-y="-46.43" relative-y="-30.00">
+        <lyric number="1" default-x="6.50" default-y="-47.64" relative-y="-30.00">
           <syllabic>single</syllabic>
           <text>me</text>
           </lyric>
         </note>
       </measure>
-    <measure number="27" width="216.87">
+    <measure number="27" width="211.99">
       <note default-x="13.00" default-y="-40.00">
         <pitch>
           <step>E</step>

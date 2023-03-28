@@ -1,4 +1,7 @@
-/// <reference types="webmidi" />
 export * from './Player';
-export declare function midiOutputs(): Promise<Array<WebMidi.MIDIOutput>>;
+export * from './ISheetRenderer';
+export * from './IMidiConverter';
+export * from './OpenSheetMusicDisplayRenderer';
+export * from './VerovioRenderer';
+export * from './FetchConverter';
 //# sourceMappingURL=index.d.ts.map
