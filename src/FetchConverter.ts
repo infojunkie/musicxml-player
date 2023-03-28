@@ -1,4 +1,4 @@
-import type { IMidiConverter } from "./IMidiConverter";
+import type { IMidiConverter } from './IMidiConverter';
 import pkg from '../package.json';
 
 export class FetchConverter implements IMidiConverter {

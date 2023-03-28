@@ -4,7 +4,7 @@ import type {
   IMidiFile,
   IMidiProgramChangeEvent,
   IMidiNoteOnEvent,
-  TMidiEvent
+  TMidiEvent,
 } from 'midi-json-parser-worker';
 import { setTimeout } from 'worker-timers';
 import type { IMidiOutput } from 'midi-player';
@@ -42,21 +42,22 @@ export class SoundFontOutput implements IMidiOutput {
 
     // Scan the MIDI for "program change" events, and load the corresponding instrument sample for each.
     this.channels = midiJson.tracks.reduce((channels, track) => {
-      const pc = <IMidiProgramChangeEvent>(
-        track.find((e) => 'programChange' in e)
-      ) || <IMidiProgramChangeEvent>(
-        track.reduce((pc: TMidiEvent | null, e: TMidiEvent) => {
-          if ('noteOn' in e) {
-            return <TMidiEvent>{
-              channel: e.channel,
-              programChange: {
-                programNumber: MIDI_PROGRAM_DEFAULT,
-              }
+      const pc =
+        <IMidiProgramChangeEvent>track.find((e) => 'programChange' in e) ||
+        <IMidiProgramChangeEvent>track.reduce(
+          (pc: TMidiEvent | null, e: TMidiEvent) => {
+            if ('noteOn' in e) {
+              return <TMidiEvent>{
+                channel: e.channel,
+                programChange: {
+                  programNumber: MIDI_PROGRAM_DEFAULT,
+                },
+              };
             }
-          }
-          return pc;
-        }, null)
-      );
+            return pc;
+          },
+          null,
+        );
       if (pc) {
         if (pc.channel !== MIDI_CHANNEL_DRUMS) {
           const instrumentNumber = this.player.loader.findInstrument(

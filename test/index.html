@@ -34,12 +34,11 @@
           new MusicXMLPlayer.VerovioRenderer();
         const sheet = params.get('sheet');
         const musicXml = await (await fetch(`data/${sheet}.musicxml`)).text();
-        const midiBuffer = await (await fetch(`data/${sheet}.mid`)).arrayBuffer();
         const player = await MusicXMLPlayer.Player.load({
           container: 'sheet',
           renderer,
           musicXml,
-          midiBuffer,
+          converter: new MusicXMLPlayer.FetchConverter(`data/${sheet}.mid`),
         });
         document.getElementById("version").textContent = JSON.stringify(player.version());
         document.getElementById("play").addEventListener("click", async () => {

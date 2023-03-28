@@ -1,4 +1,4 @@
-import type { IMidiConverter } from "./IMidiConverter";
+import type { IMidiConverter } from './IMidiConverter';
 export declare class FetchConverter implements IMidiConverter {
     private midiUri;
     constructor(midiUri: string);

@@ -33,7 +33,11 @@ export class Player {
     const midiJson = await parseMidiBuffer(midiBuffer);
     const output = options.output ?? new SoundFontOutput(midiJson);
     const player = new Player(midiJson, output, options.renderer);
-    await options.renderer.initialize(player, options.container, options.musicXml);
+    await options.renderer.initialize(
+      player,
+      options.container,
+      options.musicXml,
+    );
     return player;
   }
 
