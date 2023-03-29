@@ -4,8 +4,8 @@ import pkg from '../package.json';
 export class FetchConverter implements IMidiConverter {
   constructor(private midiUri: string) {}
 
-  version(): string {
-    return `${pkg.name} v${pkg.version}`;
+  version(): Promise<string> {
+    return Promise.resolve(`${pkg.name} v${pkg.version}`);
   }
 
   async convert(): Promise<ArrayBuffer> {

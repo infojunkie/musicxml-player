@@ -1,0 +1,1 @@
+{"version":3,"file":"MmaConverter.d.ts","sourceRoot":"","sources":["../src/MmaConverter.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,kBAAkB,CAAC;AAEvD,qBAAa,YAAa,YAAW,cAAc;IACrC,OAAO,CAAC,MAAM;gBAAN,MAAM,EAAE,MAAM;IAE5B,OAAO,IAAI,OAAO,CAAC,MAAM,CAAC;IAK1B,OAAO,CAAC,QAAQ,EAAE,MAAM,GAAG,OAAO,CAAC,WAAW,CAAC;CAUtD"}

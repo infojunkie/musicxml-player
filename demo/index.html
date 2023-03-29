@@ -38,9 +38,9 @@
           container: 'sheet',
           renderer,
           musicXml,
-          converter: new MusicXMLPlayer.FetchConverter(`data/${sheet}.mid`),
+          converter: new MusicXMLPlayer.MmaConverter(`http://localhost:3000`),
         });
-        document.getElementById("version").textContent = JSON.stringify(player.version());
+        document.getElementById("version").textContent = JSON.stringify(await player.version());
         document.getElementById("play").addEventListener("click", async () => {
           await player.play();
         });

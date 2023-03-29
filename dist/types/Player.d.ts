@@ -13,7 +13,8 @@ export interface PlayerOptions {
 export declare class Player {
     private midiJson;
     private output;
-    private sheetPlayback;
+    private renderer;
+    private converter;
     static load(options: PlayerOptions): Promise<Player>;
     private mapMeasureToTimestamp;
     private midiPlayer;
@@ -27,10 +28,7 @@ export declare class Player {
     play(): Promise<void>;
     pause(): Promise<void>;
     rewind(): Promise<void>;
-    version(): {
-        player: string;
-        renderer: string;
-    };
+    version(): Promise<Record<string, string>>;
     /**
      * Parse the MIDI file to construct a map linking measures to time offsets.
      */

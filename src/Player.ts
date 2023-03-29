@@ -32,7 +32,12 @@ export class Player {
     const midiBuffer = await options.converter.convert(options.musicXml);
     const midiJson = await parseMidiBuffer(midiBuffer);
     const output = options.output ?? new SoundFontOutput(midiJson);
-    const player = new Player(midiJson, output, options.renderer);
+    const player = new Player(
+      midiJson,
+      output,
+      options.renderer,
+      options.converter,
+    );
     await options.renderer.initialize(
       player,
       options.container,
@@ -52,7 +57,8 @@ export class Player {
   private constructor(
     private midiJson: IMidiFile,
     private output: IMidiOutput,
-    private sheetPlayback: ISheetRenderer,
+    private renderer: ISheetRenderer,
+    private converter: IMidiConverter,
   ) {
     this.midiPlayer = createMidiPlayer({
       json: this.midiJson,
@@ -90,14 +96,15 @@ export class Player {
 
   async rewind() {
     this.midiPlayer.stop();
-    this.sheetPlayback.seek(0, 0);
+    this.renderer.seek(0, 0);
     this.startTime = 0;
   }
 
-  version() {
+  async version(): Promise<Record<string, string>> {
     return {
       player: `${pkg.name} v${pkg.version}`,
-      renderer: this.sheetPlayback.version(),
+      renderer: this.renderer.version(),
+      converter: await this.converter.version(),
     };
   }
 
@@ -167,7 +174,7 @@ export class Player {
             }
           }
         });
-      this.sheetPlayback.seek(
+      this.renderer.seek(
         this.currentMeasureIndex,
         Math.max(0, now - this.currentMeasureStartTime),
       );
