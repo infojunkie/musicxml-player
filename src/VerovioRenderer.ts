@@ -103,7 +103,7 @@ export class VerovioRenderer implements ISheetRenderer {
     const elements = <ElementsAtTimeFixed>(
       this.vrv!.getElementsAtTime(timestamp)
     );
-    const notes = [...elements.notes, ...elements.rests];
+    const notes = [...(elements.notes || []), ...(elements.rests || [])];
     if (notes.length > 0 && this.notes != notes) {
       this.notes.forEach((noteid) => {
         if (!notes.includes(noteid)) {

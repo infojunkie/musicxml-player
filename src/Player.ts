@@ -126,7 +126,11 @@ export class Player {
       offset += event.delta;
       if ('marker' in event) {
         const marker = (<IMidiMarkerEvent>event).marker.split(':');
-        if (marker[0] === 'Measure') {
+        if (
+          marker[0].localeCompare('Measure', undefined, {
+            sensitivity: 'base',
+          }) === 0
+        ) {
           const measureIndex = Number(marker[1]);
           const timestamp =
             offset * (microsecondsPerQuarter / this.midiJson.division / 1000);
@@ -160,14 +164,14 @@ export class Player {
             const marker = (<IMidiMarkerEvent>event.event).marker.split(':');
             if (
               marker[0].localeCompare('Measure', undefined, {
-                sensitivity: 'accent',
+                sensitivity: 'base',
               }) === 0
             ) {
               this.currentMeasureIndex = Number(marker[1]);
               this.currentMeasureStartTime = now;
             } else if (
               marker[0].localeCompare('Groove', undefined, {
-                sensitivity: 'accent',
+                sensitivity: 'base',
               }) === 0
             ) {
               // TODO Update listeners that the groove has changed.
