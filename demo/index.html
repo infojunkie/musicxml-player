@@ -33,14 +33,14 @@
           new MusicXMLPlayer.OpenSheetMusicDisplayRenderer() :
           new MusicXMLPlayer.VerovioRenderer();
         const sheet = params.get('sheet') ?? 'salma-ya-salama';
-        let converter = null;
-        try {
-          await (await fetch(`data/${sheet}.mid`)).arrayBuffer();
-          converter = new MusicXMLPlayer.FetchConverter(`data/${sheet}.mid`);
-        }
-        catch {
-          converter = new MusicXMLPlayer.MmaConverter(`http://localhost:3000`);
-        }
+        let converter = await new MusicXMLPlayer.VerovioConverter();
+        // try {
+        //   await fetch(`data/${sheet}.mid`);
+        //   converter = new MusicXMLPlayer.FetchConverter(`data/${sheet}.mid`);
+        // }
+        // catch {
+        //   converter = new MusicXMLPlayer.MmaConverter(`http://localhost:3000`);
+        // }
         const musicXml = await (await fetch(`data/${sheet}.musicxml`)).text();
         const player = await MusicXMLPlayer.Player.load({
           container: 'sheet',
