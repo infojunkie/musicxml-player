@@ -14,6 +14,7 @@ const SCHEDULER_TIMEOUT = 25;
 const MIDI_MESSAGE_NOTEOFF = 8;
 const MIDI_MESSAGE_NOTEON = 9;
 const MIDI_PROGRAM_DEFAULT = 1;
+const SCHEDULER_NOTE_LENGTH = 10;
 
 type ChannelMap = Record<
   number,
@@ -146,21 +147,30 @@ export class SoundFontOutput implements IMidiOutput {
         : this.channels[channel].instrumentInfo!.variable;
     const when =
       this.audioContext.currentTime + (timestamp - performance.now()) / 1000;
+    const envelope = this.player.queueWaveTable(
+      this.audioContext,
+      this.audioContext.destination,
+      window[instrument],
+      when,
+      pitch,
+      SCHEDULER_NOTE_LENGTH,
+      velocity / 127,
+    );
+    envelope.cancel = () => {
+      if (envelope && (envelope.when + envelope.duration > this.audioContext.currentTime)) {
+        ((envelope as any) as GainNode).gain.cancelScheduledValues(this.audioContext.currentTime);
+        ((envelope as any) as GainNode).gain.setTargetAtTime(0.00001, this.audioContext.currentTime, 0.1);
+        envelope.when = this.audioContext.currentTime;
+        envelope.duration = SCHEDULER_NOTE_LENGTH;
+      }
+    }
     this.notes.push({
       channel,
       pitch,
       velocity,
       on: timestamp,
       off: null,
-      envelope: this.player.queueWaveTable(
-        this.audioContext,
-        this.audioContext.destination,
-        window[instrument],
-        when,
-        pitch,
-        100000,
-        velocity / 127,
-      ),
+      envelope,
     });
   }
 
