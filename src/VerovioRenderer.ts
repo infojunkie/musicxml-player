@@ -3,7 +3,7 @@ import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
 
-interface TimeMapEntryFixed {
+export interface TimeMapEntryFixed {
   tstamp: number;
   qstamp: number;
   on?: string[];
@@ -26,18 +26,13 @@ export class VerovioRenderer implements ISheetRenderer {
   private vrv: VerovioToolkit | null;
   private player: Player | null;
   private notes: Array<string>;
-  private timestamps: Array<MillisecsTimestamp>;
+  private timemap: Array<MillisecsTimestamp>;
 
   constructor() {
     this.vrv = null;
     this.player = null;
     this.notes = [];
-    this.timestamps = [];
-  }
-
-  version(): string {
-    if (!this.vrv) throw 'TODO';
-    return `verovio v${this.vrv.getVersion()}`;
+    this.timemap = [];
   }
 
   async initialize(
@@ -71,33 +66,33 @@ export class VerovioRenderer implements ISheetRenderer {
 
     // Build measure timemap and setup event listeners on notes.
     this.vrv
-      .renderToTimemap({ includeMeasures: true, includeRests: true })
-      .forEach((e) => {
-        const event = <TimeMapEntryFixed>e;
-        if ('measureOn' in event) {
-          this.timestamps.push(event.tstamp);
-        }
-        const measureIndex = this.timestamps.length - 1;
-        [...(event.on || []), ...(event.restsOn || [])].forEach((noteid) => {
-          document.getElementById(noteid)?.addEventListener('click', () => {
-            const measureMillisecs =
-              event.tstamp - this.timestamps[measureIndex];
-            this.seek(measureIndex, measureMillisecs + 1);
-            this.player!.move(measureIndex, measureMillisecs);
-          });
+    .renderToTimemap({ includeMeasures: true, includeRests: true })
+    .forEach((e) => {
+      const event = <TimeMapEntryFixed>e;
+      if ('measureOn' in event) {
+        this.timemap.push(event.tstamp);
+      }
+      const measureIndex = this.timemap.length - 1;
+      [...(event.on || []), ...(event.restsOn || [])].forEach((noteid) => {
+        document.getElementById(noteid)?.addEventListener('click', () => {
+          const measureOffset =
+            event.tstamp - this.timemap[measureIndex];
+          this.seek(measureIndex, measureOffset + 1);
+          this.player?.moveToMeasure(measureIndex, measureOffset);
         });
       });
+    });
     this.seek(0, 0);
   }
 
-  seek(measureIndex: MeasureIndex, measureMillisecs: MillisecsTimestamp): void {
+  seek(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void {
     const timestamp = Math.max(
       0,
       Math.min(
-        measureIndex < this.timestamps.length - 1
-          ? this.timestamps[measureIndex + 1]
-          : this.timestamps[measureIndex] + measureMillisecs,
-        this.timestamps[measureIndex] + measureMillisecs,
+        measureIndex < this.timemap.length - 1
+          ? this.timemap[measureIndex + 1]
+          : this.timemap[measureIndex] + measureOffset,
+        this.timemap[measureIndex] + measureOffset,
       ),
     );
     const elements = <ElementsAtTimeFixed>(
@@ -119,5 +114,10 @@ export class VerovioRenderer implements ISheetRenderer {
         note?.setAttribute('stroke', '#c00');
       });
     }
+  }
+
+  get version(): string {
+    if (!this.vrv) throw 'TODO';
+    return `verovio v${this.vrv.getVersion()}`;
   }
 }

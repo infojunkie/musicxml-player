@@ -1,16 +1,15 @@
 import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
-import { Fraction, SourceMeasure } from 'opensheetmusicdisplay';
 export declare class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     private player;
     private osmd;
     private currentMeasureIndex;
     private currentVoiceEntryIndex;
     constructor();
-    version(): string;
     initialize(player: Player, container: HTMLDivElement | string, musicXml: string): Promise<void>;
-    timestampToMillisecs(measure: SourceMeasure, timestamp: Fraction): number;
-    updateCursor(measureIndex: number, voiceEntryIndex: number): void;
-    seek(measureIndex: MeasureIndex, measureMillisecs: MillisecsTimestamp): void;
+    seek(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void;
+    get version(): string;
+    private _timestampToMillisecs;
+    private _updateCursor;
 }
 //# sourceMappingURL=OpenSheetMusicDisplayRenderer.d.ts.map

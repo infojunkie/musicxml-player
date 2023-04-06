@@ -21,11 +21,6 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     this.currentVoiceEntryIndex = 0;
   }
 
-  version(): string {
-    if (!this.osmd) throw 'TODO';
-    return `opensheetmusicdisplay v${this.osmd.Version}`;
-  }
-
   async initialize(
     player: Player,
     container: HTMLDivElement | string,
@@ -63,10 +58,10 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
               (<HTMLElement>(
                 vfve.vfStaveNote?.getAttribute('el')
               ))?.addEventListener('click', () => {
-                this.updateCursor(measureIndex, v);
-                this.player!.move(
+                this._updateCursor(measureIndex, v);
+                this.player?.moveToMeasure(
                   measureIndex,
-                  this.timestampToMillisecs(
+                  this._timestampToMillisecs(
                     measure.parentSourceMeasure,
                     se.relInMeasureTimestamp,
                   ),
@@ -79,12 +74,51 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     );
   }
 
+  seek(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void {
+    const osmd = this.osmd!;
+    const measure = osmd.Sheet.SourceMeasures[measureIndex]!;
+
+    // If we're moving to a new measure, then start at the first staff entry without search.
+    if (this.currentMeasureIndex !== measureIndex) {
+      this._updateCursor(measureIndex, 0);
+      return;
+    }
+
+    // Same measure, new time.
+    for (
+      let v = measure.VerticalSourceStaffEntryContainers.length - 1;
+      v >= 0;
+      v--
+    ) {
+      const vsse = measure.VerticalSourceStaffEntryContainers[v]!;
+
+      if (
+        this._timestampToMillisecs(measure, vsse.Timestamp) <=
+        measureOffset + Number.EPSILON
+      ) {
+        // If same staff entry, do nothing.
+        if (this.currentVoiceEntryIndex !== v) {
+          this._updateCursor(measureIndex, v);
+        }
+        return;
+      }
+    }
+    console.error(
+      `Could not find suitable staff entry at time ${measureOffset} for measure ${measureIndex}`,
+    );
+  }
+
+  get version(): string {
+    if (!this.osmd) throw 'TODO';
+    return `opensheetmusicdisplay v${this.osmd.Version}`;
+  }
+
   // Staff entry timestamp to actual time relative to measure start.
-  timestampToMillisecs(measure: SourceMeasure, timestamp: Fraction) {
+  private _timestampToMillisecs(measure: SourceMeasure, timestamp: Fraction) {
     return (timestamp.RealValue * 4 * 60 * 1000) / measure.TempoInBPM;
   }
 
-  updateCursor(measureIndex: number, voiceEntryIndex: number) {
+  private _updateCursor(measureIndex: number, voiceEntryIndex: number) {
     const osmd = this.osmd!;
     const measure = osmd.Sheet.SourceMeasures[measureIndex]!;
     const vsse = measure.VerticalSourceStaffEntryContainers[voiceEntryIndex]!;
@@ -104,39 +138,5 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
       );
       osmd.cursor.update();
     }
-  }
-
-  seek(measureIndex: MeasureIndex, measureMillisecs: MillisecsTimestamp): void {
-    const osmd = this.osmd!;
-    const measure = osmd.Sheet.SourceMeasures[measureIndex]!;
-
-    // If we're moving to a new measure, then start at the first staff entry without search.
-    if (this.currentMeasureIndex !== measureIndex) {
-      this.updateCursor(measureIndex, 0);
-      return;
-    }
-
-    // Same measure, new time.
-    for (
-      let v = measure.VerticalSourceStaffEntryContainers.length - 1;
-      v >= 0;
-      v--
-    ) {
-      const vsse = measure.VerticalSourceStaffEntryContainers[v]!;
-
-      if (
-        this.timestampToMillisecs(measure, vsse.Timestamp) <=
-        measureMillisecs + Number.EPSILON
-      ) {
-        // If same staff entry, do nothing.
-        if (this.currentVoiceEntryIndex !== v) {
-          this.updateCursor(measureIndex, v);
-        }
-        return;
-      }
-    }
-    console.error(
-      `Could not find suitable staff entry at time ${measureMillisecs} for measure ${measureIndex}`,
-    );
   }
 }

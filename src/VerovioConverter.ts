@@ -1,44 +1,70 @@
-import type { IMidiConverter } from './IMidiConverter';
+import { parseArrayBuffer as parseMidiBuffer } from 'midi-json-parser';
+import type { IMidiFile } from 'midi-json-parser-worker';
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
+import type { IMidiConverter } from './IMidiConverter';
+import type { MeasureIndex, MeasureTimemap } from './Player';
+import type { TimeMapEntryFixed } from './VerovioRenderer';
 
 export class VerovioConverter implements IMidiConverter {
-  private vrv: VerovioToolkit | null;
+  private _vrv: VerovioToolkit | null;
+  private _timemap: MeasureTimemap;
+  private _midi: IMidiFile | null;
 
   constructor() {
-    this.vrv = null;
+    this._vrv = null;
+    this._timemap = [];
+    this._midi = null;
   }
 
-  async version(): Promise<string> {
-    if (!this.vrv) {
-      this.vrv = await VerovioConverter._create();
-    }
-    return `verovio v${this.vrv.getVersion()}`;
-  }
-
-  async convert(musicXml: string): Promise<ArrayBuffer> {
-    if (!this.vrv) {
-      this.vrv = await VerovioConverter._create();
-    }
-    this.vrv.setOptions({
+  async initialize(musicXml: string): Promise<void> {
+    const VerovioModule = await createVerovioModule();
+    this._vrv = new VerovioToolkit(VerovioModule);
+    this._vrv.setOptions({
       expand: 'expansion-repeat'
     });
-    if (!this.vrv.loadData(musicXml)) {
+    if (!this._vrv.loadData(musicXml)) {
       throw 'TODO';
     }
-    return VerovioConverter._base64ToArrayBuffer(this.vrv.renderToMIDI());
+
+    // Build timemap.
+    let measureIndex: MeasureIndex = 0;
+    this._vrv
+    .renderToTimemap({ includeMeasures: true })
+    .forEach((e) => {
+      const event = <TimeMapEntryFixed>e;
+      if ('measureOn' in event) {
+        this._timemap[measureIndex++] = [event.tstamp];
+      }
+    });
+
+    // Render to MIDI.
+    this._midi = await parseMidiBuffer(
+      VerovioConverter._base64ToArrayBuffer(
+        this._vrv.renderToMIDI()
+      )
+    );
   }
 
-  static async _create(): Promise<VerovioToolkit> {
-    const VerovioModule = await createVerovioModule();
-    return new VerovioToolkit(VerovioModule);
+  get midi(): IMidiFile {
+    if (!this._midi) throw 'TODO';
+    return this._midi;
   }
 
-  static _base64ToArrayBuffer(base64: string): ArrayBuffer {
+  get timemap(): MeasureTimemap {
+    return this._timemap;
+  }
+
+  get version(): string {
+    if (!this._vrv) throw 'TODO';
+    return `verovio v${this._vrv.getVersion()}`;
+  }
+
+  private static _base64ToArrayBuffer(base64: string): ArrayBuffer {
     const binary_string = window.atob(base64);
     const len = binary_string.length;
     const bytes = new Uint8Array(len);
-    for (var i = 0; i < len; i++) {
+    for (let i = 0; i < len; i++) {
       bytes[i] = binary_string.charCodeAt(i);
     }
     return bytes.buffer;

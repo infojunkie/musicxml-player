@@ -1,11 +1,15 @@
+import type { IMidiFile } from 'midi-json-parser-worker';
 import type { IMidiConverter } from './IMidiConverter';
-import { VerovioToolkit } from 'verovio/esm';
+import type { MeasureTimemap } from './Player';
 export declare class VerovioConverter implements IMidiConverter {
-    private vrv;
+    private _vrv;
+    private _timemap;
+    private _midi;
     constructor();
-    version(): Promise<string>;
-    convert(musicXml: string): Promise<ArrayBuffer>;
-    static _create(): Promise<VerovioToolkit>;
-    static _base64ToArrayBuffer(base64: string): ArrayBuffer;
+    initialize(musicXml: string): Promise<void>;
+    get midi(): IMidiFile;
+    get timemap(): MeasureTimemap;
+    get version(): string;
+    private static _base64ToArrayBuffer;
 }
 //# sourceMappingURL=VerovioConverter.d.ts.map

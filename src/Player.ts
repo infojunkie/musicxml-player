@@ -1,11 +1,6 @@
 import type { ISheetRenderer } from './ISheetRenderer';
 import type { IMidiConverter } from './IMidiConverter';
-import { parseArrayBuffer as parseMidiBuffer } from 'midi-json-parser';
-import type {
-  IMidiFile,
-  IMidiSetTempoEvent,
-  IMidiMarkerEvent,
-} from 'midi-json-parser-worker';
+import type { IMidiMarkerEvent } from 'midi-json-parser-worker';
 import {
   create as createMidiPlayer,
   IMidiOutput,
@@ -18,6 +13,7 @@ import pkg from '../package.json';
 
 export type MeasureIndex = number;
 export type MillisecsTimestamp = number;
+export type MeasureTimemap = Array<MillisecsTimestamp[]>;
 
 export interface PlayerOptions {
   container: HTMLDivElement | string;
@@ -29,11 +25,9 @@ export interface PlayerOptions {
 
 export class Player {
   static async load(options: PlayerOptions): Promise<Player> {
-    const midiBuffer = await options.converter.convert(options.musicXml);
-    const midiJson = await parseMidiBuffer(midiBuffer);
-    const output = options.output ?? new SoundFontOutput(midiJson);
+    await options.converter.initialize(options.musicXml);
+    const output = options.output ?? new SoundFontOutput(options.converter.midi);
     const player = new Player(
-      midiJson,
       output,
       options.renderer,
       options.converter,
@@ -46,7 +40,6 @@ export class Player {
     return player;
   }
 
-  private mapMeasureToTimestamp: Array<MillisecsTimestamp[]>;
   private midiPlayer: IMidiPlayer;
   private startTime: MillisecsTimestamp;
   private pauseTime: MillisecsTimestamp;
@@ -55,26 +48,23 @@ export class Player {
   private midiFileSlicer: MidiFileSlicer;
 
   private constructor(
-    private midiJson: IMidiFile,
     private output: IMidiOutput,
     private renderer: ISheetRenderer,
     private converter: IMidiConverter,
   ) {
     this.midiPlayer = createMidiPlayer({
-      json: this.midiJson,
+      json: this.converter.midi,
       midiOutput: this.output,
     });
-    this.midiFileSlicer = new MidiFileSlicer({ json: this.midiJson });
-    this.mapMeasureToTimestamp = [];
+    this.midiFileSlicer = new MidiFileSlicer({ json: this.converter.midi });
     this.startTime = 0;
     this.pauseTime = 0;
     this.currentMeasureIndex = 0;
     this.currentMeasureStartTime = 0;
-    this.parseMidi();
   }
 
-  move(measure: MeasureIndex, millisecs: MillisecsTimestamp) {
-    const timestamp = this.mapMeasureToTimestamp[measure][0] + millisecs;
+  moveToMeasure(measure: MeasureIndex, millisecs: MillisecsTimestamp) {
+    const timestamp = this.converter.timemap[measure][0] + millisecs;
     this.midiPlayer.seek(timestamp);
     this.currentMeasureIndex = measure;
     const now = performance.now();
@@ -85,7 +75,7 @@ export class Player {
 
   async play() {
     if (this.midiPlayer.state === PlayerState.Playing) return;
-    await this.playMidi();
+    await this._play();
   }
 
   async pause() {
@@ -100,49 +90,15 @@ export class Player {
     this.startTime = 0;
   }
 
-  async version(): Promise<Record<string, string>> {
+  get version(): Record<string, string> {
     return {
       player: `${pkg.name} v${pkg.version}`,
-      renderer: this.renderer.version(),
-      converter: await this.converter.version(),
+      renderer: this.renderer.version,
+      converter: this.converter.version,
     };
   }
 
-  /**
-   * Parse the MIDI file to construct a map linking measures to time offsets.
-   */
-  private parseMidi() {
-    if (!this.midiJson.tracks.length) {
-      // TODO Warn or throw exception that there are no MIDI tracks.
-    }
-
-    let microsecondsPerQuarter = 500000; // 60,000,000 microseconds per minute / 120 beats per minute
-    let offset = 0;
-    this.midiJson.tracks[0]!.forEach((event) => {
-      if ('setTempo' in event) {
-        microsecondsPerQuarter = (<IMidiSetTempoEvent>event).setTempo
-          .microsecondsPerQuarter;
-      }
-      offset += event.delta;
-      if ('marker' in event) {
-        const marker = (<IMidiMarkerEvent>event).marker.split(':');
-        if (
-          marker[0].localeCompare('Measure', undefined, {
-            sensitivity: 'base',
-          }) === 0
-        ) {
-          const measureIndex = Number(marker[1]);
-          const timestamp =
-            offset * (microsecondsPerQuarter / this.midiJson.division / 1000);
-          const timestamps = this.mapMeasureToTimestamp[measureIndex] || [];
-          this.mapMeasureToTimestamp[measureIndex] =
-            timestamps.concat(timestamp);
-        }
-      }
-    });
-  }
-
-  private async playMidi() {
+  private async _play() {
     const now = performance.now();
     if (this.midiPlayer.state === PlayerState.Paused || this.startTime !== 0) {
       this.startTime += now - this.pauseTime;
@@ -158,26 +114,26 @@ export class Player {
       if (this.midiPlayer.state !== PlayerState.Playing) return;
 
       this.midiFileSlicer
-        .slice(lastTime - this.startTime, now - this.startTime)
-        .forEach((event) => {
-          if ('marker' in event.event) {
-            const marker = (<IMidiMarkerEvent>event.event).marker.split(':');
-            if (
-              marker[0].localeCompare('Measure', undefined, {
-                sensitivity: 'base',
-              }) === 0
-            ) {
-              this.currentMeasureIndex = Number(marker[1]);
-              this.currentMeasureStartTime = now;
-            } else if (
-              marker[0].localeCompare('Groove', undefined, {
-                sensitivity: 'base',
-              }) === 0
-            ) {
-              // TODO Update listeners that the groove has changed.
-            }
+      .slice(lastTime - this.startTime, now - this.startTime)
+      .forEach((event) => {
+        if ('marker' in event.event) {
+          const marker = (<IMidiMarkerEvent>event.event).marker.split(':');
+          if (
+            marker[0].localeCompare('Measure', undefined, {
+              sensitivity: 'base',
+            }) === 0
+          ) {
+            this.currentMeasureIndex = Number(marker[1]);
+            this.currentMeasureStartTime = now;
+          } else if (
+            marker[0].localeCompare('Groove', undefined, {
+              sensitivity: 'base',
+            }) === 0
+          ) {
+            // TODO Update listeners that the groove has changed.
           }
-        });
+        }
+      });
       this.renderer.seek(
         this.currentMeasureIndex,
         Math.max(0, now - this.currentMeasureStartTime),

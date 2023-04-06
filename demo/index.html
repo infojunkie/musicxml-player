@@ -26,6 +26,13 @@
     <script src='https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js'></script>
     <script type="module">
       import * as MusicXMLPlayer from './dist/musicxml-player.esm.js';
+
+      // Why indeed`? https://github.com/whatwg/fetch/issues/18
+      function fetchex(response) {
+        if (!response.ok) throw new Error(response.statusText);
+        return response;
+      }
+
       window.addEventListener("load", async () => {
         // Parse query arguments.
         const params = new URLSearchParams(document.location.search);
@@ -33,14 +40,20 @@
           new MusicXMLPlayer.OpenSheetMusicDisplayRenderer() :
           new MusicXMLPlayer.VerovioRenderer();
         const sheet = params.get('sheet') ?? 'salma-ya-salama';
-        let converter = await new MusicXMLPlayer.VerovioConverter();
-        // try {
-        //   await fetch(`data/${sheet}.mid`);
-        //   converter = new MusicXMLPlayer.FetchConverter(`data/${sheet}.mid`);
-        // }
-        // catch {
-        //   converter = new MusicXMLPlayer.MmaConverter(`http://localhost:3000`);
-        // }
+        let converter = null;
+        try {
+          fetchex(await fetch(`data/${sheet}.mid`, { method: 'HEAD' }));
+          fetchex(await fetch(`data/${sheet}.timemap.json`, { method: 'HEAD' }));
+          converter = new MusicXMLPlayer.FetchConverter(`data/${sheet}.mid`, `data/${sheet}.timemap.json`);
+        } catch {
+          try {
+            fetchex(await fetch(`http://localhost:3000`, { method: 'HEAD' }));
+            converter = new MusicXMLPlayer.MmaConverter(`http://localhost:3000`);
+          }
+          catch {
+            converter = new MusicXMLPlayer.VerovioConverter();
+          }
+        }
         const musicXml = await (await fetch(`data/${sheet}.musicxml`)).text();
         const player = await MusicXMLPlayer.Player.load({
           container: 'sheet',
@@ -48,7 +61,7 @@
           musicXml,
           converter,
         });
-        document.getElementById("version").textContent = JSON.stringify(await player.version());
+        document.getElementById("version").textContent = JSON.stringify(player.version);
         document.getElementById("play").addEventListener("click", async () => {
           await player.play();
         });
