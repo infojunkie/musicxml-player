@@ -13,7 +13,6 @@ import pkg from '../package.json';
 
 export type MeasureIndex = number;
 export type MillisecsTimestamp = number;
-export type MeasureTimemap = Array<MillisecsTimestamp[]>;
 
 export interface PlayerOptions {
   container: HTMLDivElement | string;
@@ -40,54 +39,63 @@ export class Player {
     return player;
   }
 
-  private midiPlayer: IMidiPlayer;
-  private startTime: MillisecsTimestamp;
-  private pauseTime: MillisecsTimestamp;
-  private currentMeasureStartTime: MillisecsTimestamp;
-  private currentMeasureIndex: MeasureIndex;
   private midiFileSlicer: MidiFileSlicer;
+  private _midiPlayer: IMidiPlayer;
+  private _startTime: MillisecsTimestamp;
+  private _pauseTime: MillisecsTimestamp;
+  private _currentMeasureStartTime: MillisecsTimestamp;
+  private _currentMeasureIndex: MeasureIndex;
+  private _timemapMeasureToTimestamp: Array<MillisecsTimestamp>;
 
   private constructor(
     private output: IMidiOutput,
     private renderer: ISheetRenderer,
     private converter: IMidiConverter,
   ) {
-    this.midiPlayer = createMidiPlayer({
+    this.midiFileSlicer = new MidiFileSlicer({ json: this.converter.midi });
+    this._midiPlayer = createMidiPlayer({
       json: this.converter.midi,
       midiOutput: this.output,
     });
-    this.midiFileSlicer = new MidiFileSlicer({ json: this.converter.midi });
-    this.startTime = 0;
-    this.pauseTime = 0;
-    this.currentMeasureIndex = 0;
-    this.currentMeasureStartTime = 0;
+    this._startTime = 0;
+    this._pauseTime = 0;
+    this._currentMeasureIndex = 0;
+    this._currentMeasureStartTime = 0;
+
+    // Build specialized timemaps for faster lookup.
+    this._timemapMeasureToTimestamp = [];
+    this.converter.timemap.forEach((entry) => {
+      if (typeof this._timemapMeasureToTimestamp[entry.measure] === 'undefined') {
+        this._timemapMeasureToTimestamp[entry.measure] = entry.timestamp;
+      }
+    });
   }
 
-  moveToMeasure(measure: MeasureIndex, millisecs: MillisecsTimestamp) {
-    const timestamp = this.converter.timemap[measure][0] + millisecs;
-    this.midiPlayer.seek(timestamp);
-    this.currentMeasureIndex = measure;
+  moveToMeasure(measure: MeasureIndex, offset: MillisecsTimestamp) {
+    const timestamp = this._timemapMeasureToTimestamp[measure] + offset;
+    this._midiPlayer.seek(timestamp);
+    this._currentMeasureIndex = measure;
     const now = performance.now();
-    this.currentMeasureStartTime = now - millisecs;
-    this.startTime = now - timestamp;
-    this.pauseTime = now;
+    this._currentMeasureStartTime = now - offset;
+    this._startTime = now - timestamp;
+    this._pauseTime = now;
   }
 
   async play() {
-    if (this.midiPlayer.state === PlayerState.Playing) return;
+    if (this._midiPlayer.state === PlayerState.Playing) return;
     await this._play();
   }
 
   async pause() {
-    if (this.midiPlayer.state !== PlayerState.Playing) return;
-    this.midiPlayer.pause();
-    this.pauseTime = performance.now();
+    if (this._midiPlayer.state !== PlayerState.Playing) return;
+    this._midiPlayer.pause();
+    this._pauseTime = performance.now();
   }
 
   async rewind() {
-    this.midiPlayer.stop();
+    this._midiPlayer.stop();
     this.renderer.seek(0, 0);
-    this.startTime = 0;
+    this._startTime = 0;
   }
 
   get version(): Record<string, string> {
@@ -100,21 +108,21 @@ export class Player {
 
   private async _play() {
     const now = performance.now();
-    if (this.midiPlayer.state === PlayerState.Paused || this.startTime !== 0) {
-      this.startTime += now - this.pauseTime;
-      this.currentMeasureStartTime += now - this.pauseTime;
+    if (this._midiPlayer.state === PlayerState.Paused || this._startTime !== 0) {
+      this._startTime += now - this._pauseTime;
+      this._currentMeasureStartTime += now - this._pauseTime;
     } else {
-      this.startTime = now;
-      this.currentMeasureIndex = 0;
-      this.currentMeasureStartTime = now;
+      this._startTime = now;
+      this._currentMeasureIndex = 0;
+      this._currentMeasureStartTime = now;
     }
 
     let lastTime = now;
     const synchronizeMidi = (now: number) => {
-      if (this.midiPlayer.state !== PlayerState.Playing) return;
+      if (this._midiPlayer.state !== PlayerState.Playing) return;
 
       this.midiFileSlicer
-      .slice(lastTime - this.startTime, now - this.startTime)
+      .slice(lastTime - this._startTime, now - this._startTime)
       .forEach((event) => {
         if ('marker' in event.event) {
           const marker = (<IMidiMarkerEvent>event.event).marker.split(':');
@@ -123,8 +131,8 @@ export class Player {
               sensitivity: 'base',
             }) === 0
           ) {
-            this.currentMeasureIndex = Number(marker[1]);
-            this.currentMeasureStartTime = now;
+            this._currentMeasureIndex = Number(marker[1]);
+            this._currentMeasureStartTime = now;
           } else if (
             marker[0].localeCompare('Groove', undefined, {
               sensitivity: 'base',
@@ -135,8 +143,8 @@ export class Player {
         }
       });
       this.renderer.seek(
-        this.currentMeasureIndex,
-        Math.max(0, now - this.currentMeasureStartTime),
+        this._currentMeasureIndex,
+        Math.max(0, now - this._currentMeasureStartTime),
       );
 
       // Schedule next cursor movement.
@@ -149,15 +157,15 @@ export class Player {
     requestAnimationFrame(synchronizeMidi);
 
     // Activate the MIDI player.
-    if (this.midiPlayer.state === PlayerState.Paused) {
-      await this.midiPlayer.resume();
+    if (this._midiPlayer.state === PlayerState.Paused) {
+      await this._midiPlayer.resume();
     } else {
-      await this.midiPlayer.play();
+      await this._midiPlayer.play();
     }
 
     // Reset when done.
-    if (this.midiPlayer.state !== PlayerState.Paused) {
-      this.startTime = 0;
+    if (this._midiPlayer.state !== PlayerState.Paused) {
+      this._startTime = 0;
     }
   }
 }

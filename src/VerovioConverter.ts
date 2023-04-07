@@ -2,8 +2,8 @@ import { parseArrayBuffer as parseMidiBuffer } from 'midi-json-parser';
 import type { IMidiFile } from 'midi-json-parser-worker';
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
-import type { IMidiConverter } from './IMidiConverter';
-import type { MeasureIndex, MeasureTimemap } from './Player';
+import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
+import type { MeasureIndex } from './Player';
 import type { TimeMapEntryFixed } from './VerovioRenderer';
 
 export class VerovioConverter implements IMidiConverter {
@@ -34,7 +34,10 @@ export class VerovioConverter implements IMidiConverter {
     .forEach((e) => {
       const event = <TimeMapEntryFixed>e;
       if ('measureOn' in event) {
-        this._timemap[measureIndex++] = [event.tstamp];
+        this._timemap.push({
+          measure: measureIndex++,
+          timestamp: event.tstamp
+        });
       }
     });
 

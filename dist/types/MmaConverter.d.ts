@@ -1,6 +1,5 @@
 import type { IMidiFile } from 'midi-json-parser-worker';
-import type { IMidiConverter } from './IMidiConverter';
-import type { MeasureTimemap } from './Player';
+import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 export declare class MmaConverter implements IMidiConverter {
     private apiUri;
     private _version;

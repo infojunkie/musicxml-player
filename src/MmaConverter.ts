@@ -4,8 +4,7 @@ import type {
   IMidiMarkerEvent,
   IMidiSetTempoEvent,
 } from 'midi-json-parser-worker';
-import type { IMidiConverter } from './IMidiConverter';
-import type { MeasureTimemap } from './Player';
+import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import { fetchex } from './helpers';
 
 export class MmaConverter implements IMidiConverter {
@@ -67,11 +66,12 @@ export class MmaConverter implements IMidiConverter {
             sensitivity: 'base',
           }) === 0
         ) {
-          const measureIndex = Number(marker[1]);
-          const timestamp =
-            offset * (microsecondsPerQuarter / midi.division / 1000);
-          const timestamps = timemap[measureIndex] || [];
-          timemap[measureIndex] = timestamps.concat(timestamp);
+          const measure = Number(marker[1])
+          const timestamp = Math.round(offset * (microsecondsPerQuarter / midi.division)) / 1000
+          timemap.push({
+            measure,
+            timestamp
+          })
         }
       }
     });

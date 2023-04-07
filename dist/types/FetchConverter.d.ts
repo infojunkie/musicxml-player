@@ -1,6 +1,5 @@
 import type { IMidiFile } from 'midi-json-parser-worker';
-import type { IMidiConverter } from './IMidiConverter';
-import type { MeasureTimemap } from './Player';
+import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 export declare class FetchConverter implements IMidiConverter {
     private _midiOrUri;
     private _timemapOrUri;
@@ -11,6 +10,5 @@ export declare class FetchConverter implements IMidiConverter {
     get midi(): IMidiFile;
     get timemap(): MeasureTimemap;
     get version(): string;
-    private static _parseTimemapFile;
 }
 //# sourceMappingURL=FetchConverter.d.ts.map

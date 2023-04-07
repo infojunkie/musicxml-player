@@ -1,5 +1,10 @@
 import type { IMidiFile } from 'midi-json-parser-worker';
-import type { MeasureTimemap } from "./Player";
+import type { MeasureIndex, MillisecsTimestamp } from "./Player";
+export declare type MeasureTimemapEntry = {
+    measure: MeasureIndex;
+    timestamp: MillisecsTimestamp;
+};
+export declare type MeasureTimemap = Array<MeasureTimemapEntry>;
 export interface IMidiConverter {
     /**
      * Initialize the MIDI converter.
