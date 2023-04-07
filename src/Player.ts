@@ -1,13 +1,12 @@
-import type { ISheetRenderer } from './ISheetRenderer';
-import type { IMidiConverter } from './IMidiConverter';
-import type { IMidiMarkerEvent } from 'midi-json-parser-worker';
 import {
   create as createMidiPlayer,
   IMidiOutput,
   IMidiPlayer,
   PlayerState,
 } from 'midi-player';
-import { MidiFileSlicer } from 'midi-file-slicer';
+import { binarySearch } from './helpers';
+import type { IMidiConverter } from './IMidiConverter';
+import type { ISheetRenderer } from './ISheetRenderer';
 import { SoundFontOutput } from './SoundFontOutput';
 import pkg from '../package.json';
 
@@ -39,7 +38,6 @@ export class Player {
     return player;
   }
 
-  private midiFileSlicer: MidiFileSlicer;
   private _midiPlayer: IMidiPlayer;
   private _startTime: MillisecsTimestamp;
   private _pauseTime: MillisecsTimestamp;
@@ -52,7 +50,6 @@ export class Player {
     private renderer: ISheetRenderer,
     private converter: IMidiConverter,
   ) {
-    this.midiFileSlicer = new MidiFileSlicer({ json: this.converter.midi });
     this._midiPlayer = createMidiPlayer({
       json: this.converter.midi,
       midiOutput: this.output,
@@ -62,7 +59,7 @@ export class Player {
     this._currentMeasureIndex = 0;
     this._currentMeasureStartTime = 0;
 
-    // Build specialized timemaps for faster lookup.
+    // Build a specialized timemap for faster lookup.
     this._timemapMeasureToTimestamp = [];
     this.converter.timemap.forEach((entry) => {
       if (typeof this._timemapMeasureToTimestamp[entry.measure] === 'undefined') {
@@ -117,43 +114,32 @@ export class Player {
       this._currentMeasureStartTime = now;
     }
 
-    let lastTime = now;
     const synchronizeMidi = (now: number) => {
       if (this._midiPlayer.state !== PlayerState.Playing) return;
 
-      this.midiFileSlicer
-      .slice(lastTime - this._startTime, now - this._startTime)
-      .forEach((event) => {
-        if ('marker' in event.event) {
-          const marker = (<IMidiMarkerEvent>event.event).marker.split(':');
-          if (
-            marker[0].localeCompare('Measure', undefined, {
-              sensitivity: 'base',
-            }) === 0
-          ) {
-            this._currentMeasureIndex = Number(marker[1]);
-            this._currentMeasureStartTime = now;
-          } else if (
-            marker[0].localeCompare('Groove', undefined, {
-              sensitivity: 'base',
-            }) === 0
-          ) {
-            // TODO Update listeners that the groove has changed.
-          }
-        }
+      // Lookup the current measure number by binary-searching the timemap.
+      const index = binarySearch(this.converter.timemap, {
+        measure: 0, timestamp: now - this._startTime
+      }, (a, b) => {
+        const d = a.timestamp - b.timestamp;
+        if (Math.abs(d) < Number.EPSILON) return 0;
+        return d;
       });
+      const entry = this.converter.timemap[index >= 0 ? index : Math.max(0, -index-2)];
+      if (this._currentMeasureIndex !== entry.measure) {
+        this._currentMeasureIndex = entry.measure;
+        this._currentMeasureStartTime = now;
+      }
       this.renderer.seek(
         this._currentMeasureIndex,
         Math.max(0, now - this._currentMeasureStartTime),
       );
 
       // Schedule next cursor movement.
-      lastTime = now;
       requestAnimationFrame(synchronizeMidi);
     };
 
     // Schedule first cursor movement.
-    lastTime = now;
     requestAnimationFrame(synchronizeMidi);
 
     // Activate the MIDI player.

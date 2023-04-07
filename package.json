@@ -74,7 +74,6 @@
   },
   "homepage": "https://github.com/infojunkie/musicxml-player#readme",
   "dependencies": {
-    "midi-file-slicer": "^6.0.77",
     "midi-json-parser": "^8.1.14",
     "midi-player": "github:infojunkie/midi-player#infojunkie",
     "opensheetmusicdisplay": "^1.7.1",

@@ -1,6 +1,6 @@
-import type { ISheetRenderer } from './ISheetRenderer';
-import type { IMidiConverter } from './IMidiConverter';
 import { IMidiOutput } from 'midi-player';
+import type { IMidiConverter } from './IMidiConverter';
+import type { ISheetRenderer } from './ISheetRenderer';
 export declare type MeasureIndex = number;
 export declare type MillisecsTimestamp = number;
 export interface PlayerOptions {
@@ -15,7 +15,6 @@ export declare class Player {
     private renderer;
     private converter;
     static load(options: PlayerOptions): Promise<Player>;
-    private midiFileSlicer;
     private _midiPlayer;
     private _startTime;
     private _pauseTime;
