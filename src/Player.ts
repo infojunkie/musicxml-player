@@ -21,7 +21,7 @@ export interface PlayerOptions {
   output?: IMidiOutput;
 }
 
-export class Player {
+export class Player implements IMidiOutput {
   static async load(options: PlayerOptions): Promise<Player> {
     await options.converter.initialize(options.musicXml);
     const output = options.output ?? new SoundFontOutput(options.converter.midi);
@@ -46,13 +46,14 @@ export class Player {
   private _timemapMeasureToTimestamp: Array<MillisecsTimestamp>;
 
   private constructor(
-    private output: IMidiOutput,
-    private renderer: ISheetRenderer,
-    private converter: IMidiConverter,
+    private _output: IMidiOutput,
+    private _renderer: ISheetRenderer,
+    private _converter: IMidiConverter,
   ) {
     this._midiPlayer = createMidiPlayer({
-      json: this.converter.midi,
-      midiOutput: this.output,
+      json: this._converter.midi,
+      midiOutput: this,
+      isSendableEvent: _ => true,
     });
     this._startTime = 0;
     this._pauseTime = 0;
@@ -61,7 +62,7 @@ export class Player {
 
     // Build a specialized timemap for faster lookup.
     this._timemapMeasureToTimestamp = [];
-    this.converter.timemap.forEach((entry) => {
+    this._converter.timemap.forEach((entry) => {
       if (typeof this._timemapMeasureToTimestamp[entry.measure] === 'undefined') {
         this._timemapMeasureToTimestamp[entry.measure] = entry.timestamp;
       }
@@ -91,16 +92,26 @@ export class Player {
 
   async rewind() {
     this._midiPlayer.stop();
-    this.renderer.seek(0, 0);
+    this._renderer.seek(0, 0);
     this._startTime = 0;
   }
 
   get version(): Record<string, string> {
     return {
       player: `${pkg.name} v${pkg.version}`,
-      renderer: this.renderer.version,
-      converter: this.converter.version,
+      renderer: this._renderer.version,
+      converter: this._converter.version,
     };
+  }
+
+  // We implement IMidiOutput here to capture any interesting events
+  // such as MARKER events with Groove information.
+  send(data: number[] | Uint8Array, timestamp?: number) {
+    this._output.send(data, timestamp);
+  }
+
+  clear() {
+    this._output.clear?.();
   }
 
   private async _play() {
@@ -118,19 +129,19 @@ export class Player {
       if (this._midiPlayer.state !== PlayerState.Playing) return;
 
       // Lookup the current measure number by binary-searching the timemap.
-      const index = binarySearch(this.converter.timemap, {
+      const index = binarySearch(this._converter.timemap, {
         measure: 0, timestamp: now - this._startTime
       }, (a, b) => {
         const d = a.timestamp - b.timestamp;
         if (Math.abs(d) < Number.EPSILON) return 0;
         return d;
       });
-      const entry = this.converter.timemap[index >= 0 ? index : Math.max(0, -index-2)];
+      const entry = this._converter.timemap[index >= 0 ? index : Math.max(0, -index-2)];
       if (this._currentMeasureIndex !== entry.measure) {
         this._currentMeasureIndex = entry.measure;
         this._currentMeasureStartTime = now;
       }
-      this.renderer.seek(
+      this._renderer.seek(
         this._currentMeasureIndex,
         Math.max(0, now - this._currentMeasureStartTime),
       );

@@ -2,7 +2,7 @@ import { parseArrayBuffer as parseMidiBuffer } from 'midi-json-parser';
 import type { IMidiFile } from 'midi-json-parser-worker';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import pkg from '../package.json';
-import { fetchex } from './helpers';
+import { fetish } from './helpers';
 
 export class FetchConverter implements IMidiConverter {
   private _timemap: MeasureTimemap;
@@ -16,11 +16,11 @@ export class FetchConverter implements IMidiConverter {
   async initialize(): Promise<void> {
     this._timemap = typeof this._timemapOrUri === 'string' ?
       <MeasureTimemap>(
-        await (await fetchex(this._timemapOrUri)).json()
+        await (await fetish(this._timemapOrUri)).json()
       ) : this._timemapOrUri;
     this._midi = typeof this._midiOrUri === 'string' ?
       await parseMidiBuffer(
-        await (await fetchex(this._midiOrUri)).arrayBuffer()
+        await (await fetish(this._midiOrUri)).arrayBuffer()
       ) : this._midiOrUri;
   }
 

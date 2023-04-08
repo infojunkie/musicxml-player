@@ -4,15 +4,15 @@ import type {
   IMidiFile,
   IMidiProgramChangeEvent,
   IMidiNoteOnEvent,
+  IMidiNoteOffEvent,
   TMidiEvent,
 } from 'midi-json-parser-worker';
 import { setTimeout } from 'worker-timers';
 import type { IMidiOutput } from 'midi-player';
+import { parseMidiEvent } from './helpers';
 
 const MIDI_CHANNEL_DRUMS = 9;
 const SCHEDULER_TIMEOUT = 25;
-const MIDI_MESSAGE_NOTEOFF = 8;
-const MIDI_MESSAGE_NOTEON = 9;
 const MIDI_PROGRAM_DEFAULT = 1;
 const SCHEDULER_NOTE_LENGTH = 10;
 
@@ -112,39 +112,22 @@ export class SoundFontOutput implements IMidiOutput {
   }
 
   send(data: number[] | Uint8Array, timestamp: number) {
-    const channel: number = data[0] & 0xf;
-    const type: number = data[0] >> 4;
-    const pitch: number = data[1];
-    const velocity: number = data[2];
-    switch (type) {
-      case MIDI_MESSAGE_NOTEON:
-        if (velocity > 0) {
-          this.noteOn(channel, pitch, timestamp, velocity);
-        } else {
-          this.noteOff(channel, pitch, timestamp);
-        }
-        break;
-      case MIDI_MESSAGE_NOTEOFF:
-        this.noteOff(channel, pitch, timestamp);
-        break;
+    const event = parseMidiEvent(data);
+    if ('noteOn' in event) {
+      this.noteOn(<IMidiNoteOnEvent>event, timestamp);
     }
-    if (data.length > 3) {
-      this.send(data.slice(3), timestamp);
+    else if ('noteOff' in event) {
+      this.noteOff(<IMidiNoteOffEvent>event, timestamp);
     }
   }
 
-  private noteOn(
-    channel: number,
-    pitch: number,
-    timestamp: number,
-    velocity: number,
-  ) {
+  private noteOn(event: IMidiNoteOnEvent, timestamp: number) {
     // Schedule the incoming notes to start at the incoming timestamp,
     // and add them to the current notes array waiting for their future "off" event.
     const instrument =
-      channel === MIDI_CHANNEL_DRUMS
-        ? this.channels[channel].beats![pitch].drumInfo.variable
-        : this.channels[channel].instrumentInfo!.variable;
+      event.channel === MIDI_CHANNEL_DRUMS
+        ? this.channels[event.channel].beats![event.noteOn.noteNumber].drumInfo.variable
+        : this.channels[event.channel].instrumentInfo!.variable;
     const when =
       this.audioContext.currentTime + (timestamp - performance.now()) / 1000;
     const envelope = this.player.queueWaveTable(
@@ -152,9 +135,9 @@ export class SoundFontOutput implements IMidiOutput {
       this.audioContext.destination,
       window[instrument],
       when,
-      pitch,
+      event.noteOn.noteNumber,
       SCHEDULER_NOTE_LENGTH,
-      velocity / 127,
+      event.noteOn.velocity / 127,
     );
     envelope.cancel = () => {
       if (envelope && (envelope.when + envelope.duration > this.audioContext.currentTime)) {
@@ -165,23 +148,23 @@ export class SoundFontOutput implements IMidiOutput {
       }
     }
     this.notes.push({
-      channel,
-      pitch,
-      velocity,
+      channel: event.channel,
+      pitch: event.noteOn.noteNumber,
+      velocity: event.noteOn.velocity,
       on: timestamp,
       off: null,
       envelope,
     });
   }
 
-  private noteOff(channel: number, pitch: number, timestamp: number) {
+  private noteOff(event: IMidiNoteOffEvent, timestamp: number) {
     // WebAudioFont cannot schedule a future note cancellation,
     // so we identify the target note and set its cancellation timestamp.
     // Our own scheduleNotes() scheduler will take care of cancelling the note
     // when its timestamp occurs.
     const note = this.notes.find(
       (note) =>
-        note.pitch === pitch && note.channel === channel && note.off === null,
+        note.pitch === event.noteOff.noteNumber && note.channel === event.channel && note.off === null,
     );
     if (note) {
       note.off = timestamp;

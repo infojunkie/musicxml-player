@@ -5,7 +5,7 @@ import type {
   IMidiSetTempoEvent,
 } from 'midi-json-parser-worker';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
-import { fetchex } from './helpers';
+import { fetish } from './helpers';
 
 export class MmaConverter implements IMidiConverter {
   private _version: any;
@@ -25,7 +25,7 @@ export class MmaConverter implements IMidiConverter {
     // Convert the score.
     const formData = new FormData();
     formData.append('musicXml', new Blob([musicXml], { type: 'text/xml' }));
-    const response = await fetchex(`${this.apiUri}/convert`, {
+    const response = await fetish(`${this.apiUri}/convert`, {
       method: 'POST',
       body: formData,
     });

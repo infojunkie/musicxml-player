@@ -10,10 +10,10 @@ export interface PlayerOptions {
     converter: IMidiConverter;
     output?: IMidiOutput;
 }
-export declare class Player {
-    private output;
-    private renderer;
-    private converter;
+export declare class Player implements IMidiOutput {
+    private _output;
+    private _renderer;
+    private _converter;
     static load(options: PlayerOptions): Promise<Player>;
     private _midiPlayer;
     private _startTime;
@@ -27,6 +27,8 @@ export declare class Player {
     pause(): Promise<void>;
     rewind(): Promise<void>;
     get version(): Record<string, string>;
+    send(data: number[] | Uint8Array, timestamp?: number): void;
+    clear(): void;
     private _play;
 }
 //# sourceMappingURL=Player.d.ts.map
