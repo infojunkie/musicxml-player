@@ -8,6 +8,9 @@ import {
   VexFlowVoiceEntry,
 } from 'opensheetmusicdisplay';
 
+/**
+ * Implementation of ISheetRenderer that uses OpenSheetMusicDisplay @see https://github.com/opensheetmusicdisplay/opensheetmusicdisplay
+ */
 export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   private player: Player | null;
   private osmd: OpenSheetMusicDisplay | null;
@@ -59,7 +62,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
                 vfve.vfStaveNote?.getAttribute('el')
               ))?.addEventListener('click', () => {
                 this._updateCursor(measureIndex, v);
-                this.player?.moveToMeasure(
+                this.player?.moveTo(
                   measureIndex,
                   this._timestampToMillisecs(
                     measure.parentSourceMeasure,
@@ -74,7 +77,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     );
   }
 
-  seek(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void {
+  moveTo(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void {
     const osmd = this.osmd!;
     const measure = osmd.Sheet.SourceMeasures[measureIndex]!;
 

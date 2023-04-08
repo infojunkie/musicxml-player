@@ -7,6 +7,10 @@ import type {
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import { fetish } from './helpers';
 
+/**
+ * Implementation of IMidiConverter that queries the musicxml-mma API (@see https://github.com/infojunkie/musicxml-mma)
+ * to convert a MusicXML to a MIDI file. It extracts the timemap contained within the MIDI file, expressed as MIDI marker events.
+ */
 export class MmaConverter implements IMidiConverter {
   private _version: any;
   private _midi: IMidiFile | null;
@@ -20,7 +24,7 @@ export class MmaConverter implements IMidiConverter {
 
   async initialize(musicXml: string): Promise<void> {
     // First get the API version.
-    this._version = await (await fetch(`${this.apiUri}`)).json();
+    this._version = await (await fetish(`${this.apiUri}`)).json();
 
     // Convert the score.
     const formData = new FormData();

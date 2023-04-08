@@ -22,7 +22,7 @@ export declare class Player implements IMidiOutput {
     private _currentMeasureIndex;
     private _timemapMeasureToTimestamp;
     private constructor();
-    moveToMeasure(measure: MeasureIndex, offset: MillisecsTimestamp): void;
+    moveTo(measure: MeasureIndex, offset: MillisecsTimestamp): void;
     play(): Promise<void>;
     pause(): Promise<void>;
     rewind(): Promise<void>;

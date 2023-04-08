@@ -22,6 +22,9 @@ interface ElementsAtTimeFixed {
   measure: string;
 }
 
+/**
+ * Implementation of ISheetRenderer that uses Verovio @see https://github.com/rism-digital/verovio
+ */
 export class VerovioRenderer implements ISheetRenderer {
   private vrv: VerovioToolkit | null;
   private player: Player | null;
@@ -77,15 +80,15 @@ export class VerovioRenderer implements ISheetRenderer {
         document.getElementById(noteid)?.addEventListener('click', () => {
           const measureOffset =
             event.tstamp - this.timemap[measureIndex];
-          this.seek(measureIndex, measureOffset + 1);
-          this.player?.moveToMeasure(measureIndex, measureOffset);
+          this.moveTo(measureIndex, measureOffset + 1);
+          this.player?.moveTo(measureIndex, measureOffset);
         });
       });
     });
-    this.seek(0, 0);
+    this.moveTo(0, 0);
   }
 
-  seek(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void {
+  moveTo(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void {
     const timestamp = Math.max(
       0,
       Math.min(
