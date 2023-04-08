@@ -15,7 +15,6 @@
     "alwaysStrict": true,
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
-    "importsNotUsedAsValues": "error",
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
@@ -38,7 +37,6 @@
     ],
 
     // Output settings.
-    "charset": "utf-8",
     "newLine": "LF",
     "sourceMap": true,
 
