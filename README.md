@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/infojunkie/musicxml-player/actions/workflows/continuous-integrations.yaml/badge.svg?branch=main)](https://github.com/infojunkie/musicxml-player/actions/workflows/continuous-integrations.yaml)
 
-A simple JavaScript component that loads and plays MusicXML files in the browser using Web Audio and Web MIDI.
+A TypeScript component that loads and plays MusicXML files in the browser using Web Audio and Web MIDI.
 
 ### Getting started
 ```
