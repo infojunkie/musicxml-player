@@ -29,10 +29,6 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "types": [
-      "jest",
-      "puppeteer",
-      "jest-environment-puppeteer",
-      "expect-puppeteer",
       "webmidi",
     ],
 
@@ -48,5 +44,5 @@
     "outDir": "./dist"
   },
   "include": ["./src/**/*.ts"],
-  "exclude": ["./src/**/*.test.ts"],
+  "exclude": ["./src/**/*.spec.ts"],
 }

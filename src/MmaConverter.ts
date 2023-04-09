@@ -70,12 +70,14 @@ export class MmaConverter implements IMidiConverter {
             sensitivity: 'base',
           }) === 0
         ) {
-          const measure = Number(marker[1])
-          const timestamp = Math.round(offset * (microsecondsPerQuarter / midi.division)) / 1000
+          const measure = Number(marker[1]);
+          const timestamp =
+            Math.round(offset * (microsecondsPerQuarter / midi.division)) /
+            1000;
           timemap.push({
             measure,
-            timestamp
-          })
+            timestamp,
+          });
         }
       }
     });

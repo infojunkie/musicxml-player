@@ -69,22 +69,21 @@ export class VerovioRenderer implements ISheetRenderer {
 
     // Build measure timemap and setup event listeners on notes.
     this.vrv
-    .renderToTimemap({ includeMeasures: true, includeRests: true })
-    .forEach((e) => {
-      const event = <TimeMapEntryFixed>e;
-      if ('measureOn' in event) {
-        this.timemap.push(event.tstamp);
-      }
-      const measureIndex = this.timemap.length - 1;
-      [...(event.on || []), ...(event.restsOn || [])].forEach((noteid) => {
-        document.getElementById(noteid)?.addEventListener('click', () => {
-          const measureOffset =
-            event.tstamp - this.timemap[measureIndex];
-          this.moveTo(measureIndex, measureOffset + 1);
-          this.player?.moveTo(measureIndex, measureOffset);
+      .renderToTimemap({ includeMeasures: true, includeRests: true })
+      .forEach((e) => {
+        const event = <TimeMapEntryFixed>e;
+        if ('measureOn' in event) {
+          this.timemap.push(event.tstamp);
+        }
+        const measureIndex = this.timemap.length - 1;
+        [...(event.on || []), ...(event.restsOn || [])].forEach((noteid) => {
+          document.getElementById(noteid)?.addEventListener('click', () => {
+            const measureOffset = event.tstamp - this.timemap[measureIndex];
+            this.moveTo(measureIndex, measureOffset + 1);
+            this.player?.moveTo(measureIndex, measureOffset);
+          });
         });
       });
-    });
     this.moveTo(0, 0);
   }
 

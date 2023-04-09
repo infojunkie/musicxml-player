@@ -35,7 +35,7 @@ export class VerovioConverter implements IMidiConverter {
     const VerovioModule = await createVerovioModule();
     this._vrv = new VerovioToolkit(VerovioModule);
     this._vrv.setOptions({
-      expand: 'expansion-repeat'
+      expand: 'expansion-repeat',
     });
     if (!this._vrv.loadData(musicXml)) {
       throw 'TODO';
@@ -43,23 +43,19 @@ export class VerovioConverter implements IMidiConverter {
 
     // Build timemap.
     let measureIndex: MeasureIndex = 0;
-    this._vrv
-    .renderToTimemap({ includeMeasures: true })
-    .forEach((e) => {
+    this._vrv.renderToTimemap({ includeMeasures: true }).forEach((e) => {
       const event = <TimeMapEntryFixed>e;
       if ('measureOn' in event) {
         this._timemap.push({
           measure: measureIndex++,
-          timestamp: event.tstamp
+          timestamp: event.tstamp,
         });
       }
     });
 
     // Render to MIDI.
     this._midi = await parseMidiBuffer(
-      VerovioConverter._base64ToArrayBuffer(
-        this._vrv.renderToMIDI()
-      )
+      VerovioConverter._base64ToArrayBuffer(this._vrv.renderToMIDI()),
     );
   }
 

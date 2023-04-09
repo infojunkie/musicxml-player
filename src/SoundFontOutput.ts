@@ -115,8 +115,7 @@ export class SoundFontOutput implements IMidiOutput {
     const event = parseMidiEvent(data);
     if ('noteOn' in event) {
       this.noteOn(<IMidiNoteOnEvent>event, timestamp);
-    }
-    else if ('noteOff' in event) {
+    } else if ('noteOff' in event) {
       this.noteOff(<IMidiNoteOffEvent>event, timestamp);
     }
   }
@@ -126,7 +125,8 @@ export class SoundFontOutput implements IMidiOutput {
     // and add them to the current notes array waiting for their future "off" event.
     const instrument =
       event.channel === MIDI_CHANNEL_DRUMS
-        ? this.channels[event.channel].beats![event.noteOn.noteNumber].drumInfo.variable
+        ? this.channels[event.channel].beats![event.noteOn.noteNumber].drumInfo
+            .variable
         : this.channels[event.channel].instrumentInfo!.variable;
     const when =
       this.audioContext.currentTime + (timestamp - performance.now()) / 1000;
@@ -140,13 +140,22 @@ export class SoundFontOutput implements IMidiOutput {
       event.noteOn.velocity / 127,
     );
     envelope.cancel = () => {
-      if (envelope && (envelope.when + envelope.duration > this.audioContext.currentTime)) {
-        ((envelope as any) as GainNode).gain.cancelScheduledValues(this.audioContext.currentTime);
-        ((envelope as any) as GainNode).gain.setTargetAtTime(0.00001, this.audioContext.currentTime, 0.1);
+      if (
+        envelope &&
+        envelope.when + envelope.duration > this.audioContext.currentTime
+      ) {
+        (envelope as any as GainNode).gain.cancelScheduledValues(
+          this.audioContext.currentTime,
+        );
+        (envelope as any as GainNode).gain.setTargetAtTime(
+          0.00001,
+          this.audioContext.currentTime,
+          0.1,
+        );
         envelope.when = this.audioContext.currentTime;
         envelope.duration = SCHEDULER_NOTE_LENGTH;
       }
-    }
+    };
     this.notes.push({
       channel: event.channel,
       pitch: event.noteOn.noteNumber,
@@ -164,7 +173,9 @@ export class SoundFontOutput implements IMidiOutput {
     // when its timestamp occurs.
     const note = this.notes.find(
       (note) =>
-        note.pitch === event.noteOff.noteNumber && note.channel === event.channel && note.off === null,
+        note.pitch === event.noteOff.noteNumber &&
+        note.channel === event.channel &&
+        note.off === null,
     );
     if (note) {
       note.off = timestamp;

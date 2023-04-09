@@ -24,12 +24,9 @@ export interface PlayerOptions {
 export class Player implements IMidiOutput {
   static async load(options: PlayerOptions): Promise<Player> {
     await options.converter.initialize(options.musicXml);
-    const output = options.output ?? new SoundFontOutput(options.converter.midi);
-    const player = new Player(
-      output,
-      options.renderer,
-      options.converter,
-    );
+    const output =
+      options.output ?? new SoundFontOutput(options.converter.midi);
+    const player = new Player(output, options.renderer, options.converter);
     await options.renderer.initialize(
       player,
       options.container,
@@ -53,7 +50,7 @@ export class Player implements IMidiOutput {
     this._midiPlayer = createMidiPlayer({
       json: this._converter.midi,
       midiOutput: this,
-      isSendableEvent: _ => true,
+      isSendableEvent: () => true,
     });
     this._startTime = 0;
     this._pauseTime = 0;
@@ -63,7 +60,9 @@ export class Player implements IMidiOutput {
     // Build a specialized timemap for faster lookup.
     this._timemapMeasureToTimestamp = [];
     this._converter.timemap.forEach((entry) => {
-      if (typeof this._timemapMeasureToTimestamp[entry.measure] === 'undefined') {
+      if (
+        typeof this._timemapMeasureToTimestamp[entry.measure] === 'undefined'
+      ) {
         this._timemapMeasureToTimestamp[entry.measure] = entry.timestamp;
       }
     });
@@ -116,7 +115,10 @@ export class Player implements IMidiOutput {
 
   private async _play() {
     const now = performance.now();
-    if (this._midiPlayer.state === PlayerState.Paused || this._startTime !== 0) {
+    if (
+      this._midiPlayer.state === PlayerState.Paused ||
+      this._startTime !== 0
+    ) {
       this._startTime += now - this._pauseTime;
       this._currentMeasureStartTime += now - this._pauseTime;
     } else {
@@ -129,14 +131,20 @@ export class Player implements IMidiOutput {
       if (this._midiPlayer.state !== PlayerState.Playing) return;
 
       // Lookup the current measure number by binary-searching the timemap.
-      const index = binarySearch(this._converter.timemap, {
-        measure: 0, timestamp: now - this._startTime
-      }, (a, b) => {
-        const d = a.timestamp - b.timestamp;
-        if (Math.abs(d) < Number.EPSILON) return 0;
-        return d;
-      });
-      const entry = this._converter.timemap[index >= 0 ? index : Math.max(0, -index-2)];
+      const index = binarySearch(
+        this._converter.timemap,
+        {
+          measure: 0,
+          timestamp: now - this._startTime,
+        },
+        (a, b) => {
+          const d = a.timestamp - b.timestamp;
+          if (Math.abs(d) < Number.EPSILON) return 0;
+          return d;
+        },
+      );
+      const entry =
+        this._converter.timemap[index >= 0 ? index : Math.max(0, -index - 2)];
       if (this._currentMeasureIndex !== entry.measure) {
         this._currentMeasureIndex = entry.measure;
         this._currentMeasureStartTime = now;

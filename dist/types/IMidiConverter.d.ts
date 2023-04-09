@@ -1,5 +1,5 @@
 import type { IMidiFile } from 'midi-json-parser-worker';
-import type { MeasureIndex, MillisecsTimestamp } from "./Player";
+import type { MeasureIndex, MillisecsTimestamp } from './Player';
 export declare type MeasureTimemapEntry = {
     measure: MeasureIndex;
     timestamp: MillisecsTimestamp;

@@ -10,7 +10,11 @@
  *        n = 0 if a = b
  * @returns index m >= 0 if match is found, m < 0 if not found with insertion point = -m-1.
  */
-export function binarySearch<T>(ar: ReadonlyArray<T>, el: T, comp: (a: T, b: T) => number): number {
+export function binarySearch<T>(
+  ar: ReadonlyArray<T>,
+  el: T,
+  comp: (a: T, b: T) => number,
+): number {
   let m = 0;
   let n = ar.length - 1;
   while (m <= n) {

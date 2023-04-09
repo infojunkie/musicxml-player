@@ -2,25 +2,11 @@ name: 'Build'
 
 on:
   push:
-    branches: ['main']
+    branches: ['**']
 
 jobs:
-  lint:
-    name: 'Run ESLint and Prettier'
-    runs-on: 'ubuntu-latest'
-    steps:
-      - name: 'Checkout the repository'
-        uses: 'actions/checkout@v3'
-
-      - name: 'Setup Node.js and npm'
-        uses: './.github/actions/setup'
-
-      - name: 'Execute the lint script'
-        run: 'npm run lint'
-
-
   test:
-    name: 'Run unit tests with Jest'
+    name: 'Run lint and unit tests'
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'Checkout the repository'
@@ -30,10 +16,10 @@ jobs:
         uses: './.github/actions/setup'
 
       - name: 'Execute the test script'
-        run: 'npm run test'
+        run: 'npm run test:lint && npm run test'
 
   bundle:
-    name: 'Bundle package with Rollup.js'
+    name: 'Build package'
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'Checkout the repository'
