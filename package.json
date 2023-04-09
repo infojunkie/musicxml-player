@@ -1,6 +1,6 @@
 {
   "name": "musicxml-player",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A simple JavaScript component that loads and plays MusicXML files in the browser using Web Audio and Web MIDI.",
   "cdn": "dist/musicxml-player.umd.js",
   "main": "dist/musicxml-player.js",
@@ -20,6 +20,7 @@
     ]
   },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@rollup/plugin-commonjs": "^23.0.2",
     "@rollup/plugin-json": "^5.0.2",
     "@rollup/plugin-node-resolve": "^15.0.1",
@@ -30,6 +31,7 @@
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.9",
     "@types/prettier": "^2.6.3",
+    "@types/sinon": "^10.0.13",
     "@types/verovio": "^3.13.0",
     "@types/webmidi": "^2.0.6",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
@@ -40,16 +42,19 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "http-server": "^14.1.1",
+    "json-midi-message-encoder": "^4.1.18",
     "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
     "prettier": "^2.7.1",
     "rollup": "^3.5.0",
     "rollup-plugin-external-globals": "^0.7.1",
     "rollup-plugin-polyfill-node": "^0.11.0",
+    "sinon": "^15.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
   },
   "scripts": {
-    "test": "TS_NODE_PROJECT=\"tsconfig.test.json\" TS_NODE_CACHE=false mocha",
+    "test": "TS_NODE_PROJECT=\"tsconfig.test.json\" TS_NODE_CACHE=false nyc --reporter=text mocha",
     "test:lint": "eslint \"*/**/*.{ts,js,json}\"",
     "build": "rollup --config ./rollup.config.mjs",
     "build:lint": "eslint \"*/**/*.{ts,js,json}\" --fix",

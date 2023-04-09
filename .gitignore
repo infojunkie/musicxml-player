@@ -28,3 +28,6 @@ pnpmfile.js
 # Log files.
 *.log
 *.log.*
+
+# nyc
+.nyc_output
