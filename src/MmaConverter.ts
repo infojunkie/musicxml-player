@@ -34,7 +34,7 @@ export class MmaConverter implements IMidiConverter {
       body: formData,
     });
     this._midi = await parseMidiBuffer(await response.arrayBuffer());
-    this._timemap = await MmaConverter._parse(this._midi);
+    this._timemap = await MmaConverter.parseTimemap(this._midi);
   }
 
   get midi(): IMidiFile {
@@ -51,7 +51,10 @@ export class MmaConverter implements IMidiConverter {
     return `${this._version.name} v${this._version.version}`;
   }
 
-  private static async _parse(midi: IMidiFile): Promise<MeasureTimemap> {
+  /**
+   * Parse an IMidiFile into a timemap.
+   */
+  static parseTimemap(midi: IMidiFile): MeasureTimemap {
     if (!midi.tracks.length) throw 'TODO';
 
     const timemap: MeasureTimemap = [];
@@ -81,6 +84,10 @@ export class MmaConverter implements IMidiConverter {
         }
       }
     });
+
+    if (!timemap.length) {
+      console.warn(`[MmaConverter.parseTimemap] Could not find any Measure:N marker message in the MIDI file.`);
+    }
 
     return timemap;
   }

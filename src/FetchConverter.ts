@@ -3,6 +3,7 @@ import type { IMidiFile } from 'midi-json-parser-worker';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import pkg from '../package.json';
 import { fetish } from './helpers';
+import { MmaConverter } from './MmaConverter';
 
 /**
  * Implementation of IMidiConverter that simply fetches given MIDI file and timemap JSON file URIs.
@@ -19,23 +20,25 @@ export class FetchConverter implements IMidiConverter {
 
   constructor(
     private _midiOrUri: IMidiFile | string,
-    private _timemapOrUri: MeasureTimemap | string,
+    private _timemapOrUri?: MeasureTimemap | string,
   ) {
     this._timemap = [];
     this._midi = null;
   }
 
   async initialize(): Promise<void> {
-    this._timemap =
-      typeof this._timemapOrUri === 'string'
-        ? <MeasureTimemap>await (await fetish(this._timemapOrUri)).json()
-        : this._timemapOrUri;
     this._midi =
       typeof this._midiOrUri === 'string'
         ? await parseMidiBuffer(
             await (await fetish(this._midiOrUri)).arrayBuffer(),
           )
         : this._midiOrUri;
+    this._timemap =
+      typeof this._timemapOrUri === 'undefined'
+        ? MmaConverter.parseTimemap(this._midi)
+        : typeof this._timemapOrUri === 'string'
+        ? <MeasureTimemap>await (await fetish(this._timemapOrUri)).json()
+        : this._timemapOrUri;
   }
 
   get midi(): IMidiFile {

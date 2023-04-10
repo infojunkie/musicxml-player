@@ -1,6 +1,6 @@
 {
   "name": "musicxml-player",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A simple JavaScript component that loads and plays MusicXML files in the browser using Web Audio and Web MIDI.",
   "cdn": "dist/musicxml-player.umd.js",
   "main": "dist/musicxml-player.js",

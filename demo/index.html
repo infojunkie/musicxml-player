@@ -36,8 +36,7 @@
         let converter = null;
         try {
           await MusicXMLPlayer.fetish(`data/${sheet}.mid`, { method: 'HEAD' });
-          await MusicXMLPlayer.fetish(`data/${sheet}.timemap.json`, { method: 'HEAD' });
-          converter = new MusicXMLPlayer.FetchConverter(`data/${sheet}.mid`, `data/${sheet}.timemap.json`);
+          converter = new MusicXMLPlayer.FetchConverter(`data/${sheet}.mid`);
         } catch {
           try {
             await MusicXMLPlayer.fetish(`http://localhost:3000`, { method: 'HEAD' });
