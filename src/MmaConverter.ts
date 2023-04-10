@@ -86,7 +86,9 @@ export class MmaConverter implements IMidiConverter {
     });
 
     if (!timemap.length) {
-      console.warn(`[MmaConverter.parseTimemap] Could not find any Measure:N marker message in the MIDI file.`);
+      console.warn(
+        `[MmaConverter.parseTimemap] Could not find any Measure:N marker message in the MIDI file.`,
+      );
     }
 
     return timemap;
