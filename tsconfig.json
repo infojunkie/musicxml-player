@@ -33,7 +33,6 @@
     ],
 
     // Output settings.
-    "newLine": "LF",
     "sourceMap": true,
 
     // Type declaration settings.

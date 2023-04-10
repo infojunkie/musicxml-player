@@ -7,5 +7,6 @@
   ],
   "exclude": [
     "**/*.spec.ts"
-  ]
+  ],
+  "exclude-after-remap": false
 }
