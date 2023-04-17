@@ -16,7 +16,10 @@ export class MmaConverter implements IMidiConverter {
   private _midi: IMidiFile | null;
   private _timemap: MeasureTimemap;
 
-  constructor(private apiUri: string) {
+  constructor(
+    private _apiUri: string,
+    private _parameters?: Record<string, string>,
+  ) {
     this._version = null;
     this._midi = null;
     this._timemap = [];
@@ -24,12 +27,17 @@ export class MmaConverter implements IMidiConverter {
 
   async initialize(musicXml: string): Promise<void> {
     // First get the API version.
-    this._version = await (await fetish(`${this.apiUri}`)).json();
+    this._version = await (await fetish(`${this._apiUri}`)).json();
 
     // Convert the score.
     const formData = new FormData();
     formData.append('musicXml', new Blob([musicXml], { type: 'text/xml' }));
-    const response = await fetish(`${this.apiUri}/convert`, {
+    if (this._parameters) {
+      for (const parameter in this._parameters) {
+        formData.append(parameter, this._parameters[parameter]);
+      }
+    }
+    const response = await fetish(`${this._apiUri}/convert`, {
       method: 'POST',
       body: formData,
     });

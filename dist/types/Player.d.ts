@@ -1,19 +1,22 @@
-import { IMidiOutput } from 'midi-player';
+import { IMidiOutput, PlayerState } from 'midi-player';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
 export declare type MeasureIndex = number;
 export declare type MillisecsTimestamp = number;
 export interface PlayerOptions {
     container: HTMLDivElement | string;
-    musicXml: string;
+    musicXml: ArrayBuffer | string;
     renderer: ISheetRenderer;
     converter: IMidiConverter;
     output?: IMidiOutput;
+    title?: string;
 }
 export declare class Player implements IMidiOutput {
     private _output;
     private _renderer;
     private _converter;
+    private _musicXml;
+    private _title;
     static load(options: PlayerOptions): Promise<Player>;
     private _midiPlayer;
     private _startTime;
@@ -26,9 +29,13 @@ export declare class Player implements IMidiOutput {
     play(): Promise<void>;
     pause(): Promise<void>;
     rewind(): Promise<void>;
+    get musicXml(): string;
+    get state(): PlayerState;
+    get title(): string | null;
     get version(): Record<string, string>;
     send(data: number[] | Uint8Array, timestamp?: number): void;
     clear(): void;
     private _play;
+    private static _isSendableEvent;
 }
 //# sourceMappingURL=Player.d.ts.map

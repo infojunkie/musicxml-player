@@ -3,9 +3,16 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
     <title>MusicXML Player Demo</title>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
     <style>
       body {
         background-color: wheat;
+      }
+      #sheet {
+        height: 100vh;
+      }
+      .hide {
+        display: none;
       }
       #player {
         position: fixed;
@@ -22,59 +29,85 @@
         height: 35px;
         width: 35px;
       }
+      #error {
+        background-color: brown;
+        color: lightgray;
+      }
+      #github {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+      }
     </style>
     <script src='https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js'></script>
-    <script type="module">
-      import * as MusicXMLPlayer from './dist/musicxml-player.esm.js';
-      window.addEventListener("load", async () => {
-        // Parse query arguments.
-        const params = new URLSearchParams(document.location.search);
-        const renderer = params.get('renderer') === 'osmd' ?
-          new MusicXMLPlayer.OpenSheetMusicDisplayRenderer() :
-          new MusicXMLPlayer.VerovioRenderer();
-        const sheet = params.get('sheet') ?? 'salma-ya-salama';
-        let converter = null;
-        try {
-          await MusicXMLPlayer.fetish(`data/${sheet}.mid`, { method: 'HEAD' });
-          converter = new MusicXMLPlayer.FetchConverter(`data/${sheet}.mid`);
-        } catch {
-          try {
-            await MusicXMLPlayer.fetish(`http://localhost:3000`, { method: 'HEAD' });
-            converter = new MusicXMLPlayer.MmaConverter(`http://localhost:3000`);
-          }
-          catch {
-            converter = new MusicXMLPlayer.VerovioConverter();
-          }
-        }
-        const musicXml = await (await MusicXMLPlayer.fetish(`data/${sheet}.musicxml`)).text();
-        const player = await MusicXMLPlayer.Player.load({
-          container: 'sheet',
-          renderer,
-          musicXml,
-          converter,
-        });
-        document.getElementById("version").textContent = JSON.stringify(player.version);
-        document.getElementById("play").addEventListener("click", async () => {
-          await player.play();
-        });
-        document.getElementById("pause").addEventListener("click", async () => {
-          await player.pause();
-        });
-        document.getElementById("rewind").addEventListener("click", async () => {
-          await player.rewind();
-        });
-      });
-    </script>
+    <script type="module" src="demo.mjs"></script>
   </head>
   <body>
-    <div id="controls">
-      <pre></pre><code id="version"></code></pre>
+    <div id="github">
+      <a class="github-button" href="https://github.com/infojunkie/musicxml-player" data-size="large" aria-label="Star infojunkie/musicxml-player on GitHub">Star on GitHub</a>
     </div>
+    <code id="version"></code>
+    <h1>MusicXML Player Demo</h1>
+    <div>
+      <label for="samples">Choose a sample from the list here</label>&nbsp;
+      <select id="samples">
+        <option value="">-- Choose --</option>
+        <option value="data/salma-ya-salama.mxl">Salma ya Salama (Compressed MusicXML)</option>
+        <option value="data/asa-branca.musicxml">Asa Branca (Uncompressed MusicXML)</option>
+        <option value="data/jazz.txt">iReal Pro Jazz 1400 (iReal Pro)</option>
+        <option value="data/brazilian.txt">iReal Pro Brazilian 150 (iReal Pro)</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="upload">Or upload a MusicXML file or an iReal Pro playlist</label>&nbsp;
+      <input type="file" id="upload" name="upload"/>
+      <span id="error"></span>
+    </div>
+
+    <div>
+      Sheets
+      <select id="sheets"></select>
+      <span id="download"></span>
+    </div>
+
+    <div>
+      Renderer
+      <input type="radio" id="osmd" name="renderer" value="osmd"/>
+      <label for="osmd">OpenSheetMusicDisplay</label>
+      <input type="radio" id="vrv" name="renderer" value="vrv"/>
+      <label for="vrv">Verovio</label>
+    </div>
+
+    <div>
+      Converter
+      <input type="radio" id="midi" name="converter" value="midi"/>
+      <label for="midi">Custom MIDI</label>
+      <input type="radio" id="mma" name="converter" value="mma"/>
+      <label for="mma">MusicXML MMA</label>
+      <input type="radio" id="vrv" name="converter" value="vrv"/>
+      <label for="vrv">Verovio</label>
+    </div>
+
+    <div>
+      <label for="grooves">Groove</label>
+      <input list="grooves-list" id="grooves"/>
+      <datalist id="grooves-list"></datalist>
+      Depends on the MusicXML MMA converter.
+    </div>
+
+    <div>
+      MIDI output
+      <select id="outputs"></select>
+      If you're not using the local synth, you need to connect this output to a MIDI synth like FluidSynth, TiMidity, or <a href="https://mmontag.github.io/dx7-synth-js/" target="_blank">DX7 Synth</a>.
+    </div>
+
     <div id="player">
       <button class="player" id="rewind">⏮</button>
       <button class="player" id="pause">⏸</button>
       <button class="player" id="play">▶</button>
     </div>
-    <div id="sheet"></div>
+
+    <div id="sheet-container"><div id="sheet"></div></div>
   </body>
 </html>

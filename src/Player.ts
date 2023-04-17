@@ -4,7 +4,8 @@ import {
   IMidiPlayer,
   PlayerState,
 } from 'midi-player';
-import { binarySearch } from './helpers';
+import type { TMidiEvent } from 'midi-json-parser-worker';
+import { binarySearch, parseMidiEvent, parseMusicXml } from './helpers';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
 import { SoundFontOutput } from './SoundFontOutput';
@@ -15,23 +16,30 @@ export type MillisecsTimestamp = number;
 
 export interface PlayerOptions {
   container: HTMLDivElement | string;
-  musicXml: string;
+  musicXml: ArrayBuffer | string;
   renderer: ISheetRenderer;
   converter: IMidiConverter;
   output?: IMidiOutput;
+  title?: string;
 }
 
 export class Player implements IMidiOutput {
   static async load(options: PlayerOptions): Promise<Player> {
-    await options.converter.initialize(options.musicXml);
+    const musicXmlAndTitle = await parseMusicXml(options.musicXml);
+    if (!musicXmlAndTitle) throw new Error('Failed to parse MusicXML.');
+
+    const { musicXml, title } = musicXmlAndTitle;
+    await options.converter.initialize(musicXml);
     const output =
       options.output ?? new SoundFontOutput(options.converter.midi);
-    const player = new Player(output, options.renderer, options.converter);
-    await options.renderer.initialize(
-      player,
-      options.container,
-      options.musicXml,
+    const player = new Player(
+      output,
+      options.renderer,
+      options.converter,
+      musicXml,
+      options.title ?? title,
     );
+    await options.renderer.initialize(player, options.container, musicXml);
     return player;
   }
 
@@ -46,6 +54,8 @@ export class Player implements IMidiOutput {
     private _output: IMidiOutput,
     private _renderer: ISheetRenderer,
     private _converter: IMidiConverter,
+    private _musicXml: string,
+    private _title: string | null,
   ) {
     this._midiPlayer = createMidiPlayer({
       json: this._converter.midi,
@@ -95,6 +105,18 @@ export class Player implements IMidiOutput {
     this._startTime = 0;
   }
 
+  get musicXml(): string {
+    return this._musicXml;
+  }
+
+  get state(): PlayerState {
+    return this._midiPlayer.state;
+  }
+
+  get title(): string | null {
+    return this._title;
+  }
+
   get version(): Record<string, string> {
     return {
       player: `${pkg.name} v${pkg.version}`,
@@ -106,7 +128,12 @@ export class Player implements IMidiOutput {
   // We implement IMidiOutput here to capture any interesting events
   // such as MARKER events with Groove information.
   send(data: number[] | Uint8Array, timestamp?: number) {
-    this._output.send(data, timestamp);
+    const event = parseMidiEvent(data);
+    // TODO I don't understand why events need to be filtered before going to Web MIDI
+    // https://github.com/chrisguttandin/midi-player/issues/354
+    if (Player._isSendableEvent(event)) {
+      this._output.send(data, timestamp);
+    }
   }
 
   clear() {
@@ -172,5 +199,14 @@ export class Player implements IMidiOutput {
     if (this._midiPlayer.state !== PlayerState.Paused) {
       this._startTime = 0;
     }
+  }
+
+  private static _isSendableEvent(event: TMidiEvent): boolean {
+    return (
+      'controlChange' in event ||
+      'noteOff' in event ||
+      'noteOn' in event ||
+      'programChange' in event
+    );
   }
 }

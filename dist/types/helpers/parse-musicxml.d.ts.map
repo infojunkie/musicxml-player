@@ -1,0 +1,1 @@
+{"version":3,"file":"parse-musicxml.d.ts","sourceRoot":"","sources":["../../src/helpers/parse-musicxml.ts"],"names":[],"mappings":"AAEA,aAAK,gBAAgB,GAAG;IACtB,QAAQ,EAAE,MAAM,CAAC;IACjB,KAAK,EAAE,MAAM,GAAG,IAAI,CAAC;CACtB,CAAC;AAEF,wBAAsB,aAAa,CACjC,gBAAgB,EAAE,WAAW,GAAG,MAAM,GACrC,OAAO,CAAC,gBAAgB,GAAG,IAAI,CAAC,CAalC"}

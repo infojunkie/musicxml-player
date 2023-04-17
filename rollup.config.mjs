@@ -27,7 +27,7 @@ const banner = `/*!
 function createOutputOptions(options) {
   return {
     banner,
-    name: 'MusicXMLPlayer',
+    name: 'MusicXmlPlayer',
     exports: 'named',
     sourcemap: true,
     ...options,

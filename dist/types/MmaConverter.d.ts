@@ -5,11 +5,12 @@ import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
  * to convert a MusicXML to a MIDI file. It extracts the timemap contained within the MIDI file, expressed as MIDI marker events.
  */
 export declare class MmaConverter implements IMidiConverter {
-    private apiUri;
+    private _apiUri;
+    private _parameters?;
     private _version;
     private _midi;
     private _timemap;
-    constructor(apiUri: string);
+    constructor(_apiUri: string, _parameters?: Record<string, string> | undefined);
     initialize(musicXml: string): Promise<void>;
     get midi(): IMidiFile;
     get timemap(): MeasureTimemap;
