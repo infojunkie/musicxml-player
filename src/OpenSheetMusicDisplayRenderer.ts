@@ -6,31 +6,38 @@ import {
   OpenSheetMusicDisplay,
   SourceMeasure,
   VexFlowVoiceEntry,
+  VexFlowMusicSheetCalculator,
 } from 'opensheetmusicdisplay';
 
 /**
  * Implementation of ISheetRenderer that uses OpenSheetMusicDisplay @see https://github.com/opensheetmusicdisplay/opensheetmusicdisplay
  */
 export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
-  private player: Player | null;
-  private osmd: OpenSheetMusicDisplay | null;
-  private currentMeasureIndex: MeasureIndex;
-  private currentVoiceEntryIndex: number;
+  private _player: Player | null;
+  private _osmd: OpenSheetMusicDisplay | null;
+  private _currentMeasureIndex: MeasureIndex;
+  private _currentVoiceEntryIndex: number;
 
   constructor() {
-    this.player = null;
-    this.osmd = null;
-    this.currentMeasureIndex = 0;
-    this.currentVoiceEntryIndex = 0;
+    this._player = null;
+    this._osmd = null;
+    this._currentMeasureIndex = 0;
+    this._currentVoiceEntryIndex = 0;
+  }
+
+  destroy(): void {
+    if (!this._osmd) return;
+    this._osmd.clear();
+    this._osmd = null;
   }
 
   async initialize(
     player: Player,
-    container: HTMLDivElement | string,
+    container: HTMLElement,
     musicXml: string,
   ): Promise<void> {
-    this.player = player;
-    this.osmd = new OpenSheetMusicDisplay(container, {
+    this._player = player;
+    this._osmd = new OpenSheetMusicDisplay(container, {
       backend: 'svg',
       drawFromMeasureNumber: 1,
       drawUpToMeasureNumber: Number.MAX_SAFE_INTEGER, // draw all measures, up to the end of the sample
@@ -40,19 +47,19 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
       disableCursor: false,
       autoResize: false,
     });
-    this.osmd.EngravingRules.resetChordAccidentalTexts(
-      this.osmd.EngravingRules.ChordAccidentalTexts,
+    this._osmd.EngravingRules.resetChordAccidentalTexts(
+      this._osmd.EngravingRules.ChordAccidentalTexts,
       true,
     );
-    this.osmd.EngravingRules.resetChordSymbolLabelTexts(
-      this.osmd.EngravingRules.ChordSymbolLabelTexts,
+    this._osmd.EngravingRules.resetChordSymbolLabelTexts(
+      this._osmd.EngravingRules.ChordSymbolLabelTexts,
     );
-    await this.osmd.load(musicXml);
-    this.osmd.render();
-    this.osmd.cursor.show();
+    await this._osmd.load(musicXml);
+    this._osmd.render();
+    this._osmd.cursor.show();
 
     // Setup event listeners for target stave notes to position the cursor.
-    this.osmd.GraphicSheet.MeasureList?.forEach(
+    this._osmd.GraphicSheet.MeasureList?.forEach(
       (measureGroup, measureIndex) => {
         measureGroup?.forEach((measure) => {
           measure?.staffEntries?.forEach((se, v) => {
@@ -62,7 +69,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
                 vfve.vfStaveNote?.getAttribute('el')
               ))?.addEventListener('click', () => {
                 this._updateCursor(measureIndex, v);
-                this.player?.moveTo(
+                this._player?.moveTo(
                   measureIndex,
                   this._timestampToMillisecs(
                     measure.parentSourceMeasure,
@@ -78,11 +85,11 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   }
 
   moveTo(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void {
-    const osmd = this.osmd!;
-    const measure = osmd.Sheet.SourceMeasures[measureIndex]!;
+    if (!this._osmd) throw 'TODO';
+    const measure = this._osmd.Sheet.SourceMeasures[measureIndex]!;
 
     // If we're moving to a new measure, then start at the first staff entry without search.
-    if (this.currentMeasureIndex !== measureIndex) {
+    if (this._currentMeasureIndex !== measureIndex) {
       this._updateCursor(measureIndex, 0);
       return;
     }
@@ -100,7 +107,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
         measureOffset + Number.EPSILON
       ) {
         // If same staff entry, do nothing.
-        if (this.currentVoiceEntryIndex !== v) {
+        if (this._currentVoiceEntryIndex !== v) {
           this._updateCursor(measureIndex, v);
         }
         return;
@@ -111,9 +118,24 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     );
   }
 
+  resize(): void {
+    if (!this._osmd) return;
+    if (
+      this._osmd.GraphicSheet?.GetCalculator instanceof
+      VexFlowMusicSheetCalculator
+    ) {
+      (
+        this._osmd.GraphicSheet.GetCalculator as VexFlowMusicSheetCalculator
+      ).beamsNeedUpdate = true;
+    }
+    if (this._osmd.IsReadyToRender()) {
+      this._osmd.render();
+    }
+  }
+
   get version(): string {
-    if (!this.osmd) throw 'TODO';
-    return `opensheetmusicdisplay v${this.osmd.Version}`;
+    if (!this._osmd) throw 'TODO';
+    return `opensheetmusicdisplay v${this._osmd.Version}`;
   }
 
   // Staff entry timestamp to actual time relative to measure start.
@@ -122,24 +144,24 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   }
 
   private _updateCursor(measureIndex: number, voiceEntryIndex: number) {
-    const osmd = this.osmd!;
-    const measure = osmd.Sheet.SourceMeasures[measureIndex]!;
+    if (!this._osmd) throw 'TODO';
+    const measure = this._osmd.Sheet.SourceMeasures[measureIndex]!;
     const vsse = measure.VerticalSourceStaffEntryContainers[voiceEntryIndex]!;
 
-    this.currentMeasureIndex = measureIndex;
-    this.currentVoiceEntryIndex = voiceEntryIndex;
+    this._currentMeasureIndex = measureIndex;
+    this._currentVoiceEntryIndex = voiceEntryIndex;
 
     if (measureIndex === 0 && voiceEntryIndex === 0) {
-      osmd.cursor.reset();
+      this._osmd.cursor.reset();
     } else {
       const startTimestamp = measure.AbsoluteTimestamp.clone();
       startTimestamp.Add(vsse.Timestamp);
-      osmd.cursor.iterator = new MusicPartManagerIterator(
-        osmd.Sheet,
+      this._osmd.cursor.iterator = new MusicPartManagerIterator(
+        this._osmd.Sheet,
         startTimestamp,
         undefined,
       );
-      osmd.cursor.update();
+      this._osmd.cursor.update();
     }
   }
 }

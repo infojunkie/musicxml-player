@@ -36,6 +36,7 @@ export class VerovioConverter implements IMidiConverter {
     this._vrv = new VerovioToolkit(VerovioModule);
     this._vrv.setOptions({
       expand: 'expansion-repeat',
+      midiNoCue: true,
     });
     if (!this._vrv.loadData(musicXml)) {
       throw 'TODO';

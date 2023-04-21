@@ -17,6 +17,7 @@ export declare class Player implements IMidiOutput {
     private _converter;
     private _musicXml;
     private _title;
+    private _container;
     static load(options: PlayerOptions): Promise<Player>;
     private _midiPlayer;
     private _startTime;
@@ -24,7 +25,9 @@ export declare class Player implements IMidiOutput {
     private _currentMeasureStartTime;
     private _currentMeasureIndex;
     private _timemapMeasureToTimestamp;
+    private _observer;
     private constructor();
+    destroy(): void;
     moveTo(measure: MeasureIndex, offset: MillisecsTimestamp): void;
     play(): Promise<void>;
     pause(): Promise<void>;
@@ -36,6 +39,5 @@ export declare class Player implements IMidiOutput {
     send(data: number[] | Uint8Array, timestamp?: number): void;
     clear(): void;
     private _play;
-    private static _isSendableEvent;
 }
 //# sourceMappingURL=Player.d.ts.map

@@ -23,8 +23,7 @@ async function createPlayer() {
   div.setAttribute('id', 'sheet');
   document.getElementById('sheet-container').appendChild(div);
   if (g_state.player) {
-    g_state.player.rewind();
-    delete g_state.player;
+    g_state.player.destroy();
     g_state.player = null;
   }
 

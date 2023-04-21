@@ -14,13 +14,18 @@ export interface TimeMapEntryFixed {
  * Implementation of ISheetRenderer that uses Verovio @see https://github.com/rism-digital/verovio
  */
 export declare class VerovioRenderer implements ISheetRenderer {
-    private vrv;
-    private player;
-    private notes;
-    private timemap;
+    private _vrv;
+    private _player;
+    private _notes;
+    private _timemap;
+    private _container;
+    private _scale;
     constructor();
-    initialize(player: Player, container: HTMLDivElement | string, musicXml: string): Promise<void>;
+    destroy(): void;
+    initialize(player: Player, container: HTMLElement, musicXml: string): Promise<void>;
     moveTo(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void;
+    resize(): void;
     get version(): string;
+    private _redraw;
 }
 //# sourceMappingURL=VerovioRenderer.d.ts.map

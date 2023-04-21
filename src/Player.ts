@@ -4,7 +4,6 @@ import {
   IMidiPlayer,
   PlayerState,
 } from 'midi-player';
-import type { TMidiEvent } from 'midi-json-parser-worker';
 import { binarySearch, parseMidiEvent, parseMusicXml } from './helpers';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
@@ -23,8 +22,16 @@ export interface PlayerOptions {
   title?: string;
 }
 
+const RESIZE_THROTTLE = 100;
+
 export class Player implements IMidiOutput {
   static async load(options: PlayerOptions): Promise<Player> {
+    const container =
+      typeof options.container === 'string'
+        ? document.getElementById(options.container)
+        : options.container;
+    if (!container) throw new Error('Failed to find container element.');
+
     const musicXmlAndTitle = await parseMusicXml(options.musicXml);
     if (!musicXmlAndTitle) throw new Error('Failed to parse MusicXML.');
 
@@ -32,14 +39,16 @@ export class Player implements IMidiOutput {
     await options.converter.initialize(musicXml);
     const output =
       options.output ?? new SoundFontOutput(options.converter.midi);
+
     const player = new Player(
       output,
       options.renderer,
       options.converter,
       musicXml,
       options.title ?? title,
+      container,
     );
-    await options.renderer.initialize(player, options.container, musicXml);
+    await options.renderer.initialize(player, container, musicXml);
     return player;
   }
 
@@ -49,6 +58,7 @@ export class Player implements IMidiOutput {
   private _currentMeasureStartTime: MillisecsTimestamp;
   private _currentMeasureIndex: MeasureIndex;
   private _timemapMeasureToTimestamp: Array<MillisecsTimestamp>;
+  private _observer: ResizeObserver;
 
   private constructor(
     private _output: IMidiOutput,
@@ -56,11 +66,12 @@ export class Player implements IMidiOutput {
     private _converter: IMidiConverter,
     private _musicXml: string,
     private _title: string | null,
+    private _container: HTMLElement,
   ) {
     this._midiPlayer = createMidiPlayer({
       json: this._converter.midi,
       midiOutput: this,
-      isSendableEvent: () => true,
+      filterMidiMessage: () => true,
     });
     this._startTime = 0;
     this._pauseTime = 0;
@@ -76,6 +87,23 @@ export class Player implements IMidiOutput {
         this._timemapMeasureToTimestamp[entry.measure] = entry.timestamp;
       }
     });
+
+    // Set up resize handling.
+    // Throttle the resize event https://stackoverflow.com/a/5490021/209184
+    let timeout: number | undefined = undefined;
+    this._observer = new ResizeObserver(() => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        this._renderer.resize();
+      }, RESIZE_THROTTLE);
+    });
+    this._observer.observe(this._container);
+  }
+
+  destroy(): void {
+    this._observer.disconnect();
+    this._midiPlayer.stop();
+    this._renderer.destroy();
   }
 
   moveTo(measure: MeasureIndex, offset: MillisecsTimestamp) {
@@ -129,9 +157,8 @@ export class Player implements IMidiOutput {
   // such as MARKER events with Groove information.
   send(data: number[] | Uint8Array, timestamp?: number) {
     const event = parseMidiEvent(data);
-    // TODO I don't understand why events need to be filtered before going to Web MIDI
-    // https://github.com/chrisguttandin/midi-player/issues/354
-    if (Player._isSendableEvent(event)) {
+    // Web MIDI does not accept meta messages.
+    if ('channel' in event) {
       this._output.send(data, timestamp);
     }
   }
@@ -199,14 +226,5 @@ export class Player implements IMidiOutput {
     if (this._midiPlayer.state !== PlayerState.Paused) {
       this._startTime = 0;
     }
-  }
-
-  private static _isSendableEvent(event: TMidiEvent): boolean {
-    return (
-      'controlChange' in event ||
-      'noteOff' in event ||
-      'noteOn' in event ||
-      'programChange' in event
-    );
   }
 }
