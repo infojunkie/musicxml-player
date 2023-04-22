@@ -14,6 +14,7 @@ export declare class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     moveTo(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void;
     resize(): void;
     get version(): string;
+    private _redraw;
     private _timestampToMillisecs;
     private _updateCursor;
 }

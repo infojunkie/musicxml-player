@@ -55,33 +55,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
       this._osmd.EngravingRules.ChordSymbolLabelTexts,
     );
     await this._osmd.load(musicXml);
-    this._osmd.render();
-    this._osmd.cursor.show();
-
-    // Setup event listeners for target stave notes to position the cursor.
-    this._osmd.GraphicSheet.MeasureList?.forEach(
-      (measureGroup, measureIndex) => {
-        measureGroup?.forEach((measure) => {
-          measure?.staffEntries?.forEach((se, v) => {
-            se.graphicalVoiceEntries?.forEach((gve) => {
-              const vfve = <VexFlowVoiceEntry>gve;
-              (<HTMLElement>(
-                vfve.vfStaveNote?.getAttribute('el')
-              ))?.addEventListener('click', () => {
-                this._updateCursor(measureIndex, v);
-                this._player?.moveTo(
-                  measureIndex,
-                  this._timestampToMillisecs(
-                    measure.parentSourceMeasure,
-                    se.relInMeasureTimestamp,
-                  ),
-                );
-              });
-            });
-          });
-        });
-      },
-    );
+    this._redraw();
   }
 
   moveTo(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void {
@@ -119,7 +93,18 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   }
 
   resize(): void {
-    if (!this._osmd) return;
+    if (this._osmd) {
+      this._redraw();
+    }
+  }
+
+  get version(): string {
+    if (!this._osmd) throw 'TODO';
+    return `opensheetmusicdisplay v${this._osmd.Version}`;
+  }
+
+  private _redraw() {
+    if (!this._osmd) throw 'TODO';
     if (
       this._osmd.GraphicSheet?.GetCalculator instanceof
       VexFlowMusicSheetCalculator
@@ -130,12 +115,33 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     }
     if (this._osmd.IsReadyToRender()) {
       this._osmd.render();
+      this._osmd.cursor.show();
     }
-  }
 
-  get version(): string {
-    if (!this._osmd) throw 'TODO';
-    return `opensheetmusicdisplay v${this._osmd.Version}`;
+    // Setup event listeners for target stave notes to position the cursor.
+    this._osmd.GraphicSheet.MeasureList?.forEach(
+      (measureGroup, measureIndex) => {
+        measureGroup?.forEach((measure) => {
+          measure?.staffEntries?.forEach((se, v) => {
+            se.graphicalVoiceEntries?.forEach((gve) => {
+              const vfve = <VexFlowVoiceEntry>gve;
+              (<HTMLElement>(
+                vfve.vfStaveNote?.getAttribute('el')
+              ))?.addEventListener('click', () => {
+                this._updateCursor(measureIndex, v);
+                this._player?.moveTo(
+                  measureIndex,
+                  this._timestampToMillisecs(
+                    measure.parentSourceMeasure,
+                    se.relInMeasureTimestamp,
+                  ),
+                );
+              });
+            });
+          });
+        });
+      },
+    );
   }
 
   // Staff entry timestamp to actual time relative to measure start.
