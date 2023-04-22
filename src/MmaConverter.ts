@@ -27,7 +27,7 @@ export class MmaConverter implements IMidiConverter {
 
   async initialize(musicXml: string): Promise<void> {
     // First get the API version.
-    this._version = await (await fetish(`${this._apiUri}`)).json();
+    this._version = await (await fetish(`${this._apiUri}/`)).json();
 
     // Convert the score.
     const formData = new FormData();

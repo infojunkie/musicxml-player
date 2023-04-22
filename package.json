@@ -1,6 +1,6 @@
 {
   "name": "musicxml-player",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A simple JavaScript component that loads and plays MusicXML files in the browser using Web Audio and Web MIDI.",
   "cdn": "dist/musicxml-player.umd.js",
   "main": "dist/musicxml-player.js",
@@ -43,8 +43,8 @@
     "eslint": "^8.19.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "http-server": "^14.1.1",
     "json-midi-message-encoder": "^4.1.18",
+    "local-web-server": "^5.3.0",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
     "prettier": "^2.7.1",
@@ -62,7 +62,8 @@
     "build": "rollup --config ./rollup.config.mjs",
     "build:lint": "eslint \"*/**/*.{ts,js,json}\" --fix",
     "develop": "rollup --watch --config ./rollup.config.mjs",
-    "demo": "http-server -c0 -p8080 demo",
+    "demo:develop": "ws -d demo --rewrite '/mma/(.*) -> http://localhost:3000/$1' -p ${PORT:-8080}",
+    "demo:server": "ws -d demo -p 8082 -z",
     "prepublishOnly": "npm run build:lint && npm run test && npm run build"
   },
   "repository": {

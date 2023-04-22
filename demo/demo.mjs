@@ -124,13 +124,14 @@ async function createConverter(converter, sheet, groove) {
   }
 
   try {
-    await MusicXmlPlayer.fetish(`http://localhost:3000`, { method: 'HEAD' });
+    const host = `${window.location.protocol}//${window.location.host}`;
+    await MusicXmlPlayer.fetish(`${host}/mma/`, { method: 'HEAD' });
     const parameters = {};
     if (groove !== DEFAULT_GROOVE) {
       parameters['globalGroove'] = groove;
     }
     candidates.push({
-      converter: new MusicXmlPlayer.MmaConverter(`http://localhost:3000`, parameters),
+      converter: new MusicXmlPlayer.MmaConverter(`${host}/mma`, parameters),
       id: 'mma',
       priority: 10
     });

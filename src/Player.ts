@@ -7,7 +7,7 @@ import {
 import { binarySearch, parseMidiEvent, parseMusicXml } from './helpers';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
-import { SoundFontOutput } from './SoundFontOutput';
+import { WebAudioFontOutput } from './WebAudioFontOutput';
 import pkg from '../package.json';
 
 export type MeasureIndex = number;
@@ -38,7 +38,7 @@ export class Player implements IMidiOutput {
     const { musicXml, title } = musicXmlAndTitle;
     await options.converter.initialize(musicXml);
     const output =
-      options.output ?? new SoundFontOutput(options.converter.midi);
+      options.output ?? new WebAudioFontOutput(options.converter.midi);
 
     const player = new Player(
       output,
