@@ -90,6 +90,10 @@ function createRenderer(renderer) {
   }
 }
 
+function getMmaEndpoint() {
+  return window.location.href + 'mma';
+}
+
 async function createConverter(converter, sheet, groove) {
   const candidates = [{
     converter: new MusicXmlPlayer.VerovioConverter(),
@@ -124,14 +128,13 @@ async function createConverter(converter, sheet, groove) {
   }
 
   try {
-    const host = `${window.location.protocol}//${window.location.host}`;
-    await MusicXmlPlayer.fetish(`${host}/mma/`, { method: 'HEAD' });
+    await MusicXmlPlayer.fetish(`${getMmaEndpoint()}/`, { method: 'HEAD' });
     const parameters = {};
     if (groove !== DEFAULT_GROOVE) {
       parameters['globalGroove'] = groove;
     }
     candidates.push({
-      converter: new MusicXmlPlayer.MmaConverter(`${host}/mma`, parameters),
+      converter: new MusicXmlPlayer.MmaConverter(getMmaEndpoint(), parameters),
       id: 'mma',
       priority: 10
     });
@@ -183,7 +186,7 @@ async function populateGrooves() {
   const grooves = document.getElementById('grooves');
   const groovesList = document.getElementById('grooves-list');
   try {
-    const lines = await (await MusicXmlPlayer.fetish('http://localhost:3000/grooves')).text();
+    const lines = await (await MusicXmlPlayer.fetish(`${getMmaEndpoint()}/grooves`)).text();
     ['Default', 'No groove override, just whatever is specified in the score.', 'None', 'No groove, just the chords.'].concat(lines.split('\n')).forEach((line, index, lines) => {
       if (index % 2 === 1) {
         const option = document.createElement('option');

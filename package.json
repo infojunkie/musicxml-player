@@ -63,7 +63,7 @@
     "build:lint": "eslint \"*/**/*.{ts,js,json}\" --fix",
     "develop": "rollup --watch --config ./rollup.config.mjs",
     "demo:develop": "ws -d demo --rewrite '/mma/(.*) -> http://localhost:3000/$1' -p ${PORT:-8080}",
-    "demo:server": "ws -d demo -p 8082 -z",
+    "demo:server": "ws -d demo -p 8082 -z --log.format combined",
     "prepublishOnly": "npm run build:lint && npm run test && npm run build"
   },
   "repository": {
