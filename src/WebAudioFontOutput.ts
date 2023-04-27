@@ -25,7 +25,7 @@ type Note = {
   channel: number;
   pitch: number;
   velocity: number;
-  on: number;
+  when: number;
   off: number | null;
   envelope: any;
 };
@@ -102,10 +102,18 @@ export class WebAudioFontOutput implements IMidiOutput {
       const now = performance.now();
       this.notes
         .filter((note) => note.off !== null && note.off <= now)
-        .forEach((note) => note.envelope.cancel());
-      this.notes = this.notes.filter(
-        (note) => note.off === null || note.off > now,
-      );
+        .forEach((note) => {
+          // It can happen that the envelope expires before we get here,
+          // and that WebAudioFontPlayer has already reused the envelope.
+          // We don't want to cancel the envelope in this case, and we detect
+          // it by comparing the original onset with the current one.
+          // They are different if the envelope has alreasdy been reused.
+          if (note.when === note.envelope.when) {
+            note.envelope.cancel();
+          }
+          note.envelope = null;
+        });
+      this.notes = this.notes.filter((note) => !!note.envelope);
       setTimeout(scheduleNotes, SCHEDULER_TIMEOUT);
     };
     setTimeout(scheduleNotes, SCHEDULER_TIMEOUT);
@@ -139,28 +147,11 @@ export class WebAudioFontOutput implements IMidiOutput {
       SCHEDULER_NOTE_LENGTH,
       event.noteOn.velocity / 127,
     );
-    envelope.cancel = () => {
-      if (
-        envelope &&
-        envelope.when + envelope.duration > this.audioContext.currentTime
-      ) {
-        (envelope as any as GainNode).gain.cancelScheduledValues(
-          this.audioContext.currentTime,
-        );
-        (envelope as any as GainNode).gain.setTargetAtTime(
-          0.00001,
-          this.audioContext.currentTime,
-          0.1,
-        );
-        envelope.when = this.audioContext.currentTime;
-        envelope.duration = SCHEDULER_NOTE_LENGTH;
-      }
-    };
     this.notes.push({
       channel: event.channel,
       pitch: event.noteOn.noteNumber,
       velocity: event.noteOn.velocity,
-      on: timestamp,
+      when: envelope.when,
       off: null,
       envelope,
     });

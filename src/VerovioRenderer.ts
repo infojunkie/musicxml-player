@@ -65,10 +65,7 @@ export class VerovioRenderer implements ISheetRenderer {
     this._vrv = <VerovioToolkitFixed>new VerovioToolkit(VerovioModule);
     if (!this._vrv.loadData(musicXml)) throw 'TODO';
 
-    // First rendering.
-    this._redraw();
-
-    // Build measure timemap and setup event listeners on notes.
+    // Setup timemap.
     this._vrv
       .renderToTimemap({ includeMeasures: true, includeRests: true })
       .forEach((e) => {
@@ -76,15 +73,10 @@ export class VerovioRenderer implements ISheetRenderer {
         if ('measureOn' in event) {
           this._timemap.push(event.tstamp);
         }
-        const measureIndex = this._timemap.length - 1;
-        [...(event.on || []), ...(event.restsOn || [])].forEach((noteid) => {
-          document.getElementById(noteid)?.addEventListener('click', () => {
-            const measureOffset = event.tstamp - this._timemap[measureIndex];
-            this.moveTo(measureIndex, measureOffset + 1);
-            this._player?.moveTo(measureIndex, measureOffset);
-          });
-        });
       });
+
+    // First rendering.
+    this._redraw();
     this.moveTo(0, 0);
   }
 
@@ -146,5 +138,20 @@ export class VerovioRenderer implements ISheetRenderer {
     }
     const svg = pages.join('');
     this._container.innerHTML = svg;
+
+    // Setup event listeners on notes.
+    this._vrv
+      .renderToTimemap({ includeMeasures: true, includeRests: true })
+      .forEach((e) => {
+        const event = <TimeMapEntryFixed>e;
+        const measureIndex = this._timemap.length - 1;
+        [...(event.on || []), ...(event.restsOn || [])].forEach((noteid) => {
+          document.getElementById(noteid)?.addEventListener('click', () => {
+            const measureOffset = event.tstamp - this._timemap[measureIndex];
+            this.moveTo(measureIndex, measureOffset + 1);
+            this._player?.moveTo(measureIndex, measureOffset);
+          });
+        });
+      });
   }
 }
