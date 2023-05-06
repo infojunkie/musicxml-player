@@ -5,6 +5,10 @@ import { VerovioToolkit } from 'verovio/esm';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import type { MeasureIndex } from './Player';
 import type { TimeMapEntryFixed } from './VerovioRenderer';
+import SaxonJS from 'saxon-js';
+
+const XSL_UNROLL = 'https://raw.githubusercontent.com/infojunkie/musicxml-mma/main/musicxml-unroll.sef.json';
+const XSL_TIMEMAP = 'https://raw.githubusercontent.com/infojunkie/musicxml-mma/main/musicxml-timemap.sef.json';
 
 /**
  * Implementation of IMidiConverter that uses the Verovio library to convert a MusicXML file to MIDI and timemap.
@@ -25,34 +29,54 @@ export class VerovioConverter implements IMidiConverter {
   private _timemap: MeasureTimemap;
   private _midi: IMidiFile | null;
 
-  constructor() {
+  constructor(private _unroll: boolean = false) {
     this._vrv = null;
     this._timemap = [];
     this._midi = null;
   }
 
   async initialize(musicXml: string): Promise<void> {
+    let xml = musicXml;
+
+    // If we're unrolling, do it now.
+    if (this._unroll) {
+      const unroll = await SaxonJS.transform({
+        stylesheetLocation: XSL_UNROLL,
+        sourceText: musicXml,
+        destination: 'serialized',
+      }, 'async');
+      xml = unroll.principalResult;
+      const timemap = await SaxonJS.transform({
+        stylesheetLocation: XSL_TIMEMAP,
+        sourceText: musicXml,
+        destination: 'serialized',
+      }, 'async');
+      this._timemap = JSON.parse(timemap.principalResult);
+    }
+
     const VerovioModule = await createVerovioModule();
     this._vrv = new VerovioToolkit(VerovioModule);
     this._vrv.setOptions({
       expand: 'expansion-repeat',
       midiNoCue: true,
     });
-    if (!this._vrv.loadData(musicXml)) {
+    if (!this._vrv.loadData(xml)) {
       throw 'TODO';
     }
 
-    // Build timemap.
-    let measureIndex: MeasureIndex = 0;
-    this._vrv.renderToTimemap({ includeMeasures: true }).forEach((e) => {
-      const event = <TimeMapEntryFixed>e;
-      if ('measureOn' in event) {
-        this._timemap.push({
-          measure: measureIndex++,
-          timestamp: event.tstamp,
-        });
-      }
-    });
+    // Fallback to use Verovio's timemap.
+    if (!this._timemap.length) {
+      let measureIndex: MeasureIndex = 0;
+      this._vrv.renderToTimemap({ includeMeasures: true }).forEach((e) => {
+        const event = <TimeMapEntryFixed>e;
+        if ('measureOn' in event) {
+          this._timemap.push({
+            measure: measureIndex++,
+            timestamp: event.tstamp,
+          });
+        }
+      });
+    }
 
     // Render to MIDI.
     this._midi = await parseMidiBuffer(

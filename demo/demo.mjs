@@ -96,7 +96,7 @@ function getMmaEndpoint() {
 
 async function createConverter(converter, sheet, groove) {
   const candidates = [{
-    converter: new MusicXmlPlayer.VerovioConverter(),
+    converter: new MusicXmlPlayer.VerovioConverter(true),
     id: 'vrv',
     priority: 1
   }];
