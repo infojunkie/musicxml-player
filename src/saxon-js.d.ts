@@ -1,19 +1,40 @@
 declare module 'saxon-js' {
+  export class XdmAtomicValue {
+    type: string;
+    toString(): string;
+    equals(value): boolean;
+    hashCode(): string;
+    matchKey(): string;
+    compareTo(value: XdmAtomicValue): number;
+  }
 
-  type XdmValue = object;
+  export type XdmValue = Array<XdmAtomicValue>;
 
-  type XdmArray = Array<XdmValue>;
+  export class XdmArray {
+    size(): number;
+    get(N: number): XdmValue;
+  }
 
-  type DOMNode = object;
+  export class XdmMap {
+    containsKey(key: XdmAtomicValue): boolean;
+    get(key: XdmAtomicValue): XdmValue | null;
+    inSituPut(key: XdmAtomicValue, value: XdmValue);
+    put(key: XdmAtomicValue, value: XdmValue): XdmMap;
+    remove(key: XdmAtomicValue): XdmMap;
+    forAllPairs(fn: ({key: XdmAtomicValue, value: XdmValue}) => void);
+    keys(): Array<XdmAtomicValue>;
+  }
+  export class XdmFunction {
+    getName(): string;
+    getArity(): number;
+  }
 
-  type HashTrie = object;
-
-  type DocumentFragment = object;
+  export type HashTrie = object;
 
   /**
    * Constructs an XDM atomic value.
    */
-  export function atom(value: boolean | number | string, type?: string): XdmValue;
+  export function atom(value: boolean | number | string, type?: string): XdmAtomicValue;
 
   /**
    * Gets the SaxonJS configuration properties. (New in SaxonJS 2.4.)
@@ -148,19 +169,88 @@ declare module 'saxon-js' {
     /**
      * Allows dynamic evaluation of an XPath 3.1 expression.
      */
-    export function evaluate();
+    export type EvaluateOptions = {
+      params?: object,
+      staticBaseURI?: string,
+      namespaceContext?: object,
+      xpathDefaultNamespace?: string,
+      defaultDecimalFormat?: object,
+      namedDecimalFormats?: object,
+      resultForm?: "default" | "array" | "iterator" | "xdm",
+    };
+    export function evaluate(xpath: string, contextItem?: object, options?: EvaluateOptions): any;
   }
 
   export namespace XS {
-
-    export namespace QName {
-      /**
-       * Construct an xs:QName.
-       * @param prefix
-       * @param uri
-       * @param local
-       */
-      export function fromParts(prefix, uri, local);
+    export class atom {
+      name: string;
+      code: string;
+      fromString(str: string): XdmAtomicValue;
+      cast(value: XdmAtomicValue): XdmAtomicValue;
+      matches(value: XdmAtomicValue): boolean;
     }
+    export class double extends atom {
+      fromNumber(num: number): XdmAtomicValue;
+    }
+    export class decimal extends atom {
+      fromNumber(num: number): XdmAtomicValue;
+      fromBig(big: BigInt): XdmAtomicValue;
+    }
+    export class integer extends atom {
+      fromNumber(num: number): XdmAtomicValue;
+      fromBig(big: BigInt): XdmAtomicValue;
+    }
+    export class float extends atom {
+      fromNumber(num: number): XdmAtomicValue;
+    }
+    export class boolean extends atom {
+      fromNumber(num: number): XdmAtomicValue;
+    }
+    export class QName extends atom {
+      fromParts(prefix: string, uri: string, local: string): XdmAtomicValue;
+      fromEQName(eqname: string): XdmAtomicValue;
+    }
+    export class dateTime extends atom {
+      fromDate(date: Date, tzOffset: number): XdmAtomicValue;
+    }
+    export class date extends atom {
+      fromDate(date: Date, tzOffset: number): XdmAtomicValue;
+    }
+    export class time extends atom {
+      fromDate(date: Date, tzOffset: number): XdmAtomicValue;
+    }
+    export class dateTimeStamp extends atom {
+      fromDate(date: Date, tzOffset: number): XdmAtomicValue;
+    }
+    export class duration extends atom {
+      fromMonthsMilliseconds(months: number, millisecs: number): XdmAtomicValue;
+    }
+  }
+
+  namespace Atomic {
+    export declare class XdmString extends XdmAtomicValue {}
+    export declare class XdmBoolean extends XdmAtomicValue {}
+    export declare class XdmDouble extends XdmAtomicValue {}
+    export declare class XdmDecimal extends XdmAtomicValue {}
+    export declare class XdmFloat extends XdmAtomicValue {}
+    export declare class XdmInteger extends XdmAtomicValue {}
+    export declare class XdmDateTime extends XdmAtomicValue {}
+    export declare class XdmDate extends XdmAtomicValue {}
+    export declare class XdmTime extends XdmAtomicValue {}
+    export declare class XdmDateTimeStamp extends XdmAtomicValue {}
+    export declare class XdmDuration extends XdmAtomicValue {}
+    export declare class XdmQName extends XdmAtomicValue {}
+  }
+
+  export class XError {
+    code: string;
+    message: string;
+    name: "XError";
+    xsltLineNr: number;
+    xsltModule: string;
+    errorObject: object;
+    jsStack: string;
+    getStackTrace(): string;
+    getMessage(): string;
   }
 }
