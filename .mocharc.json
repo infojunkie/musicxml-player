@@ -7,6 +7,7 @@
   ],
   "node-option": [
     "experimental-specifier-resolution=node",
+    "experimental-fetch",
     "loader=ts-node/esm"
   ]
 }
