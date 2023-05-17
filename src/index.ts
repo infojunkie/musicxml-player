@@ -1,3 +1,5 @@
+import '../dist/saxon-js/SaxonJS2.rt.js';
+
 export * from './Player';
 export * from './ISheetRenderer';
 export * from './IMidiConverter';
