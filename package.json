@@ -68,7 +68,8 @@
     "demo": "concurrently --kill-others \"PORT=3000 musicxml-mma\" \"npm run demo:develop\"",
     "demo:develop": "ws -d demo --rewrite '/mma/(.*) -> http://localhost:3000/$1' -p ${PORT:-8080}",
     "demo:server": "ws -d demo -p 8082 -z --log.format combined",
-    "prepublishOnly": "npm run build:lint && npm run test && npm run build"
+    "prepublishOnly": "npm run build:lint && npm run test && npm run build",
+    "postinstall": "patch-package"
   },
   "repository": {
     "type": "git",
