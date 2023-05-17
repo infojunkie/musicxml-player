@@ -75,7 +75,6 @@ const options = {
     commonjs(),
     json(),
     externalGlobals({
-      webaudiofont: 'WebAudioFontPlayer',
       'saxon-js': 'SaxonJS',
     }),
     nodePolyfills(),

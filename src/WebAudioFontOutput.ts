@@ -1,5 +1,5 @@
 import { AudioContext, IAudioContext } from 'standardized-audio-context';
-import WebAudioFontPlayer from 'webaudiofont';
+import { WebAudioFontPlayer } from 'webaudiofont';
 import type {
   IMidiFile,
   IMidiProgramChangeEvent,

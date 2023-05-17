@@ -1,0 +1,12 @@
+diff --git a/node_modules/webaudiofont/npm/dist/WebAudioFontPlayer.js b/node_modules/webaudiofont/npm/dist/WebAudioFontPlayer.js
+index 0617937..49e7894 100644
+--- a/node_modules/webaudiofont/npm/dist/WebAudioFontPlayer.js
++++ b/node_modules/webaudiofont/npm/dist/WebAudioFontPlayer.js
+@@ -1220,3 +1220,7 @@ var WebAudioFontTicker = /** @class */ (function () {
+     ;
+     return WebAudioFontTicker;
+ }());
++
++module.exports = {
++  WebAudioFontPlayer,
++}
