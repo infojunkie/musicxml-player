@@ -49,7 +49,6 @@
     "mocha": "^10.2.0",
     "musicxml-mma": "github:infojunkie/musicxml-mma",
     "nyc": "^15.1.0",
-    "patch-package": "^7.0.0",
     "prettier": "^2.7.1",
     "rollup": "^3.5.0",
     "rollup-plugin-external-globals": "^0.7.1",
@@ -69,7 +68,7 @@
     "demo:develop": "ws -d demo --rewrite '/mma/(.*) -> http://localhost:3000/$1' -p ${PORT:-8080}",
     "demo:server": "ws -d demo -p 8082 -z --log.format combined",
     "prepublishOnly": "npm run build:lint && npm run test && npm run build",
-    "postinstall": "patch-package"
+    "postinstall": "./apply-patches.sh"
   },
   "repository": {
     "type": "git",
