@@ -53,8 +53,9 @@
         <option value="">-- Choose --</option>
         <option value="data/salma-ya-salama.mxl">Salma ya Salama (Compressed MusicXML)</option>
         <option value="data/asa-branca.musicxml">Asa Branca (Uncompressed MusicXML)</option>
-        <option value="data/jazz.txt">iReal Pro Jazz 1400 (iReal Pro)</option>
-        <option value="data/brazilian.txt">iReal Pro Brazilian 150 (iReal Pro)</option>
+        <option value="data/jazz.txt">Playlist: Jazz 1400 (iReal Pro)</option>
+        <option value="data/brazilian.txt">Playlist: Brazilian 150 (iReal Pro)</option>
+        <option value="data/stevie-wonder.txt">Playlist: Stevie Wonder 30 (iReal Pro)</option>
       </select>
     </div>
 
@@ -62,6 +63,11 @@
       <label for="upload">Or upload a MusicXML file or an iReal Pro playlist</label>&nbsp;
       <input type="file" id="upload" name="upload"/>
       <span id="error"></span>
+    </div>
+
+    <div>
+      <label for="ireal">Or paste an iReal Pro song URI directly</label>&nbsp;
+      <input type="text" size="50" id="ireal" name="ireal" placeholder="irealb://... or irealbook://..."/>
     </div>
 
     <div>

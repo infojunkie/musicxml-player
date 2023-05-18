@@ -48,6 +48,7 @@ async function createPlayer() {
   }
   document.getElementById('download').innerHTML = '';
   document.getElementById('error').textContent = '';
+  document.getElementById('ireal').value = '';
   document.getElementById('grooves').value = groove === DEFAULT_GROOVE ? null : groove;
 
   // Create new player.
@@ -237,6 +238,20 @@ function handlePlayPauseKey(e) {
   }
 }
 
+function populateSheets(ireal) {
+  const playlist = new iRealMusicXml.Playlist(ireal);
+  const sheets = document.getElementById('sheets');
+  sheets.innerHTML = '';
+  playlist.songs.forEach(song => {
+    const option = document.createElement('option');
+    option.value = JSON.stringify(song);
+    option.text = song.title;
+    sheets.add(option);
+  });
+  g_state.params.set('sheet', sheet);
+  sheets.dispatchEvent(new Event('change'));
+}
+
 async function handleSampleSelect(e) {
   if (!e.target.value) return;
   const sheet = e.target.value;
@@ -250,17 +265,7 @@ async function handleSampleSelect(e) {
   else {
     try {
       const ireal = await (await MusicXmlPlayer.fetish(sheet)).text();
-      const playlist = new iRealMusicXml.Playlist(ireal);
-      const sheets = document.getElementById('sheets');
-      sheets.innerHTML = '';
-      playlist.songs.forEach(song => {
-        const option = document.createElement('option');
-        option.value = JSON.stringify(song);
-        option.text = song.title;
-        sheets.add(option);
-      });
-      g_state.params.set('sheet', sheet);
-      sheets.dispatchEvent(new Event('change'));
+      populateSheets(ireal);
     }
     catch (error) {
       console.error(`Failed to load sheet ${sheet}: ${error}`);
@@ -288,7 +293,13 @@ async function handleFileUpload(e) {
       createPlayer();
     }
     else {
-      document.getElementById('error').textContent = 'This file is not recognized as valid MusicXML.';
+      try {
+        const ireal = new TextDecoder().decode(upload.target.result);
+        populateSheets(ireal);
+      }
+      catch (error) {
+        document.getElementById('error').textContent = 'This file is not recognized as either MusicXML or iReal Pro.';
+      }
     }
   };
   if (file.size < 1*1024*1024) {
@@ -296,6 +307,17 @@ async function handleFileUpload(e) {
   }
   else {
     document.getElementById('error').textContent = 'This file is too large.';
+  }
+}
+
+function handleIRealChange(e) {
+  if (!e.target.value) return;
+  try {
+    populateSheets(e.target.value);
+  }
+  catch (error) {
+    document.getElementById('error').textContent = 'This URI is not recognized as iReal Pro.';
+    document.getElementById('ireal').value = '';
   }
 }
 
@@ -331,6 +353,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('sheets').addEventListener('change', handleSheetSelect);
   document.getElementById('grooves').addEventListener('change', handleGrooveSelect);
   document.getElementById('outputs').addEventListener('change', handleMidiOutputSelect);
+  document.getElementById('ireal').addEventListener('change', handleIRealChange);
   window.addEventListener('keydown', handlePlayPauseKey);
 
   // Initialize Web MIDI.
