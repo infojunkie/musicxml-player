@@ -15,10 +15,11 @@ import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
  *
  */
 export declare class VerovioConverter implements IMidiConverter {
+    private _unroll;
     private _vrv;
     private _timemap;
     private _midi;
-    constructor();
+    constructor(_unroll?: boolean);
     initialize(musicXml: string): Promise<void>;
     get midi(): IMidiFile;
     get timemap(): MeasureTimemap;
