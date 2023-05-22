@@ -1,5 +1,6 @@
 import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
+import { VerovioOptions } from 'verovio';
 export interface TimeMapEntryFixed {
     tstamp: number;
     qstamp: number;
@@ -19,8 +20,8 @@ export declare class VerovioRenderer implements ISheetRenderer {
     private _notes;
     private _timemap;
     private _container;
-    private _scale;
-    constructor();
+    private _options;
+    constructor(options?: VerovioOptions);
     destroy(): void;
     initialize(player: Player, container: HTMLElement, musicXml: string): Promise<void>;
     moveTo(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void;

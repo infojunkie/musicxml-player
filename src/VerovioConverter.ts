@@ -2,13 +2,16 @@ import { parseArrayBuffer as parseMidiBuffer } from 'midi-json-parser';
 import type { IMidiFile } from 'midi-json-parser-worker';
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
+import { VerovioOptions } from 'verovio';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import type { MeasureIndex } from './Player';
 import type { TimeMapEntryFixed } from './VerovioRenderer';
 import SaxonJS from './saxon-js/SaxonJS2.rt';
 
-const XSL_UNROLL = 'https://raw.githubusercontent.com/infojunkie/musicxml-mma/main/musicxml-unroll.sef.json';
-const XSL_TIMEMAP = 'https://raw.githubusercontent.com/infojunkie/musicxml-mma/main/musicxml-timemap.sef.json';
+const XSL_UNROLL =
+  'https://raw.githubusercontent.com/infojunkie/musicxml-mma/main/musicxml-unroll.sef.json';
+const XSL_TIMEMAP =
+  'https://raw.githubusercontent.com/infojunkie/musicxml-mma/main/musicxml-timemap.sef.json';
 
 /**
  * Implementation of IMidiConverter that uses the Verovio library to convert a MusicXML file to MIDI and timemap.
@@ -28,11 +31,19 @@ export class VerovioConverter implements IMidiConverter {
   private _vrv: VerovioToolkit | null;
   private _timemap: MeasureTimemap;
   private _midi: IMidiFile | null;
+  private _options: VerovioOptions;
 
-  constructor(private _unroll: boolean = false) {
+  constructor(private _unroll: boolean = false, options?: VerovioOptions) {
     this._vrv = null;
     this._timemap = [];
     this._midi = null;
+    this._options = {
+      ...{
+        expand: 'expansion-repeat',
+        midiNoCue: true,
+      },
+      ...options,
+    };
   }
 
   async initialize(musicXml: string): Promise<void> {
@@ -40,26 +51,29 @@ export class VerovioConverter implements IMidiConverter {
 
     // If we're unrolling, do it now.
     if (this._unroll) {
-      const unroll = await SaxonJS.transform({
-        stylesheetLocation: XSL_UNROLL,
-        sourceText: musicXml,
-        destination: 'serialized',
-      }, 'async');
+      const unroll = await SaxonJS.transform(
+        {
+          stylesheetLocation: XSL_UNROLL,
+          sourceText: musicXml,
+          destination: 'serialized',
+        },
+        'async',
+      );
       xml = unroll.principalResult;
-      const timemap = await SaxonJS.transform({
-        stylesheetLocation: XSL_TIMEMAP,
-        sourceText: musicXml,
-        destination: 'serialized',
-      }, 'async');
+      const timemap = await SaxonJS.transform(
+        {
+          stylesheetLocation: XSL_TIMEMAP,
+          sourceText: musicXml,
+          destination: 'serialized',
+        },
+        'async',
+      );
       this._timemap = JSON.parse(timemap.principalResult);
     }
 
     const VerovioModule = await createVerovioModule();
     this._vrv = new VerovioToolkit(VerovioModule);
-    this._vrv.setOptions({
-      expand: 'expansion-repeat',
-      midiNoCue: true,
-    });
+    this._vrv.setOptions(this._options);
     if (!this._vrv.loadData(xml)) {
       throw 'TODO';
     }

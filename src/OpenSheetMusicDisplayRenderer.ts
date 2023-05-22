@@ -2,12 +2,18 @@ import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 import {
   Fraction,
+  OSMDOptions,
   MusicPartManagerIterator,
   OpenSheetMusicDisplay,
   SourceMeasure,
   VexFlowVoiceEntry,
   VexFlowMusicSheetCalculator,
+  EngravingRules,
 } from 'opensheetmusicdisplay';
+
+export type EngravingRulesOptions = {
+  [Prop in keyof EngravingRules]: EngravingRules[Prop];
+};
 
 /**
  * Implementation of ISheetRenderer that uses OpenSheetMusicDisplay @see https://github.com/opensheetmusicdisplay/opensheetmusicdisplay
@@ -17,12 +23,26 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   private _osmd: OpenSheetMusicDisplay | null;
   private _currentMeasureIndex: MeasureIndex;
   private _currentVoiceEntryIndex: number;
+  private _options: OSMDOptions;
 
-  constructor() {
+  constructor(options?: OSMDOptions, private _rules?: EngravingRulesOptions) {
     this._player = null;
     this._osmd = null;
     this._currentMeasureIndex = 0;
     this._currentVoiceEntryIndex = 0;
+    this._options = {
+      ...{
+        backend: 'svg',
+        drawFromMeasureNumber: 1,
+        drawUpToMeasureNumber: Number.MAX_SAFE_INTEGER, // draw all measures, up to the end of the sample
+        newSystemFromXML: true,
+        newPageFromXML: true,
+        followCursor: true,
+        disableCursor: false,
+        autoResize: false,
+      },
+      ...options,
+    };
   }
 
   destroy(): void {
@@ -37,16 +57,14 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     musicXml: string,
   ): Promise<void> {
     this._player = player;
-    this._osmd = new OpenSheetMusicDisplay(container, {
-      backend: 'svg',
-      drawFromMeasureNumber: 1,
-      drawUpToMeasureNumber: Number.MAX_SAFE_INTEGER, // draw all measures, up to the end of the sample
-      newSystemFromXML: true,
-      newPageFromXML: true,
-      followCursor: true,
-      disableCursor: false,
-      autoResize: false,
-    });
+    this._osmd = new OpenSheetMusicDisplay(container, this._options);
+    if (this._rules) {
+      let k: keyof EngravingRules;
+      for (k in this._rules) {
+        (this._osmd.EngravingRules as any)[k] = this._rules[k];
+      }
+    }
+    // FIXME: Avoid hard-coding these engraving rules.
     this._osmd.EngravingRules.resetChordAccidentalTexts(
       this._osmd.EngravingRules.ChordAccidentalTexts,
       true,

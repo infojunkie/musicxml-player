@@ -2,6 +2,7 @@ import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
+import { VerovioOptions } from 'verovio';
 
 export interface TimeMapEntryFixed {
   tstamp: number;
@@ -35,15 +36,22 @@ export class VerovioRenderer implements ISheetRenderer {
   private _notes: Array<string>;
   private _timemap: Array<MillisecsTimestamp>;
   private _container: HTMLElement | null;
-  private _scale: number;
+  private _options: VerovioOptions;
 
-  constructor() {
+  constructor(options?: VerovioOptions) {
     this._vrv = null;
     this._player = null;
     this._notes = [];
     this._timemap = [];
     this._container = null;
-    this._scale = 50;
+    this._options = {
+      ...{
+        breaks: 'encoded',
+        adjustPageHeight: true,
+        scale: 50,
+      },
+      ...options,
+    };
   }
 
   destroy() {
@@ -125,11 +133,13 @@ export class VerovioRenderer implements ISheetRenderer {
   private _redraw() {
     if (!this._container || !this._vrv) throw 'TODO';
     this._vrv.setOptions({
-      breaks: 'encoded',
-      adjustPageHeight: true,
-      scale: this._scale,
-      pageHeight: (this._container.clientHeight * 100) / this._scale,
-      pageWidth: (this._container.clientWidth * 100) / this._scale,
+      ...this._options,
+      ...{
+        pageHeight:
+          (this._container.clientHeight * 100) / (this._options.scale ?? 100),
+        pageWidth:
+          (this._container.clientWidth * 100) / (this._options.scale ?? 100),
+      },
     });
     this._vrv.redoLayout({ resetCache: false });
     const pages = [];

@@ -10,14 +10,9 @@ A TypeScript component that loads and plays MusicXML files in the browser using 
 npm install
 npm run build
 npm test
+npm run demo
 ```
-
-# Running the demo
-This is a demo showcasing MusicXML rendering, MIDI conversion, Web Audio and Web MIDI playback. It is an enhanced replica of the [earlier demo](https://github.com/infojunkie/ireal-musicxml/tree/main/demo/web) where the above functionality was hard-coded into the HTML app. By contrast, in this demo, the playback and rendering functionalities are all encapsulated in the present module, with only the demo UI coded in `demo.mjs`.
-
-- Start this demo `npm run demo`
-- Open http://127.0.0.1:8080/
-
+Then open http://127.0.0.1:8080/
 # Theory of operation
 This component synchronizes rendering and playback of MusicXML documents. Rendering is done using existing Web-based music engraving libraries such as [OpenSheetMusicDisplay](https://github.com/opensheetmusicdisplay/opensheetmusicdisplay) or [Verovio](https://github.com/rism-digital/verovio). Playback uses standard MIDI files that are expected to correspond to the given MusicXML, and sends the MIDI events to either a Web MIDI output, or to a Web Audio synthesizer.
 
