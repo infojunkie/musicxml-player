@@ -18,6 +18,7 @@ import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 export declare class VerovioConverter implements IMidiConverter {
     private _unroll;
     private _vrv;
+    private _musicXml;
     private _timemap;
     private _midi;
     private _options;
@@ -27,5 +28,6 @@ export declare class VerovioConverter implements IMidiConverter {
     get timemap(): MeasureTimemap;
     get version(): string;
     private static _base64ToArrayBuffer;
+    private static _unroll;
 }
 //# sourceMappingURL=VerovioConverter.d.ts.map
