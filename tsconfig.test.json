@@ -1,9 +1,5 @@
 {
   "extends": "./tsconfig",
-  "compilerOptions": {
-    // Transpilation settings.
-    "module": "commonjs",
-  },
   "ts-node": {
     "transpileOnly": true,
   }

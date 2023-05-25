@@ -1,24 +1,11 @@
 {
   "name": "musicxml-player",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "A simple JavaScript component that loads and plays MusicXML files in the browser using Web Audio and Web MIDI.",
-  "cdn": "dist/musicxml-player.umd.js",
-  "main": "dist/musicxml-player.js",
-  "types": "types/musicxml-player.d.ts",
-  "unpkg": "dist/musicxml-player.umd.js",
+  "main": "dist/musicxml-player.esm.js",
+  "type": "module",
+  "types": "dist/types/index.d.ts",
   "module": "dist/musicxml-player.esm.js",
-  "jsdelivr": "dist/musicxml-player.umd.js",
-  "umd:main": "dist/musicxml-player.umd.js",
-  "exports": {
-    ".": [
-      {
-        "import": "./dist/musicxml-player.mjs",
-        "require": "./dist/musicxml-player.cjs",
-        "default": "./dist/musicxml-player.js"
-      },
-      "./dist/musicxml-player.js"
-    ]
-  },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@rollup/plugin-commonjs": "^23.0.2",
