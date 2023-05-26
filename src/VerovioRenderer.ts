@@ -113,8 +113,16 @@ export class VerovioRenderer implements ISheetRenderer {
       this._notes = notes;
       this._notes.forEach((noteid) => {
         const note = document.getElementById(noteid);
-        note?.setAttribute('fill', '#c00');
-        note?.setAttribute('stroke', '#c00');
+        if (!note) return;
+        note.setAttribute('fill', '#c00');
+        note.setAttribute('stroke', '#c00');
+        if (this._options.breaks === 'none') {
+          note.scrollIntoView({ 'behavior': 'auto', 'inline': 'center' });
+        }
+        else {
+          const system = note.closest('.system');
+          system?.scrollIntoView({ 'behavior': 'auto', 'block': 'center' });
+        }
       });
     }
   }
