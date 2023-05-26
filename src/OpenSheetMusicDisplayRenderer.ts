@@ -35,8 +35,8 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
         backend: 'svg',
         drawFromMeasureNumber: 1,
         drawUpToMeasureNumber: Number.MAX_SAFE_INTEGER, // draw all measures, up to the end of the sample
-        newSystemFromXML: true,
-        newPageFromXML: true,
+        newSystemFromXML: false,
+        newPageFromXML: false,
         followCursor: true,
         disableCursor: false,
         autoResize: false,

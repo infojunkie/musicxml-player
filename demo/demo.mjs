@@ -50,6 +50,7 @@ async function createPlayer() {
   document.getElementById('error').textContent = '';
   document.getElementById('ireal').value = '';
   document.getElementById('grooves').value = groove === DEFAULT_GROOVE ? null : groove;
+  document.querySelectorAll('.renderer-options').forEach(element => { element.hidden = true; });
 
   // Create new player.
   if (g_state.musicXml) {
@@ -82,9 +83,15 @@ async function createPlayer() {
 function createRenderer(renderer) {
   switch (renderer) {
     case 'osmd':
-      return new MusicXmlPlayer.OpenSheetMusicDisplayRenderer();
+      document.getElementById(`${renderer}-options`).hidden = false;
+      return new MusicXmlPlayer.OpenSheetMusicDisplayRenderer({
+        renderSingleHorizontalStaffline: !!document.getElementById('osmd-horizontal').checked,
+      });
     case 'vrv':
-      return new MusicXmlPlayer.VerovioRenderer();
+      document.getElementById(`${renderer}-options`).hidden = false;
+      return new MusicXmlPlayer.VerovioRenderer({
+        breaks: !!document.getElementById('vrv-horizontal').checked ? 'none' : 'smart',
+      });
     default:
       console.warn(`Unknown renderer ${renderer}`);
       return createRenderer(DEFAULT_RENDERER);
@@ -321,6 +328,10 @@ function handleIRealChange(e) {
   }
 }
 
+function handleRendererOptionchange(e) {
+  createPlayer();
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   g_state.params = new URLSearchParams(document.location.search);
 
@@ -354,6 +365,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('grooves').addEventListener('change', handleGrooveSelect);
   document.getElementById('outputs').addEventListener('change', handleMidiOutputSelect);
   document.getElementById('ireal').addEventListener('change', handleIRealChange);
+  document.querySelectorAll('.renderer-option').forEach(element => element.addEventListener('change', handleRendererOptionchange));
   window.addEventListener('keydown', handlePlayPauseKey);
 
   // Initialize Web MIDI.
