@@ -117,11 +117,10 @@ export class VerovioRenderer implements ISheetRenderer {
         note.setAttribute('fill', '#c00');
         note.setAttribute('stroke', '#c00');
         if (this._options.breaks === 'none') {
-          note.scrollIntoView({ 'behavior': 'auto', 'inline': 'center' });
-        }
-        else {
+          note.scrollIntoView({ behavior: 'auto', inline: 'center' });
+        } else {
           const system = note.closest('.system');
-          system?.scrollIntoView({ 'behavior': 'auto', 'block': 'center' });
+          system?.scrollIntoView({ behavior: 'auto', block: 'center' });
         }
       });
     }

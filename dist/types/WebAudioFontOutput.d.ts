@@ -1,14 +1,17 @@
 import type { IMidiFile } from 'midi-json-parser-worker';
 import type { IMidiOutput } from 'midi-player';
 export declare class WebAudioFontOutput implements IMidiOutput {
-    private audioContext;
-    private player;
-    private notes;
-    private channels;
+    private _audioContext;
+    private _player;
+    private _notes;
+    private _instruments;
+    private _pitchBends;
     constructor(midiJson: IMidiFile);
     send(data: number[] | Uint8Array, timestamp: number): void;
-    private noteOn;
-    private noteOff;
+    private _noteOn;
+    private _noteOff;
+    private _pitchBend;
+    private _timestampToAudioContext;
     clear(): void;
 }
 //# sourceMappingURL=WebAudioFontOutput.d.ts.map
