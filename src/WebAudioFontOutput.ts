@@ -170,6 +170,7 @@ export class WebAudioFontOutput implements IMidiOutput {
       pb
         ? [
             {
+              // Pitch bend range is [0, 16384] which corresponds to [-2, +2] semitones.
               delta: (pb.pitchBend - 8192) / 4096,
               when: 0,
             },

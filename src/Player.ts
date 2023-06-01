@@ -8,18 +8,45 @@ import { binarySearch, parseMidiEvent, parseMusicXml } from './helpers';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
 import { WebAudioFontOutput } from './WebAudioFontOutput';
+import SaxonJS from './saxon-js/SaxonJS2.rt';
 import pkg from '../package.json';
+
+const XSL_UNROLL =
+  'https://raw.githubusercontent.com/infojunkie/musicxml-mma/main/musicxml-unroll.sef.json';
 
 export type MeasureIndex = number;
 export type MillisecsTimestamp = number;
 
 export interface PlayerOptions {
+  /**
+   * The HTML element containing the sheet.
+   */
   container: HTMLDivElement | string;
+  /**
+   * The input MusicXML score, as text string or compressed ArrayBuffer.
+   */
   musicXml: ArrayBuffer | string;
+  /**
+   * An instance of the sheet renderer used to render the score.
+   */
   renderer: ISheetRenderer;
+  /**
+   * An instance of the MIDI converter used to convert the score to MIDI.
+   */
   converter: IMidiConverter;
+  /**
+   * (Optional) An instance of the MIDI output to send the note events.
+   * If ommitted, a local Web Audio synthesizer will be used.
+   */
   output?: IMidiOutput;
+  /**
+   * (Optional) An override to the score title.
+   */
   title?: string;
+  /**
+   * (Optional) A flag to unroll the score before displaying it and playing it.
+   */
+  unroll?: boolean;
 }
 
 const RESIZE_THROTTLE = 100;
@@ -35,7 +62,12 @@ export class Player implements IMidiOutput {
     const musicXmlAndTitle = await parseMusicXml(options.musicXml);
     if (!musicXmlAndTitle) throw new Error('Failed to parse MusicXML.');
 
-    const { musicXml, title } = musicXmlAndTitle;
+    let { musicXml, title } = musicXmlAndTitle;
+
+    if (options.unroll) {
+      musicXml = await Player._unroll(musicXml);
+    }
+
     await options.converter.initialize(musicXml);
     const output =
       options.output ?? new WebAudioFontOutput(options.converter.midi);
@@ -226,5 +258,23 @@ export class Player implements IMidiOutput {
     if (this._midiPlayer.state !== PlayerState.Paused) {
       this._startTime = 0;
     }
+  }
+
+  private static async _unroll(musicXml: string): Promise<string> {
+    try {
+      const unroll = await SaxonJS.transform(
+        {
+          stylesheetLocation: XSL_UNROLL,
+          sourceText: musicXml,
+          destination: 'serialized',
+          stylesheetParams: { renumberMeasures: true },
+        },
+        'async',
+      );
+      return unroll.principalResult;
+    } catch (error) {
+      console.warn(`[Parser._unroll] ${error}`);
+    }
+    return musicXml;
   }
 }

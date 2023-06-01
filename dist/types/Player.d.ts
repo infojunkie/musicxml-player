@@ -4,12 +4,35 @@ import type { ISheetRenderer } from './ISheetRenderer';
 export declare type MeasureIndex = number;
 export declare type MillisecsTimestamp = number;
 export interface PlayerOptions {
+    /**
+     * The HTML element containing the sheet.
+     */
     container: HTMLDivElement | string;
+    /**
+     * The input MusicXML score, as text string or compressed ArrayBuffer.
+     */
     musicXml: ArrayBuffer | string;
+    /**
+     * An instance of the sheet renderer used to render the score.
+     */
     renderer: ISheetRenderer;
+    /**
+     * An instance of the MIDI converter used to convert the score to MIDI.
+     */
     converter: IMidiConverter;
+    /**
+     * (Optional) An instance of the MIDI output to send the note events.
+     * If ommitted, a local Web Audio synthesizer will be used.
+     */
     output?: IMidiOutput;
+    /**
+     * (Optional) An override to the score title.
+     */
     title?: string;
+    /**
+     * (Optional) A flag to unroll the score before displaying it and playing it.
+     */
+    unroll?: boolean;
 }
 export declare class Player implements IMidiOutput {
     private _output;
@@ -39,5 +62,6 @@ export declare class Player implements IMidiOutput {
     send(data: number[] | Uint8Array, timestamp?: number): void;
     clear(): void;
     private _play;
+    private static _unroll;
 }
 //# sourceMappingURL=Player.d.ts.map

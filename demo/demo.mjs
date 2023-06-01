@@ -61,6 +61,7 @@ async function createPlayer() {
         renderer: createRenderer(renderer),
         output: createOutput(output),
         converter: await createConverter(converter, sheet, groove),
+        unroll: !!document.getElementById('unroll').checked
       });
       document.getElementById('version').textContent = JSON.stringify(player.version);
 
@@ -104,7 +105,7 @@ function getMmaEndpoint() {
 
 async function createConverter(converter, sheet, groove) {
   const candidates = [{
-    converter: new MusicXmlPlayer.VerovioConverter(true),
+    converter: new MusicXmlPlayer.VerovioConverter(),
     id: 'vrv',
     priority: 1
   }];
@@ -328,7 +329,7 @@ function handleIRealChange(e) {
   }
 }
 
-function handleRendererOptionchange(e) {
+function handleOptionchange(e) {
   createPlayer();
 }
 
@@ -365,7 +366,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('grooves').addEventListener('change', handleGrooveSelect);
   document.getElementById('outputs').addEventListener('change', handleMidiOutputSelect);
   document.getElementById('ireal').addEventListener('change', handleIRealChange);
-  document.querySelectorAll('.renderer-option').forEach(element => element.addEventListener('change', handleRendererOptionchange));
+  document.querySelectorAll('.renderer-option').forEach(element => element.addEventListener('change', handleOptionchange));
+  document.querySelectorAll('.player-option').forEach(element => element.addEventListener('change', handleOptionchange));
   window.addEventListener('keydown', handlePlayPauseKey);
 
   // Initialize Web MIDI.

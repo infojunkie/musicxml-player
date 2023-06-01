@@ -6,12 +6,6 @@ import { VerovioOptions } from 'verovio';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import type { MeasureIndex } from './Player';
 import type { TimeMapEntryFixed } from './VerovioRenderer';
-import SaxonJS from './saxon-js/SaxonJS2.rt';
-
-const XSL_UNROLL =
-  'https://raw.githubusercontent.com/infojunkie/musicxml-mma/main/musicxml-unroll.sef.json';
-const XSL_TIMEMAP =
-  'https://raw.githubusercontent.com/infojunkie/musicxml-mma/main/musicxml-timemap.sef.json';
 
 /**
  * Implementation of IMidiConverter that uses the Verovio library to convert a MusicXML file to MIDI and timemap.
@@ -20,14 +14,12 @@ const XSL_TIMEMAP =
  */
 export class VerovioConverter implements IMidiConverter {
   private _vrv: VerovioToolkit | null;
-  private _musicXml: string;
   private _timemap: MeasureTimemap;
   private _midi: IMidiFile | null;
   private _options: VerovioOptions;
 
-  constructor(private _unroll: boolean = false, options?: VerovioOptions) {
+  constructor(options?: VerovioOptions) {
     this._vrv = null;
-    this._musicXml = '';
     this._timemap = [];
     this._midi = null;
     this._options = {
@@ -43,21 +35,11 @@ export class VerovioConverter implements IMidiConverter {
     const VerovioModule = await createVerovioModule();
     this._vrv = new VerovioToolkit(VerovioModule);
     this._vrv.setOptions(this._options);
-
-    // If unrolling, do it now.
-    this._musicXml = musicXml;
-    if (this._unroll) {
-      const { musicXml, timemap } = await VerovioConverter._unroll(
-        this._musicXml,
-      );
-      this._musicXml = musicXml;
-      this._timemap = timemap;
-    }
-    if (!this._vrv.loadData(this._musicXml)) {
+    if (!this._vrv.loadData(musicXml)) {
       throw 'TODO';
     }
 
-    // Fallback to use Verovio's timemap.
+    // Build timemap.
     if (!this._timemap.length) {
       let measureIndex: MeasureIndex = 0;
       this._vrv.renderToTimemap({ includeMeasures: true }).forEach((e) => {
@@ -99,40 +81,5 @@ export class VerovioConverter implements IMidiConverter {
       bytes[i] = binary_string.charCodeAt(i);
     }
     return bytes.buffer;
-  }
-
-  private static async _unroll(musicXml: string): Promise<{
-    musicXml: string;
-    timemap: MeasureTimemap;
-  }> {
-    try {
-      const unroll = await SaxonJS.transform(
-        {
-          stylesheetLocation: XSL_UNROLL,
-          sourceText: musicXml,
-          destination: 'serialized',
-        },
-        'async',
-      );
-      const xml = unroll.principalResult;
-      const timemap = await SaxonJS.transform(
-        {
-          stylesheetLocation: XSL_TIMEMAP,
-          sourceText: musicXml,
-          destination: 'serialized',
-        },
-        'async',
-      );
-      return {
-        musicXml: xml,
-        timemap: JSON.parse(timemap.principalResult),
-      };
-    } catch (error) {
-      console.warn(`[VerovioConverter._unroll] ${error}`);
-    }
-    return {
-      musicXml,
-      timemap: [],
-    };
   }
 }

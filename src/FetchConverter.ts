@@ -3,7 +3,10 @@ import type { IMidiFile } from 'midi-json-parser-worker';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import pkg from '../package.json';
 import { fetish } from './helpers';
-import { MmaConverter } from './MmaConverter';
+import SaxonJS from './saxon-js/SaxonJS2.rt';
+
+const XSL_TIMEMAP =
+  'https://raw.githubusercontent.com/infojunkie/musicxml-mma/main/musicxml-timemap.sef.json';
 
 /**
  * Implementation of IMidiConverter that simply fetches given MIDI file and timemap JSON file URIs.
@@ -26,7 +29,7 @@ export class FetchConverter implements IMidiConverter {
     this._midi = null;
   }
 
-  async initialize(): Promise<void> {
+  async initialize(musicXml: string): Promise<void> {
     this._midi =
       typeof this._midiOrUri === 'string'
         ? await parseMidiBuffer(
@@ -35,7 +38,7 @@ export class FetchConverter implements IMidiConverter {
         : this._midiOrUri;
     this._timemap =
       typeof this._timemapOrUri === 'undefined'
-        ? MmaConverter.parseTimemap(this._midi)
+        ? await FetchConverter._convertTimemap(musicXml)
         : typeof this._timemapOrUri === 'string'
         ? <MeasureTimemap>await (await fetish(this._timemapOrUri)).json()
         : this._timemapOrUri;
@@ -52,5 +55,22 @@ export class FetchConverter implements IMidiConverter {
 
   get version(): string {
     return `${pkg.name} v${pkg.version}`;
+  }
+
+  private static async _convertTimemap(musicXml: string): Promise<MeasureTimemap> {
+    try {
+      const unroll = await SaxonJS.transform(
+        {
+          stylesheetLocation: XSL_TIMEMAP,
+          sourceText: musicXml,
+          destination: 'serialized',
+        },
+        'async',
+      );
+      return JSON.parse(unroll.principalResult);
+    } catch (error) {
+      console.warn(`[FetchConverter._convertTimemap] ${error}`);
+    }
+    return [];
   }
 }

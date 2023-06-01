@@ -15,9 +15,10 @@ export declare class FetchConverter implements IMidiConverter {
     private _timemap;
     private _midi;
     constructor(_midiOrUri: IMidiFile | string, _timemapOrUri?: string | MeasureTimemap | undefined);
-    initialize(): Promise<void>;
+    initialize(musicXml: string): Promise<void>;
     get midi(): IMidiFile;
     get timemap(): MeasureTimemap;
     get version(): string;
+    private static _convertTimemap;
 }
 //# sourceMappingURL=FetchConverter.d.ts.map

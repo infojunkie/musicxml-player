@@ -82,14 +82,18 @@
       <label for="osmd">OpenSheetMusicDisplay</label>
       <input type="radio" id="vrv" name="renderer" value="vrv"/>
       <label for="vrv">Verovio</label>
-      <fieldset class="renderer-options" id="osmd-options">
+      <div class="player-options">
+        <input type="checkbox" class="player-option" id="unroll">
+        <label for="unroll">Unroll score</label>
+      </div>
+      <div class="renderer-options" id="osmd-options" hidden>
         <input type="checkbox" class="renderer-option" id="osmd-horizontal">
         <label for="osmd-horizontal">Horizontal layout</label>
-      </fieldset>
-      <fieldset class="renderer-options" id="vrv-options">
+      </div>
+      <div class="renderer-options" id="vrv-options" hidden>
         <input type="checkbox" class="renderer-option" id="vrv-horizontal">
         <label for="vrv-horizontal">Horizontal layout</label>
-      </fieldset>
+      </div>
     </div>
 
     <div>
