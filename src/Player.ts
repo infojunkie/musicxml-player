@@ -161,7 +161,7 @@ export class Player implements IMidiOutput {
 
   async rewind() {
     this._midiPlayer.stop();
-    this._renderer.moveTo(0, 0);
+    this._renderer.moveTo(0, 0, 0);
     this._startTime = 0;
   }
 
@@ -237,6 +237,7 @@ export class Player implements IMidiOutput {
       }
       this._renderer.moveTo(
         this._currentMeasureIndex,
+        this._timemapMeasureToTimestamp[this._currentMeasureIndex],
         Math.max(0, now - this._currentMeasureStartTime),
       );
 

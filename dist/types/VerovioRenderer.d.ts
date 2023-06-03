@@ -18,13 +18,12 @@ export declare class VerovioRenderer implements ISheetRenderer {
     private _vrv;
     private _player;
     private _notes;
-    private _timemap;
     private _container;
     private _options;
     constructor(options?: VerovioOptions);
     destroy(): void;
     initialize(player: Player, container: HTMLElement, musicXml: string): Promise<void>;
-    moveTo(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void;
+    moveTo(_: MeasureIndex, measureStart: MillisecsTimestamp, measureOffset: MillisecsTimestamp): void;
     resize(): void;
     get version(): string;
     private _redraw;

@@ -1,6 +1,6 @@
 import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
-import { OSMDOptions, EngravingRules } from 'opensheetmusicdisplay';
+import { IOSMDOptions, EngravingRules } from 'opensheetmusicdisplay';
 export declare type EngravingRulesOptions = {
     [Prop in keyof EngravingRules]: EngravingRules[Prop];
 };
@@ -14,10 +14,10 @@ export declare class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     private _currentMeasureIndex;
     private _currentVoiceEntryIndex;
     private _options;
-    constructor(options?: OSMDOptions, _rules?: EngravingRulesOptions | undefined);
+    constructor(options?: IOSMDOptions, _rules?: EngravingRulesOptions | undefined);
     destroy(): void;
     initialize(player: Player, container: HTMLElement, musicXml: string): Promise<void>;
-    moveTo(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void;
+    moveTo(measureIndex: MeasureIndex, _: MillisecsTimestamp, measureOffset: MillisecsTimestamp): void;
     resize(): void;
     get version(): string;
     private _redraw;

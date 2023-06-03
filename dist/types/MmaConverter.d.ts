@@ -18,6 +18,6 @@ export declare class MmaConverter implements IMidiConverter {
     /**
      * Parse an IMidiFile into a timemap.
      */
-    static parseTimemap(midi: IMidiFile): MeasureTimemap;
+    private static _parseTimemap;
 }
 //# sourceMappingURL=MmaConverter.d.ts.map

@@ -34,7 +34,6 @@ export class VerovioRenderer implements ISheetRenderer {
   private _vrv: VerovioToolkitFixed | null;
   private _player: Player | null;
   private _notes: Array<string>;
-  private _timemap: Array<MillisecsTimestamp>;
   private _container: HTMLElement | null;
   private _options: VerovioOptions;
 
@@ -42,7 +41,6 @@ export class VerovioRenderer implements ISheetRenderer {
     this._vrv = null;
     this._player = null;
     this._notes = [];
-    this._timemap = [];
     this._container = null;
     this._options = {
       ...{
@@ -73,57 +71,44 @@ export class VerovioRenderer implements ISheetRenderer {
     this._vrv = <VerovioToolkitFixed>new VerovioToolkit(VerovioModule);
     if (!this._vrv.loadData(musicXml)) throw 'TODO';
 
-    // Setup timemap.
-    this._vrv
-      .renderToTimemap({ includeMeasures: true, includeRests: true })
-      .forEach((e) => {
-        const event = <TimeMapEntryFixed>e;
-        if ('measureOn' in event) {
-          this._timemap.push(event.tstamp);
-        }
-      });
-
     // First rendering.
     this._redraw();
-    this.moveTo(0, 0);
+    this.moveTo(0, 0, 0);
   }
 
-  moveTo(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void {
-    const timestamp = Math.max(
-      0,
-      Math.min(
-        measureIndex < this._timemap.length - 1
-          ? this._timemap[measureIndex + 1]
-          : this._timemap[measureIndex] + measureOffset,
-        this._timemap[measureIndex] + measureOffset,
-      ),
-    );
+  moveTo(
+    _: MeasureIndex,
+    measureStart: MillisecsTimestamp,
+    measureOffset: MillisecsTimestamp
+  ): void {
+    const timestamp = measureStart + measureOffset;
     const elements = <ElementsAtTimeFixed>(
       this._vrv!.getElementsAtTime(timestamp)
     );
     const notes = [...(elements.notes || []), ...(elements.rests || [])];
-    if (notes.length > 0 && this._notes != notes) {
-      this._notes.forEach((noteid) => {
-        if (!notes.includes(noteid)) {
-          const note = document.getElementById(noteid);
-          note?.setAttribute('fill', '#000');
-          note?.setAttribute('stroke', '#000');
-        }
-      });
-      this._notes = notes;
-      this._notes.forEach((noteid) => {
-        const note = document.getElementById(noteid);
-        if (!note) return;
-        note.setAttribute('fill', '#c00');
-        note.setAttribute('stroke', '#c00');
-        if (this._options.breaks === 'none') {
-          note.scrollIntoView({ behavior: 'auto', inline: 'center' });
-        } else {
-          const system = note.closest('.system');
-          system?.scrollIntoView({ behavior: 'auto', block: 'center' });
-        }
-      });
+    if (notes.length === this._notes.length && this._notes.every((noteid, index) => notes[index] === noteid)) {
+      return;
     }
+    this._notes.forEach((noteid) => {
+      if (!notes.includes(noteid)) {
+        const note = document.getElementById(noteid);
+        note?.setAttribute('fill', '#000');
+        note?.setAttribute('stroke', '#000');
+      }
+    });
+    this._notes = notes;
+    this._notes.forEach((noteid) => {
+      const note = document.getElementById(noteid);
+      if (!note) return;
+      note.setAttribute('fill', '#c00');
+      note.setAttribute('stroke', '#c00');
+      if (this._options.breaks === 'none') {
+        note.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      } else {
+        const system = note.closest('.system');
+        system?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
   }
 
   resize(): void {
@@ -157,16 +142,25 @@ export class VerovioRenderer implements ISheetRenderer {
     this._container.innerHTML = svg;
 
     // Setup event listeners on notes.
+    let measureIndex = -1;
+    let measureStart = 0;
     this._vrv
       .renderToTimemap({ includeMeasures: true, includeRests: true })
       .forEach((e) => {
         const event = <TimeMapEntryFixed>e;
-        const measureIndex = this._timemap.length - 1;
+        if ('measureOn' in event) {
+          measureIndex++;
+          measureStart = event.tstamp;
+        }
+
+        // For the closure below, we need the variables to be local.
+        const localIndex = measureIndex;
+        const localStart = measureStart;
+        const localOffset = event.tstamp - measureStart;
         [...(event.on || []), ...(event.restsOn || [])].forEach((noteid) => {
           document.getElementById(noteid)?.addEventListener('click', () => {
-            const measureOffset = event.tstamp - this._timemap[measureIndex];
-            this.moveTo(measureIndex, measureOffset + 1);
-            this._player?.moveTo(measureIndex, measureOffset);
+            this.moveTo(localIndex, localStart, localOffset + 1);
+            this._player?.moveTo(localIndex, localOffset);
           });
         });
       });

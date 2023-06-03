@@ -15,7 +15,11 @@ export interface ISheetRenderer {
     container: HTMLElement,
     musicXml: string,
   ): Promise<void>;
-  moveTo(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void;
+  moveTo(
+    measureIndex: MeasureIndex,
+    measureStart: MillisecsTimestamp,
+    measureOffset: MillisecsTimestamp
+  ): void;
   resize(): void;
   get version(): string;
 }

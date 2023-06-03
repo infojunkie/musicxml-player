@@ -38,7 +38,7 @@ export class FetchConverter implements IMidiConverter {
         : this._midiOrUri;
     this._timemap =
       typeof this._timemapOrUri === 'undefined'
-        ? await FetchConverter._convertTimemap(musicXml)
+        ? await FetchConverter._parseTimemap(musicXml)
         : typeof this._timemapOrUri === 'string'
         ? <MeasureTimemap>await (await fetish(this._timemapOrUri)).json()
         : this._timemapOrUri;
@@ -57,7 +57,10 @@ export class FetchConverter implements IMidiConverter {
     return `${pkg.name} v${pkg.version}`;
   }
 
-  private static async _convertTimemap(musicXml: string): Promise<MeasureTimemap> {
+  /**
+   * Parse a MusicXML score into a timemap.
+   */
+  private static async _parseTimemap(musicXml: string): Promise<MeasureTimemap> {
     try {
       const unroll = await SaxonJS.transform(
         {
@@ -69,7 +72,7 @@ export class FetchConverter implements IMidiConverter {
       );
       return JSON.parse(unroll.principalResult);
     } catch (error) {
-      console.warn(`[FetchConverter._convertTimemap] ${error}`);
+      console.warn(`[FetchConverter._parseTimemap] ${error}`);
     }
     return [];
   }

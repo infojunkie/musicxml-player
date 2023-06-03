@@ -19,6 +19,9 @@ export declare class FetchConverter implements IMidiConverter {
     get midi(): IMidiFile;
     get timemap(): MeasureTimemap;
     get version(): string;
-    private static _convertTimemap;
+    /**
+     * Parse a MusicXML score into a timemap.
+     */
+    private static _parseTimemap;
 }
 //# sourceMappingURL=FetchConverter.d.ts.map

@@ -2,7 +2,7 @@ import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 import {
   Fraction,
-  OSMDOptions,
+  IOSMDOptions,
   MusicPartManagerIterator,
   OpenSheetMusicDisplay,
   SourceMeasure,
@@ -23,9 +23,9 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   private _osmd: OpenSheetMusicDisplay | null;
   private _currentMeasureIndex: MeasureIndex;
   private _currentVoiceEntryIndex: number;
-  private _options: OSMDOptions;
+  private _options: IOSMDOptions;
 
-  constructor(options?: OSMDOptions, private _rules?: EngravingRulesOptions) {
+  constructor(options?: IOSMDOptions, private _rules?: EngravingRulesOptions) {
     this._player = null;
     this._osmd = null;
     this._currentMeasureIndex = 0;
@@ -76,7 +76,11 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     this._redraw();
   }
 
-  moveTo(measureIndex: MeasureIndex, measureOffset: MillisecsTimestamp): void {
+  moveTo(
+    measureIndex: MeasureIndex,
+    _: MillisecsTimestamp,
+    measureOffset: MillisecsTimestamp
+  ): void {
     if (!this._osmd) throw 'TODO';
     const measure = this._osmd.Sheet.SourceMeasures[measureIndex]!;
 
