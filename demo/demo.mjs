@@ -65,7 +65,7 @@ async function createPlayer() {
       });
       document.getElementById('version').textContent = JSON.stringify(player.version);
 
-      const title = player.title.toLowerCase().replace(/[/\\?%*:|"'<>\s]/g, '-') + '.musicxml';
+      const title = (player.title?.toLowerCase().replace(/[/\\?%*:|"'<>\s]/g, '-') ?? 'untitled') + '.musicxml';
       const a = document.createElement('a');
       a.setAttribute('href', 'data:text/xml;charset=utf-8,' + encodeURIComponent(player.musicXml));
       a.setAttribute('download', title);

@@ -45,7 +45,7 @@ async function _parseCompressedMusicXml(
     const rootBuf = await entries[rootFile].arrayBuffer();
     return _parseUncompressedMusicXml(decoder.decode(rootBuf));
   } catch (error) {
-    console.warn(`[parseMusicXml] ${error}`);
+    console.error(`[parseMusicXml] ${error}`);
   }
   return null;
 }
@@ -54,15 +54,16 @@ function _parseUncompressedMusicXml(musicXml: string): MusicXmlAndTitle | null {
   try {
     const doc = new DOMParser().parseFromString(musicXml, 'text/xml');
     if (doc.querySelector('parsererror')) return null;
-
-    // TODO Validate the MusicXML if possible/needed.
-
+    const version = doc
+      .getElementsByTagName('score-partwise')[0]
+      .getAttribute('version');
+    console.log(`[parseMusicXml] MusicXML version ${version}`);
     return {
       musicXml,
       title: _extractMusicXmlTitle(doc),
     };
   } catch (error) {
-    console.warn(`[parseMusicXml] ${error}`);
+    console.error(`[parseMusicXml] ${error}`);
   }
   return null;
 }
