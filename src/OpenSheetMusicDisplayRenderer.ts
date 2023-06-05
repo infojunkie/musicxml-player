@@ -79,7 +79,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   moveTo(
     measureIndex: MeasureIndex,
     _: MillisecsTimestamp,
-    measureOffset: MillisecsTimestamp
+    measureOffset: MillisecsTimestamp,
   ): void {
     if (!this._osmd) throw 'TODO';
     const measure = this._osmd.Sheet.SourceMeasures[measureIndex]!;

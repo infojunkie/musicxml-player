@@ -41,13 +41,14 @@ export declare class Player implements IMidiOutput {
     private _musicXml;
     private _title;
     private _container;
+    readonly options: PlayerOptions;
     static load(options: PlayerOptions): Promise<Player>;
     private _midiPlayer;
     private _startTime;
     private _pauseTime;
     private _currentMeasureStartTime;
     private _currentMeasureIndex;
-    private _timemapMeasureToTimestamp;
+    private _timemap;
     private _observer;
     private constructor();
     destroy(): void;

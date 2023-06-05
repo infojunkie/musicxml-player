@@ -60,7 +60,9 @@ export class FetchConverter implements IMidiConverter {
   /**
    * Parse a MusicXML score into a timemap.
    */
-  private static async _parseTimemap(musicXml: string): Promise<MeasureTimemap> {
+  private static async _parseTimemap(
+    musicXml: string,
+  ): Promise<MeasureTimemap> {
     try {
       const unroll = await SaxonJS.transform(
         {

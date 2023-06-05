@@ -18,7 +18,8 @@ export interface ISheetRenderer {
   moveTo(
     measureIndex: MeasureIndex,
     measureStart: MillisecsTimestamp,
-    measureOffset: MillisecsTimestamp
+    measureOffset: MillisecsTimestamp,
+    measureDuration?: MillisecsTimestamp,
   ): void;
   resize(): void;
   get version(): string;

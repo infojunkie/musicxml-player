@@ -10,7 +10,7 @@ import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 export interface ISheetRenderer {
     destroy(): void;
     initialize(player: Player, container: HTMLElement, musicXml: string): Promise<void>;
-    moveTo(measureIndex: MeasureIndex, measureStart: MillisecsTimestamp, measureOffset: MillisecsTimestamp): void;
+    moveTo(measureIndex: MeasureIndex, measureStart: MillisecsTimestamp, measureOffset: MillisecsTimestamp, measureDuration?: MillisecsTimestamp): void;
     resize(): void;
     get version(): string;
 }

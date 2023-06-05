@@ -61,8 +61,8 @@ export class Player implements IMidiOutput {
 
     const musicXmlAndTitle = await parseMusicXml(options.musicXml);
     if (!musicXmlAndTitle) throw new Error('Failed to parse MusicXML.');
-
-    let { musicXml, title } = musicXmlAndTitle;
+    let { musicXml } = musicXmlAndTitle;
+    const { title } = musicXmlAndTitle;
 
     if (options.unroll) {
       musicXml = await Player._unroll(musicXml);
@@ -79,6 +79,7 @@ export class Player implements IMidiOutput {
       musicXml,
       options.title ?? title,
       container,
+      options,
     );
     await options.renderer.initialize(player, container, musicXml);
     return player;
@@ -89,7 +90,13 @@ export class Player implements IMidiOutput {
   private _pauseTime: MillisecsTimestamp;
   private _currentMeasureStartTime: MillisecsTimestamp;
   private _currentMeasureIndex: MeasureIndex;
-  private _timemapMeasureToTimestamp: Array<MillisecsTimestamp>;
+  private _timemap: Record<
+    MeasureIndex,
+    {
+      start: MillisecsTimestamp;
+      duration: MillisecsTimestamp;
+    }
+  >;
   private _observer: ResizeObserver;
 
   private constructor(
@@ -99,6 +106,7 @@ export class Player implements IMidiOutput {
     private _musicXml: string,
     private _title: string | null,
     private _container: HTMLElement,
+    public readonly options: PlayerOptions,
   ) {
     this._midiPlayer = createMidiPlayer({
       json: this._converter.midi,
@@ -111,14 +119,21 @@ export class Player implements IMidiOutput {
     this._currentMeasureStartTime = 0;
 
     // Build a specialized timemap for faster lookup.
-    this._timemapMeasureToTimestamp = [];
-    this._converter.timemap.forEach((entry) => {
-      if (
-        typeof this._timemapMeasureToTimestamp[entry.measure] === 'undefined'
-      ) {
-        this._timemapMeasureToTimestamp[entry.measure] = entry.timestamp;
+    this._timemap = [];
+    this._converter.timemap.forEach((entry, i, timemap) => {
+      if (typeof this._timemap[entry.measure] === 'undefined') {
+        this._timemap[entry.measure] = {
+          start: entry.timestamp,
+          // Get the measure duration by subtracting the next measure's timestamp.
+          // FIXME: If we're at the last measure, we just set 0 for now.
+          duration:
+            i < timemap.length - 1
+              ? timemap[i + 1].timestamp - entry.timestamp
+              : 0,
+        };
       }
     });
+    console.log(this._timemap);
 
     // Set up resize handling.
     // Throttle the resize event https://stackoverflow.com/a/5490021/209184
@@ -139,7 +154,7 @@ export class Player implements IMidiOutput {
   }
 
   moveTo(measure: MeasureIndex, offset: MillisecsTimestamp) {
-    const timestamp = this._timemapMeasureToTimestamp[measure] + offset;
+    const timestamp = this._timemap[measure].start + offset;
     this._midiPlayer.seek(timestamp);
     this._currentMeasureIndex = measure;
     const now = performance.now();
@@ -237,8 +252,9 @@ export class Player implements IMidiOutput {
       }
       this._renderer.moveTo(
         this._currentMeasureIndex,
-        this._timemapMeasureToTimestamp[this._currentMeasureIndex],
+        this._timemap[this._currentMeasureIndex].start,
         Math.max(0, now - this._currentMeasureStartTime),
+        this._timemap[this._currentMeasureIndex].duration,
       );
 
       // Schedule next cursor movement.

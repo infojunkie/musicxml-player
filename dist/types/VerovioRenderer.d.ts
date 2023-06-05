@@ -20,12 +20,15 @@ export declare class VerovioRenderer implements ISheetRenderer {
     private _notes;
     private _container;
     private _options;
+    private _timemap;
+    private _cacheScroll;
     constructor(options?: VerovioOptions);
     destroy(): void;
     initialize(player: Player, container: HTMLElement, musicXml: string): Promise<void>;
-    moveTo(_: MeasureIndex, measureStart: MillisecsTimestamp, measureOffset: MillisecsTimestamp): void;
+    moveTo(measureIndex: MeasureIndex, _: MillisecsTimestamp, measureOffset: MillisecsTimestamp, measureDuration?: MillisecsTimestamp): void;
     resize(): void;
     get version(): string;
+    private _isHorizontalLayout;
     private _redraw;
 }
 //# sourceMappingURL=VerovioRenderer.d.ts.map
