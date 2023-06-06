@@ -133,7 +133,6 @@ export class Player implements IMidiOutput {
         };
       }
     });
-    console.log(this._timemap);
 
     // Set up resize handling.
     // Throttle the resize event https://stackoverflow.com/a/5490021/209184

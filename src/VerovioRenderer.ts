@@ -143,7 +143,7 @@ export class VerovioRenderer implements ISheetRenderer {
             this._cacheScroll.rects[measureIndex].width,
       );
       if (offset !== this._cacheScroll.offset) {
-        window.scrollTo({ behavior: 'auto', left: offset });
+        this._container?.scrollTo({ behavior: 'auto', left: offset });
         this._cacheScroll.offset = offset;
       }
     }
