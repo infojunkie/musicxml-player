@@ -5,6 +5,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import json from '@rollup/plugin-json';
+import css from 'rollup-plugin-import-css';
 
 import pkg from './package.json' assert { type: 'json' };
 
@@ -74,6 +75,7 @@ const options = {
     commonjs(),
     json(),
     nodePolyfills(),
+    css()
   ],
 };
 

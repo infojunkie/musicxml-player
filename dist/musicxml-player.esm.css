@@ -1,0 +1,12 @@
+.player-sheet {
+  overflow: auto;
+}
+.player-cursor {
+  z-index: 2;
+  width: 2px;
+  will-change: transform;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgb(234, 107, 36);
+}

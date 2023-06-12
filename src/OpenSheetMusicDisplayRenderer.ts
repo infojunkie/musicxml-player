@@ -78,8 +78,9 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
 
   moveTo(
     measureIndex: MeasureIndex,
-    _: MillisecsTimestamp,
+    _measureStart: MillisecsTimestamp,
     measureOffset: MillisecsTimestamp,
+    _measureDuration?: MillisecsTimestamp,
   ): void {
     if (!this._osmd) throw 'TODO';
     const measure = this._osmd.Sheet.SourceMeasures[measureIndex]!;
@@ -106,7 +107,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
         if (this._currentVoiceEntryIndex !== v) {
           this._updateCursor(measureIndex, v);
         }
-        return;
+        break;
       }
     }
     console.error(
@@ -153,6 +154,10 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
                 this._updateCursor(measureIndex, v);
                 this._player?.moveTo(
                   measureIndex,
+                  this._timestampToMillisecs(
+                    measure.parentSourceMeasure,
+                    measure.parentSourceMeasure.AbsoluteTimestamp,
+                  ),
                   this._timestampToMillisecs(
                     measure.parentSourceMeasure,
                     se.relInMeasureTimestamp,

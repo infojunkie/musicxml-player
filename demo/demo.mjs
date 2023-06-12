@@ -18,13 +18,8 @@ const g_state = {
 
 async function createPlayer() {
   // Destroy previous player.
-  document.getElementById('sheet').remove();
-  const div = document.createElement('div');
-  div.setAttribute('id', 'sheet');
-  document.getElementById('sheet-container').appendChild(div);
   if (g_state.player) {
     g_state.player.destroy();
-    g_state.player = null;
   }
 
   // Reset UI elements.
@@ -57,7 +52,7 @@ async function createPlayer() {
     try {
       const player = await MusicXmlPlayer.Player.load({
         musicXml: g_state.musicXml,
-        container: 'sheet',
+        container: 'sheet-container',
         renderer: createRenderer(renderer),
         output: createOutput(output),
         converter: await createConverter(converter, sheet, groove),

@@ -1,3 +1,4 @@
+import './player.css';
 export * from './Player';
 export * from './ISheetRenderer';
 export * from './IMidiConverter';
