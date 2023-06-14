@@ -88,7 +88,9 @@ function createRenderer(renderer) {
       return new MusicXmlPlayer.VerovioRenderer({
         breaks: !!document.getElementById('vrv-horizontal').checked ? 'none' : 'smart',
         spacingNonLinear: !!document.getElementById('vrv-horizontal').checked ? 1.0 : undefined,
-        spacingLinear: !!document.getElementById('vrv-horizontal').checked ? 0.1 : undefined,
+        spacingLinear: !!document.getElementById('vrv-horizontal').checked ? 0.04 : undefined,
+      }, {
+        scrollOffset: 150,
       });
     default:
       console.warn(`Unknown renderer ${renderer}`);

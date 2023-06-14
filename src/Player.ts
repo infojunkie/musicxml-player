@@ -152,9 +152,8 @@ export class Player implements IMidiOutput {
     this._observer = new ResizeObserver(() => {
       clearTimeout(timeout);
       timeout = setTimeout(() => {
-        // FIXME This can be called before the renderer is initialized, and cause problems there.
         this._renderer.resize();
-        }, RESIZE_THROTTLE);
+      }, RESIZE_THROTTLE);
     });
     this._observer.observe(this._container);
   }
@@ -166,7 +165,11 @@ export class Player implements IMidiOutput {
     this._renderer.destroy();
   }
 
-  moveTo(measureIndex: MeasureIndex, measureStart: MillisecsTimestamp, measureOffset: MillisecsTimestamp) {
+  moveTo(
+    measureIndex: MeasureIndex,
+    measureStart: MillisecsTimestamp,
+    measureOffset: MillisecsTimestamp,
+  ) {
     // Set the playback position.
     const now = performance.now();
     const timestamp = this._timemap[measureIndex].start + measureOffset;

@@ -16,6 +16,10 @@ export interface TimeMapEntryFixed {
   measureOn: string;
 }
 
+export interface CursorOptions {
+  scrollOffset: number;
+}
+
 interface ElementsAtTimeFixed {
   notes: string[];
   rests: string[];
@@ -42,7 +46,8 @@ export class VerovioRenderer implements ISheetRenderer {
   private _player: Player | null;
   private _notes: Array<string>;
   private _container: HTMLElement | null;
-  private _options: VerovioOptions;
+  private _vrvOptions: VerovioOptions;
+  private _cursorOptions: CursorOptions;
   private _timemap: MeasureTimemap;
   private _measures: {
     rects: DOMRect[];
@@ -54,26 +59,33 @@ export class VerovioRenderer implements ISheetRenderer {
     offset: number;
     left: number;
     top: number;
-  }
+  };
   private _measure: {
-    measureIndex: MeasureIndex,
-    measureStart: MillisecsTimestamp,
-    measureOffset: MillisecsTimestamp,
-    measureDuration: MillisecsTimestamp | undefined,
-  }
+    measureIndex: MeasureIndex;
+    measureStart: MillisecsTimestamp;
+    measureOffset: MillisecsTimestamp;
+    measureDuration: MillisecsTimestamp | undefined;
+  };
 
-  constructor(options?: VerovioOptions) {
+  constructor(vrvOptions?: VerovioOptions, cursorOptions?: CursorOptions) {
     this._vrv = null;
     this._player = null;
     this._notes = [];
     this._container = null;
-    this._options = {
+    this._vrvOptions = {
       ...{
         breaks: 'encoded',
         adjustPageHeight: true,
         scale: 50,
+        footer: 'none',
       },
-      ...options,
+      ...vrvOptions,
+    };
+    this._cursorOptions = {
+      ...{
+        scrollOffset: 50,
+      },
+      ...cursorOptions,
     };
     this._timemap = [];
     this._measures = {
@@ -88,7 +100,7 @@ export class VerovioRenderer implements ISheetRenderer {
     this._position = {
       x: 0,
       y: 0,
-      height: 0
+      height: 0,
     };
     this._measure = {
       measureIndex: 0,
@@ -122,14 +134,7 @@ export class VerovioRenderer implements ISheetRenderer {
     // FIXME Create the sheet div inside the sheet container instead of using the container parent.
     this._container.parentElement!.appendChild(this._cursor);
     this._container.addEventListener('scroll', () => {
-      const deltaX = this._container!.scrollLeft - this._scroll.left;
-      this._moveCursor({
-        x: this._position.x - deltaX,
-        y: this._position.y,
-        height: this._position.height
-      });
-      this._scroll.left = this._container!.scrollLeft;
-      this._scroll.top = this._container!.scrollTop;
+      this._moveCursor();
     });
 
     // First rendering.
@@ -143,13 +148,15 @@ export class VerovioRenderer implements ISheetRenderer {
     measureOffset: MillisecsTimestamp,
     measureDuration?: MillisecsTimestamp,
   ) {
+    // Cache the incoming measure params.
     this._measure = {
       measureIndex,
       measureStart,
       measureOffset,
       measureDuration,
-    }
+    };
 
+    // Find the Verovio notes at the current timestamp.
     const timestamp = this._timemap[measureIndex].timestamp + measureOffset;
     const elements = <ElementsAtTimeFixed>(
       this._vrv!.getElementsAtTime(timestamp)
@@ -195,7 +202,7 @@ export class VerovioRenderer implements ISheetRenderer {
     if (this._isHorizontalLayout() && measureDuration) {
       const scrollOffset = Math.round(
         this._measures.rects[measureIndex].left -
-          this._measures.rects[0].left +
+          this._cursorOptions.scrollOffset +
           Math.min(1.0, measureOffset / measureDuration) *
             this._measures.rects[measureIndex].width,
       );
@@ -206,38 +213,13 @@ export class VerovioRenderer implements ISheetRenderer {
     }
 
     // Move the cursor.
-    // FIXME Handle the case where the measure contains elements before the first note.
-    let x = 0;
-    if (measureDuration) {
-      x = Math.round(
-        window.scrollX +
-        this._measures.rects[measureIndex].left -
-        this._container!.scrollLeft +
-        Math.min(1.0, measureOffset / measureDuration) * this._measures.rects[measureIndex].width,
-      );
-    }
-    else {
-      const note = document.getElementById(this._notes[0]);
-      x = note!.getBoundingClientRect().left;
-    }
-    const system = this._measures.elements[measureIndex].closest('.system');
-    const systemRect = system!.getBoundingClientRect();
-    this._moveCursor({
-      x,
-      y: systemRect.top + window.scrollY,
-      height: systemRect.height,
-    });
+    this._moveCursor();
   }
 
   resize(): void {
     if (this._container && this._vrv) {
       this._drawSheet();
-      this.moveTo(
-        this._measure.measureIndex,
-        this._measure.measureStart,
-        this._measure.measureOffset,
-        this._measure.measureDuration
-      );
+      this._moveCursor();
     }
   }
 
@@ -247,24 +229,51 @@ export class VerovioRenderer implements ISheetRenderer {
   }
 
   private _isHorizontalLayout(): boolean {
-    return this._options.breaks === 'none';
+    return this._vrvOptions.breaks === 'none';
   }
 
-  private _moveCursor(position: CursorPosition) {
-    this._cursor.style.transform = `translate(${position.x}px,${position.y}px)`;
-    this._cursor.style.height = `${position.height}px`;
-    this._position = position;
+  private _moveCursor() {
+    // FIXME Handle the case where the measure contains elements before the first note.
+    let x = 0;
+    if (this._measure.measureDuration) {
+      x = Math.round(
+        window.scrollX +
+          this._measures.rects[this._measure.measureIndex].left -
+          this._container!.scrollLeft +
+          Math.min(
+            1.0,
+            this._measure.measureOffset / this._measure.measureDuration,
+          ) *
+            this._measures.rects[this._measure.measureIndex].width,
+      );
+    } else {
+      const note = document.getElementById(this._notes[0]);
+      x = note!.getBoundingClientRect().left;
+    }
+    const system =
+      this._measures.elements[this._measure.measureIndex].closest('.system');
+    const systemRect = system!.getBoundingClientRect();
+    this._position = {
+      x,
+      y: systemRect.top + window.scrollY,
+      height: systemRect.height,
+    };
+    this._cursor.style.transform = `translate(${this._position.x}px,${this._position.y}px)`;
+    this._cursor.style.height = `${this._position.height}px`;
   }
 
   private _drawSheet() {
     if (!this._container || !this._vrv) throw 'TODO';
+
     this._vrv.setOptions({
-      ...this._options,
+      ...this._vrvOptions,
       ...{
         pageHeight:
-          (this._container.clientHeight * 100) / (this._options.scale ?? 100),
+          (this._container.parentElement!.clientHeight * 100) /
+          (this._vrvOptions.scale ?? 100),
         pageWidth:
-          (this._container.clientWidth * 100) / (this._options.scale ?? 100),
+          (this._container.parentElement!.clientWidth * 100) /
+          (this._vrvOptions.scale ?? 100),
       },
     });
     this._vrv.redoLayout({ resetCache: false });
@@ -291,7 +300,7 @@ export class VerovioRenderer implements ISheetRenderer {
         // For the closure below, we need the variables to be local.
         const localIndex = this._timemap.length - 1;
         const localStart = this._timemap[localIndex].timestamp;
-        const localOffset = event.tstamp - localStart;
+        const localOffset = event.tstamp - localStart + 1;
         [...(event.on || []), ...(event.restsOn || [])].forEach((noteid) => {
           document.getElementById(noteid)?.addEventListener('click', () => {
             this._player?.moveTo(localIndex, localStart, localOffset);
@@ -302,10 +311,19 @@ export class VerovioRenderer implements ISheetRenderer {
     // Cache measures bounding rectangles for smooth scrolling.
     this._measures.elements = [];
     this._measures.rects = [];
-    const measures = this._container?.querySelectorAll<SVGGElement>('svg .measure');
+    const measures =
+      this._container?.querySelectorAll<SVGGElement>('svg .measure');
     measures.forEach((measure) => {
       this._measures.elements.push(measure);
-      this._measures.rects.push(measure.getBoundingClientRect());
+      const rect = measure.getBoundingClientRect();
+      this._measures.rects.push(
+        DOMRect.fromRect({
+          x: rect.x + window.scrollX + this._container!.scrollLeft,
+          y: rect.y + window.scrollY + this._container!.scrollTop,
+          height: rect.height,
+          width: rect.width,
+        }),
+      );
     });
   }
 }

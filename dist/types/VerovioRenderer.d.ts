@@ -11,6 +11,9 @@ export interface TimeMapEntryFixed {
     tempo?: number;
     measureOn: string;
 }
+export interface CursorOptions {
+    scrollOffset: number;
+}
 /**
  * Implementation of ISheetRenderer that uses Verovio @see https://github.com/rism-digital/verovio
  */
@@ -19,14 +22,15 @@ export declare class VerovioRenderer implements ISheetRenderer {
     private _player;
     private _notes;
     private _container;
-    private _options;
+    private _vrvOptions;
+    private _cursorOptions;
     private _timemap;
     private _measures;
     private _cursor;
     private _position;
     private _scroll;
     private _measure;
-    constructor(options?: VerovioOptions);
+    constructor(vrvOptions?: VerovioOptions, cursorOptions?: CursorOptions);
     destroy(): void;
     initialize(player: Player, container: HTMLElement, musicXml: string): Promise<void>;
     moveTo(measureIndex: MeasureIndex, measureStart: MillisecsTimestamp, measureOffset: MillisecsTimestamp, measureDuration?: MillisecsTimestamp): void;
