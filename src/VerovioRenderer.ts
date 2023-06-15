@@ -233,6 +233,8 @@ export class VerovioRenderer implements ISheetRenderer {
   }
 
   private _moveCursor() {
+    if (!this._notes.length) return;
+
     // FIXME Handle the case where the measure contains elements before the first note.
     let x = 0;
     if (this._measure.measureDuration) {
@@ -311,8 +313,9 @@ export class VerovioRenderer implements ISheetRenderer {
     // Cache measures bounding rectangles for smooth scrolling.
     this._measures.elements = [];
     this._measures.rects = [];
-    const measures =
-      this._container?.querySelectorAll<SVGGElement>('svg .measure');
+    const measures = this._container?.querySelectorAll<SVGGElement>(
+      'svg .measure > .staff',
+    );
     measures.forEach((measure) => {
       this._measures.elements.push(measure);
       const rect = measure.getBoundingClientRect();

@@ -83,15 +83,9 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     _measureDuration?: MillisecsTimestamp,
   ): void {
     if (!this._osmd) throw 'TODO';
-    const measure = this._osmd.Sheet.SourceMeasures[measureIndex]!;
+    const measure = this._osmd.Sheet.SourceMeasures[measureIndex];
 
-    // If we're moving to a new measure, then start at the first staff entry without search.
-    if (this._currentMeasureIndex !== measureIndex) {
-      this._updateCursor(measureIndex, 0);
-      return;
-    }
-
-    // Same measure, new time.
+    // Find the time within the measure.
     for (
       let v = measure.VerticalSourceStaffEntryContainers.length - 1;
       v >= 0;
@@ -104,10 +98,13 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
         measureOffset + Number.EPSILON
       ) {
         // If same staff entry, do nothing.
-        if (this._currentVoiceEntryIndex !== v) {
+        if (
+          this._currentMeasureIndex !== measureIndex ||
+          this._currentVoiceEntryIndex !== v
+        ) {
           this._updateCursor(measureIndex, v);
         }
-        break;
+        return;
       }
     }
     console.error(
@@ -145,13 +142,12 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     this._osmd.GraphicSheet.MeasureList?.forEach(
       (measureGroup, measureIndex) => {
         measureGroup?.forEach((measure) => {
-          measure?.staffEntries?.forEach((se, v) => {
+          measure?.staffEntries?.forEach((se, _v) => {
             se.graphicalVoiceEntries?.forEach((gve) => {
               const vfve = <VexFlowVoiceEntry>gve;
               (<HTMLElement>(
                 vfve.vfStaveNote?.getAttribute('el')
               ))?.addEventListener('click', () => {
-                this._updateCursor(measureIndex, v);
                 this._player?.moveTo(
                   measureIndex,
                   this._timestampToMillisecs(
