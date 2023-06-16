@@ -192,7 +192,7 @@ export class VerovioRenderer implements ISheetRenderer {
             });
           }
         } else {
-          const system = note.closest('.system');
+          const system = note.closest('g.system');
           system?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       });
@@ -253,7 +253,7 @@ export class VerovioRenderer implements ISheetRenderer {
       x = note!.getBoundingClientRect().left;
     }
     const system =
-      this._measures.elements[this._measure.measureIndex].closest('.system');
+      this._measures.elements[this._measure.measureIndex].closest('g.system');
     const systemRect = system!.getBoundingClientRect();
     this._position = {
       x,
@@ -313,12 +313,12 @@ export class VerovioRenderer implements ISheetRenderer {
     // Cache measures bounding rectangles for smooth scrolling.
     this._measures.elements = [];
     this._measures.rects = [];
-    const measures = this._container?.querySelectorAll<SVGGElement>(
-      'svg .measure > .staff',
-    );
+    const measures =
+      this._container?.querySelectorAll<SVGGElement>('svg g.measure');
     measures.forEach((measure) => {
       this._measures.elements.push(measure);
-      const rect = measure.getBoundingClientRect();
+      const staff = measure.querySelector('g.staff');
+      const rect = staff!.getBoundingClientRect();
       this._measures.rects.push(
         DOMRect.fromRect({
           x: rect.x + window.scrollX + this._container!.scrollLeft,
