@@ -179,8 +179,8 @@ export class VerovioRenderer implements ISheetRenderer {
       this._notes.forEach((noteid) => {
         const note = document.getElementById(noteid);
         if (!note) return;
-        note.setAttribute('fill', '#c00');
-        note.setAttribute('stroke', '#c00');
+        note.setAttribute('fill', 'rgb(234, 107, 36)');
+        note.setAttribute('stroke', 'rgb(234, 107, 36)');
 
         // Scroll to the highlighted notes.
         if (this._isHorizontalLayout()) {
@@ -219,7 +219,15 @@ export class VerovioRenderer implements ISheetRenderer {
   resize(): void {
     if (this._container && this._vrv) {
       this._drawSheet();
-      this._moveCursor();
+
+      // Force the notes highlighting and cursor position to be recalculated.
+      this._notes = [];
+      this.moveTo(
+        this._measure.measureIndex,
+        this._measure.measureStart,
+        this._measure.measureOffset,
+        this._measure.measureDuration,
+      );
     }
   }
 

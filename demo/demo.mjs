@@ -45,7 +45,6 @@ async function createPlayer() {
   document.getElementById('error').textContent = '';
   document.getElementById('ireal').value = '';
   document.getElementById('grooves').value = groove === DEFAULT_GROOVE ? null : groove;
-  document.querySelectorAll('.renderer-options').forEach(element => { element.hidden = true; });
 
   // Create new player.
   if (g_state.musicXml) {
@@ -56,7 +55,7 @@ async function createPlayer() {
         renderer: createRenderer(renderer),
         output: createOutput(output),
         converter: await createConverter(converter, sheet, groove),
-        unroll: !!document.getElementById('unroll').checked
+        unroll: !!document.getElementById('option-unroll').checked
       });
       document.getElementById('version').textContent = JSON.stringify(player.version);
 
@@ -79,16 +78,14 @@ async function createPlayer() {
 function createRenderer(renderer) {
   switch (renderer) {
     case 'osmd':
-      document.getElementById(`${renderer}-options`).hidden = false;
       return new MusicXmlPlayer.OpenSheetMusicDisplayRenderer({
-        renderSingleHorizontalStaffline: !!document.getElementById('osmd-horizontal').checked,
+        renderSingleHorizontalStaffline: !!document.getElementById('option-horizontal').checked,
       });
     case 'vrv':
-      document.getElementById(`${renderer}-options`).hidden = false;
       return new MusicXmlPlayer.VerovioRenderer({
-        breaks: !!document.getElementById('vrv-horizontal').checked ? 'none' : 'smart',
-        spacingNonLinear: !!document.getElementById('vrv-horizontal').checked ? 1.0 : undefined,
-        spacingLinear: !!document.getElementById('vrv-horizontal').checked ? 0.04 : undefined,
+        breaks: !!document.getElementById('option-horizontal').checked ? 'none' : 'smart',
+        spacingNonLinear: !!document.getElementById('option-horizontal').checked ? 1.0 : undefined,
+        spacingLinear: !!document.getElementById('option-horizontal').checked ? 0.04 : undefined,
       }, {
         scrollOffset: 150,
       });
@@ -365,7 +362,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('grooves').addEventListener('change', handleGrooveSelect);
   document.getElementById('outputs').addEventListener('change', handleMidiOutputSelect);
   document.getElementById('ireal').addEventListener('change', handleIRealChange);
-  document.querySelectorAll('.renderer-option').forEach(element => element.addEventListener('change', handleOptionchange));
   document.querySelectorAll('.player-option').forEach(element => element.addEventListener('change', handleOptionchange));
   window.addEventListener('keydown', handlePlayPauseKey);
 
