@@ -295,6 +295,7 @@ export class VerovioRenderer implements ISheetRenderer {
     this._container.innerHTML = svg;
 
     // Setup event listeners on notes.
+    let firstNoteid: string | null = null;
     this._timemap = [];
     this._vrv
       .renderToTimemap({ includeMeasures: true, includeRests: true })
@@ -312,6 +313,9 @@ export class VerovioRenderer implements ISheetRenderer {
         const localStart = this._timemap[localIndex].timestamp;
         const localOffset = event.tstamp - localStart + 1;
         [...(event.on || []), ...(event.restsOn || [])].forEach((noteid) => {
+          if (!firstNoteid) {
+            firstNoteid = noteid;
+          }
           document.getElementById(noteid)?.addEventListener('click', () => {
             this._player?.moveTo(localIndex, localStart, localOffset);
           });
@@ -323,18 +327,32 @@ export class VerovioRenderer implements ISheetRenderer {
     this._measures.rects = [];
     const measures =
       this._container?.querySelectorAll<SVGGElement>('svg g.measure');
-    measures.forEach((measure) => {
+    measures.forEach((measure, i) => {
       this._measures.elements.push(measure);
       const staff = measure.querySelector('g.staff');
       const rect = staff!.getBoundingClientRect();
-      this._measures.rects.push(
-        DOMRect.fromRect({
-          x: rect.x + window.scrollX + this._container!.scrollLeft,
-          y: rect.y + window.scrollY + this._container!.scrollTop,
-          height: rect.height,
-          width: rect.width,
-        }),
-      );
+      if (i > 0) {
+        this._measures.rects.push(
+          DOMRect.fromRect({
+            x: rect.x + window.scrollX + this._container!.scrollLeft,
+            y: rect.y + window.scrollY + this._container!.scrollTop,
+            height: rect.height,
+            width: rect.width,
+          }),
+        );
+      } else {
+        // First measure: Start from first note instead of measure start.
+        const note = measure.querySelector(`#${firstNoteid}`);
+        const noteRect = note!.getBoundingClientRect();
+        this._measures.rects.push(
+          DOMRect.fromRect({
+            x: noteRect.x + window.scrollX + this._container!.scrollLeft,
+            y: rect.y + window.scrollY + this._container!.scrollTop,
+            height: rect.height,
+            width: rect.width - (noteRect.x - rect.x),
+          }),
+        );
+      }
     });
   }
 }

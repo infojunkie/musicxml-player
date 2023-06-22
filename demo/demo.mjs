@@ -86,8 +86,11 @@ function createRenderer(renderer) {
         breaks: !!document.getElementById('option-horizontal').checked ? 'none' : 'smart',
         spacingNonLinear: !!document.getElementById('option-horizontal').checked ? 1.0 : undefined,
         spacingLinear: !!document.getElementById('option-horizontal').checked ? 0.04 : undefined,
+        fingeringScale: 0.6,
+        justificationBracketGroup: 5,
+        scale: 60,
       }, {
-        scrollOffset: 150,
+        scrollOffset: 100,
       });
     default:
       console.warn(`Unknown renderer ${renderer}`);
