@@ -6,29 +6,36 @@ const DEFAULT_OUTPUT = 'local';
 const DEFAULT_SHEET = 'data/asa-branca.musicxml';
 const DEFAULT_GROOVE = 'Default';
 const DEFAULT_CONVERTER = 'midi';
+const DEFAULT_OPTIONS = {
+  unroll: false,
+  horizontal: false,
+};
 
 const PLAYER_PLAYING = 1;
+
+const LOCALSTORAGE_KEY = 'musicxml-player';
 
 const g_state = {
   webmidi: null,
   player: null,
   params: null,
   musicXml: null,
+  options: {},
 }
 
 async function createPlayer() {
   // Destroy previous player.
-  if (g_state.player) {
-    g_state.player.destroy();
-  }
+  g_state.player?.destroy();
 
-  // Reset UI elements.
+  // Set the player parameters.
   const sheet = g_state.params.get('sheet');
   const output = g_state.params.get('output') ?? DEFAULT_OUTPUT;
   const renderer = g_state.params.get('renderer') ?? DEFAULT_RENDERER;
   const groove = g_state.params.get('groove') ?? DEFAULT_GROOVE;
   const converter = g_state.params.get('converter') ?? DEFAULT_CONVERTER;
+  const options = g_state.options ?? DEFAULT_OPTIONS;
 
+  // Reset UI elements.
   const samples = document.getElementById('samples');
   samples.selectedIndex = 0;
   for (const option of samples.options) {
@@ -52,13 +59,14 @@ async function createPlayer() {
       const player = await MusicXmlPlayer.Player.load({
         musicXml: g_state.musicXml,
         container: 'sheet-container',
-        renderer: createRenderer(renderer),
+        renderer: createRenderer(renderer, options),
         output: createOutput(output),
         converter: await createConverter(converter, sheet, groove),
-        unroll: !!document.getElementById('option-unroll').checked
+        unroll: options.unroll,
       });
       document.getElementById('version').textContent = JSON.stringify(player.version);
 
+      // Update the UI elements.
       const title = (player.title?.toLowerCase().replace(/[/\\?%*:|"'<>\s]/g, '-') ?? 'untitled') + '.musicxml';
       const a = document.createElement('a');
       a.setAttribute('href', 'data:text/xml;charset=utf-8,' + encodeURIComponent(player.musicXml));
@@ -66,7 +74,17 @@ async function createPlayer() {
       a.innerText = title;
       download.appendChild(a);
 
+      // Save the state and player parameters.
       g_state.player = player;
+      g_state.options = options;
+      try {
+        window.localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify({
+          musicXml: new TextEncoder().encode(g_state.musicXml),
+          params: [...g_state.params.entries()],
+          options: g_state.options,
+        }));
+      }
+      catch {}
     }
     catch (error) {
       console.error(`Error creating player: ${error}`);
@@ -75,17 +93,17 @@ async function createPlayer() {
   }
 }
 
-function createRenderer(renderer) {
+function createRenderer(renderer, options) {
   switch (renderer) {
     case 'osmd':
       return new MusicXmlPlayer.OpenSheetMusicDisplayRenderer({
-        renderSingleHorizontalStaffline: !!document.getElementById('option-horizontal').checked,
+        renderSingleHorizontalStaffline: options.horizontal,
       });
     case 'vrv':
       return new MusicXmlPlayer.VerovioRenderer({
-        breaks: !!document.getElementById('option-horizontal').checked ? 'none' : 'smart',
-        spacingNonLinear: !!document.getElementById('option-horizontal').checked ? 1.0 : undefined,
-        spacingLinear: !!document.getElementById('option-horizontal').checked ? 0.04 : undefined,
+        breaks: options.horizontal ? 'none' : 'smart',
+        spacingNonLinear: options.horizontal ? 1.0 : undefined,
+        spacingLinear: options.horizontal ? 0.04 : undefined,
         fingeringScale: 0.6,
         justificationBracketGroup: 5,
         scale: 60,
@@ -245,7 +263,7 @@ function handlePlayPauseKey(e) {
   }
 }
 
-function populateSheets(ireal) {
+function populateSheets(ireal, sheet) {
   const playlist = new iRealMusicXml.Playlist(ireal);
   const sheets = document.getElementById('sheets');
   sheets.innerHTML = '';
@@ -272,7 +290,7 @@ async function handleSampleSelect(e) {
   else {
     try {
       const ireal = await (await MusicXmlPlayer.fetish(sheet)).text();
-      populateSheets(ireal);
+      populateSheets(ireal, sheet);
     }
     catch (error) {
       console.error(`Failed to load sheet ${sheet}: ${error}`);
@@ -302,7 +320,7 @@ async function handleFileUpload(e) {
     else {
       try {
         const ireal = new TextDecoder().decode(upload.target.result);
-        populateSheets(ireal);
+        populateSheets(ireal, file.name);
       }
       catch (error) {
         document.getElementById('error').textContent = 'This file is not recognized as either MusicXML or iReal Pro.';
@@ -320,7 +338,7 @@ async function handleFileUpload(e) {
 function handleIRealChange(e) {
   if (!e.target.value) return;
   try {
-    populateSheets(e.target.value);
+    populateSheets(e.target.value, null);
   }
   catch (error) {
     document.getElementById('error').textContent = 'This URI is not recognized as iReal Pro.';
@@ -329,11 +347,24 @@ function handleIRealChange(e) {
 }
 
 function handleOptionchange(e) {
+  g_state.options = {
+    unroll: !!document.getElementById('unroll').checked,
+    horizontal: !!document.getElementById('horizontal').checked,
+  };
   createPlayer();
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  g_state.params = new URLSearchParams(document.location.search);
+  const params = new URLSearchParams(document.location.search);
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_KEY));
+    g_state.musicXml = stored.musicXml;
+    g_state.params = new URLSearchParams([...stored.params, ...[...params.entries()]]);
+    g_state.options = stored.options;
+  }
+  catch {
+    g_state.params = params;
+  }
 
   // Build the UI.
   await populateGrooves();
@@ -365,7 +396,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('grooves').addEventListener('change', handleGrooveSelect);
   document.getElementById('outputs').addEventListener('change', handleMidiOutputSelect);
   document.getElementById('ireal').addEventListener('change', handleIRealChange);
-  document.querySelectorAll('.player-option').forEach(element => element.addEventListener('change', handleOptionchange));
+  document.querySelectorAll('.player-option').forEach(element => {
+    if (g_state.options[element.id]) {
+      element.setAttribute('checked', 'checked');
+    }
+    element.addEventListener('change', handleOptionchange);
+  });
   window.addEventListener('keydown', handlePlayPauseKey);
 
   // Initialize Web MIDI.
