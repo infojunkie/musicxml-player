@@ -1,6 +1,0 @@
-{
-  "extends": "./tsconfig",
-  "ts-node": {
-    "transpileOnly": true,
-  }
-}

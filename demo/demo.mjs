@@ -20,7 +20,7 @@ const g_state = {
   player: null,
   params: null,
   musicXml: null,
-  options: {},
+  options: DEFAULT_OPTIONS,
 }
 
 async function createPlayer() {
@@ -33,7 +33,7 @@ async function createPlayer() {
   const renderer = g_state.params.get('renderer') ?? DEFAULT_RENDERER;
   const groove = g_state.params.get('groove') ?? DEFAULT_GROOVE;
   const converter = g_state.params.get('converter') ?? DEFAULT_CONVERTER;
-  const options = g_state.options ?? DEFAULT_OPTIONS;
+  const options = g_state.options;
 
   // Reset UI elements.
   const samples = document.getElementById('samples');
@@ -79,15 +79,15 @@ async function createPlayer() {
       g_state.options = options;
       try {
         window.localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify({
-          musicXml: new TextEncoder().encode(g_state.musicXml),
           params: [...g_state.params.entries()],
           options: g_state.options,
         }));
       }
-      catch {}
+      catch (error) {
+        console.warn(`Error saving player state: ${error}`);
+      }
     }
     catch (error) {
-      console.error(`Error creating player: ${error}`);
       document.getElementById('error').textContent = 'Error creating player. Please try another setting.';
     }
   }
@@ -123,7 +123,7 @@ function getMmaEndpoint() {
 async function createConverter(converter, sheet, groove) {
   const candidates = [{
     converter: new MusicXmlPlayer.VerovioConverter(),
-    id: 'vrv',
+    id: 'converter-vrv',
     priority: 1
   }];
 
@@ -137,20 +137,20 @@ async function createConverter(converter, sheet, groove) {
       await MusicXmlPlayer.fetish(timemap, { method: 'HEAD' });
       candidates.push({
         converter: new MusicXmlPlayer.FetchConverter(midi, timemap),
-        id: 'midi',
+        id: 'converter-midi',
         priority: 5
       });
     }
     catch {
       candidates.push({
         converter: new MusicXmlPlayer.FetchConverter(midi),
-        id: 'midi',
+        id: 'converter-midi',
         priority: 5
       });
     }
   }
   catch {
-    document.querySelector('input[name="converter"][id="midi"]').disabled = true;
+    document.querySelector('input[name="converter"][id="converter-midi"]').disabled = true;
   }
 
   try {
@@ -161,17 +161,17 @@ async function createConverter(converter, sheet, groove) {
     }
     candidates.push({
       converter: new MusicXmlPlayer.MmaConverter(getMmaEndpoint(), parameters),
-      id: 'mma',
+      id: 'converter-mma',
       priority: 10
     });
   }
   catch {
-    document.querySelector('input[name="converter"][id="mma"]').disabled = true;
+    document.querySelector('input[name="converter"][id="converter-mma"]').disabled = true;
   }
 
   const chosen = candidates.reduce((chosen, candidate) => {
     document.querySelector(`input[name="converter"][id="${candidate.id}"]`).disabled = false;
-    if (candidate.id === converter) {
+    if (candidate.id === `converter-${converter}`) {
       candidate.priority = Number.POSITIVE_INFINITY;
     }
     if (!chosen || chosen.priority < candidate.priority) {
@@ -181,7 +181,7 @@ async function createConverter(converter, sheet, groove) {
   }, null);
   document.querySelector(`input[name="converter"][id="${chosen.id}"]`).checked = true;
 
-  if (chosen.id !== 'mma') {
+  if (chosen.id !== 'converter-mma') {
     g_state.params.set('groove', DEFAULT_GROOVE);
   }
 
@@ -263,7 +263,7 @@ function handlePlayPauseKey(e) {
   }
 }
 
-function populateSheets(ireal, sheet) {
+function populateSheets(ireal) {
   const playlist = new iRealMusicXml.Playlist(ireal);
   const sheets = document.getElementById('sheets');
   sheets.innerHTML = '';
@@ -273,28 +273,29 @@ function populateSheets(ireal, sheet) {
     option.text = song.title;
     sheets.add(option);
   });
-  g_state.params.set('sheet', sheet);
+  g_state.params.delete('sheet');
+  g_state.params.set('groove', DEFAULT_GROOVE);
   sheets.dispatchEvent(new Event('change'));
 }
 
 async function handleSampleSelect(e) {
   if (!e.target.value) return;
   const sheet = e.target.value;
-  if (sheet.endsWith('.musicxml') || sheet.endsWith('.mxl')) {
-    const musicXml = await (await MusicXmlPlayer.fetish(sheet)).arrayBuffer();
-    g_state.musicXml = musicXml;
-    g_state.params.set('sheet', sheet);
-    g_state.params.set('groove', DEFAULT_GROOVE);
-    createPlayer();
-  }
-  else {
-    try {
+  try {
+    if (sheet.endsWith('.musicxml') || sheet.endsWith('.mxl')) {
+      const musicXml = await (await MusicXmlPlayer.fetish(sheet)).arrayBuffer();
+      g_state.musicXml = musicXml;
+      g_state.params.set('sheet', sheet);
+      g_state.params.set('groove', DEFAULT_GROOVE);
+      createPlayer();
+    }
+    else {
       const ireal = await (await MusicXmlPlayer.fetish(sheet)).text();
-      populateSheets(ireal, sheet);
+      populateSheets(ireal);
     }
-    catch (error) {
-      console.error(`Failed to load sheet ${sheet}: ${error}`);
-    }
+  }
+  catch (error) {
+    console.error(`Failed to load sheet ${sheet}: ${error}`);
   }
 }
 
@@ -307,25 +308,29 @@ function handleSheetSelect(e) {
   createPlayer();
 }
 
+async function handleFileBuffer(buffer) {
+  const parseResult = await MusicXmlPlayer.parseMusicXml(buffer);
+  if (parseResult) {
+    g_state.musicXml = parseResult.musicXml;
+    g_state.params.delete('sheet');
+    createPlayer();
+  }
+  else {
+    try {
+      const ireal = new TextDecoder().decode(buffer);
+      populateSheets(ireal);
+    }
+    catch (error) {
+      document.getElementById('error').textContent = 'This file is not recognized as either MusicXML or iReal Pro.';
+    }
+  }
+}
+
 async function handleFileUpload(e) {
   const reader = new FileReader();
   const file = e.target.files[0];
   reader.onloadend = async (upload) => {
-    const musicXmlAndTitle = await MusicXmlPlayer.parseMusicXml(upload.target.result);
-    if (musicXmlAndTitle) {
-      g_state.musicXml = musicXmlAndTitle.musicXml;
-      g_state.params.set('sheet', file.name);
-      createPlayer();
-    }
-    else {
-      try {
-        const ireal = new TextDecoder().decode(upload.target.result);
-        populateSheets(ireal, file.name);
-      }
-      catch (error) {
-        document.getElementById('error').textContent = 'This file is not recognized as either MusicXML or iReal Pro.';
-      }
-    }
+    await handleFileBuffer(upload.target.result);
   };
   if (file.size < 1*1024*1024) {
     reader.readAsArrayBuffer(file);
@@ -338,9 +343,9 @@ async function handleFileUpload(e) {
 function handleIRealChange(e) {
   if (!e.target.value) return;
   try {
-    populateSheets(e.target.value, null);
+    populateSheets(e.target.value);
   }
-  catch (error) {
+  catch {
     document.getElementById('error').textContent = 'This URI is not recognized as iReal Pro.';
     document.getElementById('ireal').value = '';
   }
@@ -348,17 +353,17 @@ function handleIRealChange(e) {
 
 function handleOptionchange(e) {
   g_state.options = {
-    unroll: !!document.getElementById('unroll').checked,
-    horizontal: !!document.getElementById('horizontal').checked,
+    unroll: !!document.getElementById('option-unroll').checked,
+    horizontal: !!document.getElementById('option-horizontal').checked,
   };
   createPlayer();
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Load the parameters from local storage and/or the URL.
   const params = new URLSearchParams(document.location.search);
   try {
     const stored = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_KEY));
-    g_state.musicXml = stored.musicXml;
     g_state.params = new URLSearchParams([...stored.params, ...[...params.entries()]]);
     g_state.options = stored.options;
   }
@@ -397,7 +402,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('outputs').addEventListener('change', handleMidiOutputSelect);
   document.getElementById('ireal').addEventListener('change', handleIRealChange);
   document.querySelectorAll('.player-option').forEach(element => {
-    if (g_state.options[element.id]) {
+    if (!!g_state.options[element.id.replace('option-', '')]) {
       element.setAttribute('checked', 'checked');
     }
     element.addEventListener('change', handleOptionchange);

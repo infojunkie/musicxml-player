@@ -1,7 +1,10 @@
-declare type MusicXmlAndTitle = {
+export declare type MusicXmlParseQuery = Record<string, string>;
+export declare type MusicXmlParseResult = {
     musicXml: string;
-    title: string | null;
+    queries: Record<string, {
+        query: string;
+        result: any;
+    }>;
 };
-export declare function parseMusicXml(musicXmlOrBuffer: ArrayBuffer | string): Promise<MusicXmlAndTitle | null>;
-export {};
+export declare function parseMusicXml(musicXmlOrBuffer: ArrayBuffer | string, queries?: MusicXmlParseQuery): Promise<MusicXmlParseResult>;
 //# sourceMappingURL=parse-musicxml.d.ts.map

@@ -75,7 +75,9 @@ const options = {
     commonjs(),
     json(),
     nodePolyfills(),
-    css()
+    css({
+      output: 'musicxml-player.esm.css',
+    })
   ],
 };
 

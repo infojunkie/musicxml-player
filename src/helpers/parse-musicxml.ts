@@ -1,78 +1,91 @@
 import { unzip } from 'unzipit';
+import SaxonJS from '../saxon-js/SaxonJS2.rt';
 
-type MusicXmlAndTitle = {
+export type MusicXmlParseQuery = Record<string, string>;
+export type MusicXmlParseResult = {
   musicXml: string;
-  title: string | null;
+  queries: Record<string, { query: string; result: any }>;
 };
 
 export async function parseMusicXml(
   musicXmlOrBuffer: ArrayBuffer | string,
-): Promise<MusicXmlAndTitle | null> {
+  queries?: MusicXmlParseQuery,
+): Promise<MusicXmlParseResult> {
   if (musicXmlOrBuffer instanceof ArrayBuffer) {
     // Decode the buffer and try it as an uncompressed document.
     const musicXml = new TextDecoder().decode(musicXmlOrBuffer);
-    const result = _parseUncompressedMusicXml(musicXml);
-    if (result) return result;
+    try {
+      return await _parseUncompressedMusicXml(musicXml, queries);
+    } catch {
+      // Do nothing: just keep going.
+    }
 
     // Try the buffer as a compressed document.
-    return await _parseCompressedMusicXml(musicXmlOrBuffer);
+    return await _parseCompressedMusicXml(musicXmlOrBuffer, queries);
   } else {
     // A string is assumed to be an uncompressed document.
-    return _parseUncompressedMusicXml(musicXmlOrBuffer);
+    return await _parseUncompressedMusicXml(musicXmlOrBuffer, queries);
   }
 }
 
 async function _parseCompressedMusicXml(
   mxml: ArrayBuffer,
-): Promise<MusicXmlAndTitle | null> {
-  try {
-    const { entries } = await unzip(mxml);
+  queries: MusicXmlParseQuery | undefined,
+): Promise<MusicXmlParseResult> {
+  const { entries } = await unzip(mxml);
 
-    // Extract rootfile from META-INF/container.xml.
-    const decoder = new TextDecoder();
-    const containerBuf = await entries['META-INF/container.xml'].arrayBuffer();
-    const doc = new DOMParser().parseFromString(
-      decoder.decode(containerBuf),
-      'text/xml',
+  // Extract rootfile from META-INF/container.xml.
+  const decoder = new TextDecoder();
+  const containerBuf = await entries['META-INF/container.xml'].arrayBuffer();
+  const doc = await SaxonJS.getResource({
+    type: 'xml',
+    encoding: 'utf8',
+    text: decoder.decode(containerBuf),
+  });
+  const rootFile = SaxonJS.XPath.evaluate('//rootfile[1]/@full-path', doc);
+  if (!rootFile)
+    throw new Error(
+      'Invalid compressed MusicXML file does not contain rootfile/@full-path.',
     );
-    if (doc.querySelector('parsererror')) return null;
-    const rootFile = doc
-      .getElementsByTagName('rootfile')[0]
-      .getAttribute('full-path');
-    if (!rootFile) return null;
 
-    // Parse root document as MusicXML.
-    const rootBuf = await entries[rootFile].arrayBuffer();
-    return _parseUncompressedMusicXml(decoder.decode(rootBuf));
-  } catch (error) {
-    console.error(`[parseMusicXml] ${error}`);
-  }
-  return null;
+  // Parse root document as MusicXML.
+  const rootBuf = await entries[rootFile.value].arrayBuffer();
+  return _parseUncompressedMusicXml(decoder.decode(rootBuf), queries);
 }
 
-function _parseUncompressedMusicXml(musicXml: string): MusicXmlAndTitle | null {
-  try {
-    const doc = new DOMParser().parseFromString(musicXml, 'text/xml');
-    if (doc.querySelector('parsererror')) return null;
-    const version = doc
-      .getElementsByTagName('score-partwise')[0]
-      .getAttribute('version');
-    console.log(`[parseMusicXml] MusicXML version ${version}`);
-    return {
-      musicXml,
-      title: _extractMusicXmlTitle(doc),
-    };
-  } catch (error) {
-    console.error(`[parseMusicXml] ${error}`);
-  }
-  return null;
-}
-
-function _extractMusicXmlTitle(doc: Document): string | null {
-  try {
-    return doc.getElementsByTagName('work-title')[0].textContent;
-  } catch (error) {
-    console.warn(`[parseMusicXml] ${error}`);
-  }
-  return null;
+async function _parseUncompressedMusicXml(
+  musicXml: string,
+  queries: MusicXmlParseQuery | undefined,
+): Promise<MusicXmlParseResult> {
+  const doc = await SaxonJS.getResource({
+    type: 'xml',
+    encoding: 'utf8',
+    text: musicXml,
+  });
+  const version = SaxonJS.XPath.evaluate('//score-partwise/@version', doc) ?? {
+    value: '(unknown)',
+  };
+  console.debug(`[parseMusicXml] MusicXML version ${version.value}`);
+  const parseResult: MusicXmlParseResult = {
+    musicXml,
+    queries: {},
+  };
+  if (queries)
+    for (const k in queries) {
+      try {
+        const result = SaxonJS.XPath.evaluate(queries[k], doc);
+        if (result) {
+          parseResult.queries[k] = {
+            query: queries[k],
+            result: result.nodeValue ?? result.value ?? null,
+          };
+        } else throw 'not found';
+      } catch {
+        parseResult.queries[k] = {
+          query: queries[k],
+          result: null,
+        };
+      }
+    }
+  return parseResult;
 }

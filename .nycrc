@@ -6,7 +6,7 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "**/*.spec.ts"
+    "**/*.spec.js"
   ],
   "exclude-after-remap": false
 }

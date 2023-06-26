@@ -63,33 +63,34 @@ export class Player implements IMidiOutput {
     sheet.className = 'player-sheet';
     container.appendChild(sheet);
 
-    // FIXME Throw exceptions from parseMusicXML instead of here.
-    // FIXME parseMusicXML should accept a list of XPath queries to return,
-    // instead of the hard-coded title.
-    const musicXmlAndTitle = await parseMusicXml(options.musicXml);
-    if (!musicXmlAndTitle) throw new Error('Failed to parse MusicXML.');
-    let { musicXml } = musicXmlAndTitle;
-    const { title } = musicXmlAndTitle;
+    try {
+      const parseResult = await parseMusicXml(options.musicXml, {
+        title: '//work/work-title/text()',
+        version: '//score-partwise/@version',
+      });
+      let musicXml = parseResult.musicXml;
+      if (options.unroll) {
+        musicXml = await Player._unroll(musicXml);
+      }
+      await options.converter.initialize(musicXml);
+      const output =
+        options.output ?? new WebAudioFontOutput(options.converter.midi);
 
-    if (options.unroll) {
-      musicXml = await Player._unroll(musicXml);
+      const player = new Player(
+        output,
+        options.renderer,
+        options.converter,
+        musicXml,
+        options.title ?? parseResult.queries['title'].result,
+        sheet,
+        options,
+      );
+      await options.renderer.initialize(player, sheet, musicXml);
+      return player;
+    } catch (error) {
+      console.error(`[MusicXML Player] ${error}`);
+      throw error;
     }
-
-    await options.converter.initialize(musicXml);
-    const output =
-      options.output ?? new WebAudioFontOutput(options.converter.midi);
-
-    const player = new Player(
-      output,
-      options.renderer,
-      options.converter,
-      musicXml,
-      options.title ?? title,
-      sheet,
-      options,
-    );
-    await options.renderer.initialize(player, sheet, musicXml);
-    return player;
   }
 
   private _midiPlayer: IMidiPlayer;
