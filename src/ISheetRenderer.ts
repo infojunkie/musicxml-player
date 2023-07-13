@@ -16,10 +16,10 @@ export interface ISheetRenderer {
     musicXml: string,
   ): Promise<void>;
   moveTo(
-    measureIndex: MeasureIndex,
-    measureStart: MillisecsTimestamp,
-    measureOffset: MillisecsTimestamp,
-    measureDuration?: MillisecsTimestamp,
+    index: MeasureIndex,
+    start: MillisecsTimestamp,
+    offset: MillisecsTimestamp,
+    duration?: MillisecsTimestamp,
   ): void;
   resize(): void;
   get version(): string;

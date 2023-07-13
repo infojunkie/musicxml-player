@@ -39,6 +39,9 @@
       #sheet-container {
         height: 50vh;
       }
+      #audio-offset {
+        width: 5em;
+      }
     </style>
     <link rel="stylesheet" href="dist/musicxml-player.esm.css">
     <script type="module" src="demo.mjs"></script>
@@ -110,9 +113,22 @@
     </div>
 
     <div>
-      MIDI output
+      <label for="outputs">MIDI output</label>
       <select id="outputs"></select>
-      If you're not using the local synth, you need to connect this output to a MIDI synth like FluidSynth, TiMidity, or <a href="https://mmontag.github.io/dx7-synth-js/" target="_blank">DX7 Synth</a>.
+      <input type="checkbox" class="player-option" id="option-mute" value="mute"/>
+      <label for="option-mute">Mute</label>
+      <div>
+        If you're not using the local synth, you need to connect this output to a MIDI synth like FluidSynth, TiMidity, or <a href="https://mmontag.github.io/dx7-synth-js/" target="_blank">DX7 Synth</a>.
+      </div>
+    </div>
+
+    <div>
+      <label for="audio-file">Audio track and delay</label>
+      <input type="file" id="audio-file" name="upload"/>
+      <input type="number" id="audio-offset" name="audio-offset" value="0" step="50" disabled/> ms.
+      <div>
+        <audio id="audio-track" controls controlslist="noplaybackrate nodownload"></audio>
+      </div>
     </div>
 
     <div id="player">

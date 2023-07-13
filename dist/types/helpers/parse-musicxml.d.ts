@@ -1,10 +1,10 @@
-export declare type MusicXmlParseQuery = Record<string, string>;
-export declare type MusicXmlParseResult = {
+export declare type MusicXMLParseQuery = Record<string, string>;
+export declare type MusicXMLParseResult = {
     musicXml: string;
     queries: Record<string, {
         query: string;
         result: any;
     }>;
 };
-export declare function parseMusicXml(musicXmlOrBuffer: ArrayBuffer | string, queries?: MusicXmlParseQuery): Promise<MusicXmlParseResult>;
+export declare function parseMusicXML(musicXmlOrBuffer: ArrayBuffer | string, queries?: MusicXMLParseQuery): Promise<MusicXMLParseResult>;
 //# sourceMappingURL=parse-musicxml.d.ts.map

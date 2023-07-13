@@ -4,10 +4,11 @@ import {
   IMidiPlayer,
   PlayerState,
 } from 'midi-player';
-import { binarySearch, parseMidiEvent, parseMusicXml } from './helpers';
+import { binarySearch, parseMidiEvent, parseMusicXML } from './helpers';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
 import { WebAudioFontOutput } from './WebAudioFontOutput';
+import { ITimingObject } from 'timing-object';
 import SaxonJS from './saxon-js/SaxonJS2.rt';
 import pkg from '../package.json';
 
@@ -40,6 +41,10 @@ export interface PlayerOptions {
    */
   output?: IMidiOutput;
   /**
+   * (Optional) An instance of a TimingObject.
+   */
+  timingsrc?: ITimingObject;
+  /**
    * (Optional) An override to the score title.
    */
   title?: string;
@@ -47,6 +52,11 @@ export interface PlayerOptions {
    * (Optional) A flag to unroll the score before displaying it and playing it.
    */
   unroll?: boolean;
+  /**
+   * (Optional) A flag to mute the player's MIDI output.
+   * It also exists as a dynamic flag during playback.
+   */
+  mute?: boolean;
 }
 
 const RESIZE_THROTTLE = 100;
@@ -64,7 +74,7 @@ export class Player implements IMidiOutput {
     container.appendChild(sheet);
 
     try {
-      const parseResult = await parseMusicXml(options.musicXml, {
+      const parseResult = await parseMusicXML(options.musicXml, {
         title: '//work/work-title/text()',
         version: '//score-partwise/@version',
       });
@@ -80,15 +90,16 @@ export class Player implements IMidiOutput {
         output,
         options.renderer,
         options.converter,
-        musicXml,
-        options.title ?? parseResult.queries['title'].result,
         sheet,
-        options,
+        musicXml,
+        options.timingsrc ?? null,
+        options.title ?? parseResult.queries['title'].result,
       );
       await options.renderer.initialize(player, sheet, musicXml);
+      player.mute = options.mute ?? false;
       return player;
     } catch (error) {
-      console.error(`[MusicXML Player] ${error}`);
+      console.error(`[Player.load] ${error}`);
       throw error;
     }
   }
@@ -107,15 +118,21 @@ export class Player implements IMidiOutput {
     }
   >;
   private _observer: ResizeObserver;
+  private _changeEventListener: EventListener;
+
+  /**
+   * A dynamic flag to mute the player's MIDI output.
+   */
+  public mute: boolean;
 
   private constructor(
     private _output: IMidiOutput,
     private _renderer: ISheetRenderer,
     private _converter: IMidiConverter,
-    private _musicXml: string,
-    private _title: string | null,
     private _container: HTMLElement,
-    public readonly options: PlayerOptions,
+    private _musicXml: string,
+    private _timingsrc: ITimingObject | null,
+    private _title: string | null,
   ) {
     // Create the MIDI player.
     this._midiPlayer = createMidiPlayer({
@@ -130,6 +147,7 @@ export class Player implements IMidiOutput {
     this._measureIndex = 0;
     this._measureStart = 0;
     this._measureOffset = 0;
+    this.mute = false;
 
     // Build a specialized timemap for faster lookup.
     this._timemap = [];
@@ -157,9 +175,14 @@ export class Player implements IMidiOutput {
       }, RESIZE_THROTTLE);
     });
     this._observer.observe(this._container);
+
+    // Set up TimingObject listeners.
+    this._changeEventListener = (event) => this._handleTimingsrcChange(event);
+    this.timingsrc = this._timingsrc;
   }
 
   destroy(): void {
+    this.timingsrc = null;
     this._container.remove();
     this._observer.disconnect();
     this._midiPlayer.stop();
@@ -211,8 +234,8 @@ export class Player implements IMidiOutput {
     return this._midiPlayer.state;
   }
 
-  get title(): string | null {
-    return this._title;
+  get title(): string {
+    return this._title ?? '';
   }
 
   get version(): Record<string, string> {
@@ -223,9 +246,21 @@ export class Player implements IMidiOutput {
     };
   }
 
+  // TimingObject interface.
+  get timingsrc(): ITimingObject | null {
+    return this._timingsrc;
+  }
+
+  set timingsrc(timingsrc: ITimingObject | null) {
+    this._timingsrc?.removeEventListener('change', this._changeEventListener);
+    this._timingsrc = timingsrc;
+    this._timingsrc?.addEventListener('change', this._changeEventListener);
+  }
+
   // We implement IMidiOutput here to capture any interesting events
   // such as MARKER events with Groove information.
   send(data: number[] | Uint8Array, timestamp?: number) {
+    if (this.mute) return;
     const event = parseMidiEvent(data);
     // Web MIDI does not accept meta messages.
     if ('channel' in event) {
@@ -301,6 +336,21 @@ export class Player implements IMidiOutput {
     }
   }
 
+  private _handleTimingsrcChange(_event: Event) {
+    const vector = this._timingsrc?.query();
+    if (vector?.velocity === 0) {
+      if (vector?.position === 0) {
+        this.rewind();
+      }
+      else {
+        this.pause();
+      }
+    }
+    else {
+      this.play();
+    }
+  }
+
   private static async _unroll(musicXml: string): Promise<string> {
     try {
       const unroll = await SaxonJS.transform(
@@ -314,7 +364,7 @@ export class Player implements IMidiOutput {
       );
       return unroll.principalResult;
     } catch (error) {
-      console.warn(`[Parser._unroll] ${error}`);
+      console.warn(`[Player._unroll] ${error}`);
     }
     return musicXml;
   }

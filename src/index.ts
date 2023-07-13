@@ -7,4 +7,5 @@ export * from './VerovioRenderer';
 export * from './FetchConverter';
 export * from './MmaConverter';
 export * from './VerovioConverter';
+export * from './WebAudioFontOutput';
 export * from './helpers';

@@ -33,7 +33,7 @@ export declare class VerovioRenderer implements ISheetRenderer {
     constructor(vrvOptions?: VerovioOptions, cursorOptions?: CursorOptions);
     destroy(): void;
     initialize(player: Player, container: HTMLElement, musicXml: string): Promise<void>;
-    moveTo(measureIndex: MeasureIndex, measureStart: MillisecsTimestamp, measureOffset: MillisecsTimestamp, measureDuration?: MillisecsTimestamp): void;
+    moveTo(index: MeasureIndex, start: MillisecsTimestamp, offset: MillisecsTimestamp, duration?: MillisecsTimestamp): void;
     resize(): void;
     get version(): string;
     private _isHorizontalLayout;

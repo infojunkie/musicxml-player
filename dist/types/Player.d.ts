@@ -1,6 +1,7 @@
 import { IMidiOutput, PlayerState } from 'midi-player';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
+import { ITimingObject } from 'timing-object';
 export declare type MeasureIndex = number;
 export declare type MillisecsTimestamp = number;
 export interface PlayerOptions {
@@ -26,6 +27,10 @@ export interface PlayerOptions {
      */
     output?: IMidiOutput;
     /**
+     * (Optional) An instance of a TimingObject.
+     */
+    timingsrc?: ITimingObject;
+    /**
      * (Optional) An override to the score title.
      */
     title?: string;
@@ -33,15 +38,20 @@ export interface PlayerOptions {
      * (Optional) A flag to unroll the score before displaying it and playing it.
      */
     unroll?: boolean;
+    /**
+     * (Optional) A flag to mute the player's MIDI output.
+     * It also exists as a dynamic flag during playback.
+     */
+    mute?: boolean;
 }
 export declare class Player implements IMidiOutput {
     private _output;
     private _renderer;
     private _converter;
-    private _musicXml;
-    private _title;
     private _container;
-    readonly options: PlayerOptions;
+    private _musicXml;
+    private _timingsrc;
+    private _title;
     static load(options: PlayerOptions): Promise<Player>;
     private _midiPlayer;
     private _playbackStart;
@@ -51,6 +61,11 @@ export declare class Player implements IMidiOutput {
     private _measureOffset;
     private _timemap;
     private _observer;
+    private _changeEventListener;
+    /**
+     * A dynamic flag to mute the player's MIDI output.
+     */
+    mute: boolean;
     private constructor();
     destroy(): void;
     moveTo(measureIndex: MeasureIndex, measureStart: MillisecsTimestamp, measureOffset: MillisecsTimestamp): void;
@@ -59,11 +74,14 @@ export declare class Player implements IMidiOutput {
     rewind(): Promise<void>;
     get musicXml(): string;
     get state(): PlayerState;
-    get title(): string | null;
+    get title(): string;
     get version(): Record<string, string>;
+    get timingsrc(): ITimingObject | null;
+    set timingsrc(timingsrc: ITimingObject | null);
     send(data: number[] | Uint8Array, timestamp?: number): void;
     clear(): void;
     private _play;
+    private _handleTimingsrcChange;
     private static _unroll;
 }
 //# sourceMappingURL=Player.d.ts.map

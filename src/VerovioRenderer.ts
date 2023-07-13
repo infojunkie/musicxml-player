@@ -32,12 +32,6 @@ interface VerovioToolkitFixed extends VerovioToolkit {
   destroy(): void;
 }
 
-type CursorPosition = {
-  x: number;
-  y: number;
-  height: number;
-};
-
 /**
  * Implementation of ISheetRenderer that uses Verovio @see https://github.com/rism-digital/verovio
  */
@@ -54,17 +48,21 @@ export class VerovioRenderer implements ISheetRenderer {
     elements: SVGGElement[];
   };
   private _cursor: HTMLDivElement;
-  private _position: CursorPosition;
+  private _position: {
+    x: number;
+    y: number;
+    height: number;
+  };
   private _scroll: {
     offset: number;
     left: number;
     top: number;
   };
   private _measure: {
-    measureIndex: MeasureIndex;
-    measureStart: MillisecsTimestamp;
-    measureOffset: MillisecsTimestamp;
-    measureDuration: MillisecsTimestamp | undefined;
+    index: MeasureIndex;
+    start: MillisecsTimestamp;
+    offset: MillisecsTimestamp;
+    duration: MillisecsTimestamp | undefined;
   };
 
   constructor(vrvOptions?: VerovioOptions, cursorOptions?: CursorOptions) {
@@ -103,10 +101,10 @@ export class VerovioRenderer implements ISheetRenderer {
       height: 0,
     };
     this._measure = {
-      measureIndex: 0,
-      measureStart: 0,
-      measureOffset: 0,
-      measureDuration: 0,
+      index: 0,
+      start: 0,
+      offset: 0,
+      duration: 0,
     };
     this._cursor = document.createElement('div');
     this._cursor.className = 'player-cursor';
@@ -143,25 +141,30 @@ export class VerovioRenderer implements ISheetRenderer {
   }
 
   moveTo(
-    measureIndex: MeasureIndex,
-    measureStart: MillisecsTimestamp,
-    measureOffset: MillisecsTimestamp,
-    measureDuration?: MillisecsTimestamp,
+    index: MeasureIndex,
+    start: MillisecsTimestamp,
+    offset: MillisecsTimestamp,
+    duration?: MillisecsTimestamp,
   ) {
     // Cache the incoming measure params.
     this._measure = {
-      measureIndex,
-      measureStart,
-      measureOffset,
-      measureDuration,
+      index,
+      start,
+      offset,
+      duration,
     };
 
     // Find the Verovio notes at the current timestamp.
-    const timestamp = this._timemap[measureIndex].timestamp + measureOffset;
+    const timestamp = this._timemap[index].timestamp + offset;
     const elements = <ElementsAtTimeFixed>(
       this._vrv!.getElementsAtTime(timestamp)
     );
     const notes = [...(elements.notes || []), ...(elements.rests || [])];
+    if (!notes.length) {
+      // Empty notes: Find the full-measure rest.
+      const mRest = this._measures.elements[index].querySelector('g.mRest');
+      if (mRest) notes.push(mRest.id);
+    }
 
     // Highlight the notes.
     if (
@@ -184,7 +187,7 @@ export class VerovioRenderer implements ISheetRenderer {
 
         // Scroll to the highlighted notes.
         if (this._isHorizontalLayout()) {
-          if (!measureDuration) {
+          if (!duration) {
             note.scrollIntoView({
               behavior: 'smooth',
               inline: 'center',
@@ -199,12 +202,12 @@ export class VerovioRenderer implements ISheetRenderer {
     }
 
     // Scroll smoothly if using horizontal mode.
-    if (this._isHorizontalLayout() && measureDuration) {
+    if (this._isHorizontalLayout() && duration) {
       const scrollOffset = Math.round(
-        this._measures.rects[measureIndex].left -
+        this._measures.rects[index].left -
           this._cursorOptions.scrollOffset +
-          Math.min(1.0, measureOffset / measureDuration) *
-            this._measures.rects[measureIndex].width,
+          Math.min(1.0, offset / duration) *
+            this._measures.rects[index].width,
       );
       if (scrollOffset !== this._scroll.offset) {
         this._container?.scrollTo({ behavior: 'auto', left: scrollOffset });
@@ -223,10 +226,10 @@ export class VerovioRenderer implements ISheetRenderer {
       // Force the notes highlighting and cursor position to be recalculated.
       this._notes = [];
       this.moveTo(
-        this._measure.measureIndex,
-        this._measure.measureStart,
-        this._measure.measureOffset,
-        this._measure.measureDuration,
+        this._measure.index,
+        this._measure.start,
+        this._measure.offset,
+        this._measure.duration,
       );
     }
   }
@@ -245,23 +248,23 @@ export class VerovioRenderer implements ISheetRenderer {
 
     // FIXME Handle the case where the measure contains elements before the first note.
     let x = 0;
-    if (this._measure.measureDuration) {
+    if (this._measure.duration) {
       x = Math.round(
         window.scrollX +
-          this._measures.rects[this._measure.measureIndex].left -
+          this._measures.rects[this._measure.index].left -
           this._container!.scrollLeft +
           Math.min(
             1.0,
-            this._measure.measureOffset / this._measure.measureDuration,
+            this._measure.offset / this._measure.duration,
           ) *
-            this._measures.rects[this._measure.measureIndex].width,
+            this._measures.rects[this._measure.index].width,
       );
     } else {
       const note = document.getElementById(this._notes[0]);
       x = note!.getBoundingClientRect().left;
     }
     const system =
-      this._measures.elements[this._measure.measureIndex].closest('g.system');
+      this._measures.elements[this._measure.index].closest('g.system');
     const systemRect = system!.getBoundingClientRect();
     this._position = {
       x,
@@ -331,7 +334,8 @@ export class VerovioRenderer implements ISheetRenderer {
       this._measures.elements.push(measure);
       const staff = measure.querySelector('g.staff');
       const rect = staff!.getBoundingClientRect();
-      if (i > 0) {
+      const note = measure.querySelector(`#${firstNoteid}`) ?? measure.querySelector(`g.mRest`);
+      if (i > 0 || !note) {
         this._measures.rects.push(
           DOMRect.fromRect({
             x: rect.x + window.scrollX + this._container!.scrollLeft,
@@ -342,8 +346,7 @@ export class VerovioRenderer implements ISheetRenderer {
         );
       } else {
         // First measure: Start from first note instead of measure start.
-        const note = measure.querySelector(`#${firstNoteid}`);
-        const noteRect = note!.getBoundingClientRect();
+        const noteRect = note.getBoundingClientRect();
         this._measures.rects.push(
           DOMRect.fromRect({
             x: noteRect.x + window.scrollX + this._container!.scrollLeft,

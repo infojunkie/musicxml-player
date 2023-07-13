@@ -78,13 +78,13 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   }
 
   moveTo(
-    measureIndex: MeasureIndex,
-    _measureStart: MillisecsTimestamp,
-    measureOffset: MillisecsTimestamp,
-    _measureDuration?: MillisecsTimestamp,
+    index: MeasureIndex,
+    _start: MillisecsTimestamp,
+    offset: MillisecsTimestamp,
+    _duration?: MillisecsTimestamp,
   ): void {
     if (!this._osmd) throw 'TODO';
-    const measure = this._osmd.Sheet.SourceMeasures[measureIndex];
+    const measure = this._osmd.Sheet.SourceMeasures[index];
 
     // Find the time within the measure.
     for (
@@ -96,20 +96,20 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
 
       if (
         this._timestampToMillisecs(measure, vsse.Timestamp) <=
-        measureOffset + Number.EPSILON
+        offset + Number.EPSILON
       ) {
         // If same staff entry, do nothing.
         if (
-          this._currentMeasureIndex !== measureIndex ||
+          this._currentMeasureIndex !== index ||
           this._currentVoiceEntryIndex !== v
         ) {
-          this._updateCursor(measureIndex, v);
+          this._updateCursor(index, v);
         }
         return;
       }
     }
     console.error(
-      `Could not find suitable staff entry at time ${measureOffset} for measure ${measureIndex}`,
+      `Could not find suitable staff entry at time ${offset} for measure ${index}`,
     );
   }
 
@@ -141,7 +141,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
 
     // Setup event listeners for target stave notes to position the cursor.
     this._osmd.GraphicSheet.MeasureList?.forEach(
-      (measureGroup, measureIndex) => {
+      (measureGroup, index) => {
         measureGroup?.forEach((measure) => {
           measure?.staffEntries?.forEach((se, _v) => {
             se.graphicalVoiceEntries?.forEach((gve) => {
@@ -150,7 +150,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
                 vfve.vfStaveNote?.getAttribute('el')
               ))?.addEventListener('click', () => {
                 this._player?.moveTo(
-                  measureIndex,
+                  index,
                   this._timestampToMillisecs(
                     measure.parentSourceMeasure,
                     measure.parentSourceMeasure.AbsoluteTimestamp,
@@ -173,15 +173,15 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     return (timestamp.RealValue * 4 * 60 * 1000) / measure.TempoInBPM;
   }
 
-  private _updateCursor(measureIndex: number, voiceEntryIndex: number) {
+  private _updateCursor(index: number, voiceEntryIndex: number) {
     if (!this._osmd) throw 'TODO';
-    const measure = this._osmd.Sheet.SourceMeasures[measureIndex]!;
+    const measure = this._osmd.Sheet.SourceMeasures[index]!;
     const vsse = measure.VerticalSourceStaffEntryContainers[voiceEntryIndex]!;
 
-    this._currentMeasureIndex = measureIndex;
+    this._currentMeasureIndex = index;
     this._currentVoiceEntryIndex = voiceEntryIndex;
 
-    if (measureIndex === 0 && voiceEntryIndex === 0) {
+    if (index === 0 && voiceEntryIndex === 0) {
       this._osmd.cursor.reset();
     } else {
       const startTimestamp = measure.AbsoluteTimestamp.clone();

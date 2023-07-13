@@ -1,37 +1,37 @@
 import { unzip } from 'unzipit';
 import SaxonJS from '../saxon-js/SaxonJS2.rt';
 
-export type MusicXmlParseQuery = Record<string, string>;
-export type MusicXmlParseResult = {
+export type MusicXMLParseQuery = Record<string, string>;
+export type MusicXMLParseResult = {
   musicXml: string;
   queries: Record<string, { query: string; result: any }>;
 };
 
-export async function parseMusicXml(
+export async function parseMusicXML(
   musicXmlOrBuffer: ArrayBuffer | string,
-  queries?: MusicXmlParseQuery,
-): Promise<MusicXmlParseResult> {
+  queries?: MusicXMLParseQuery,
+): Promise<MusicXMLParseResult> {
   if (musicXmlOrBuffer instanceof ArrayBuffer) {
     // Decode the buffer and try it as an uncompressed document.
     const musicXml = new TextDecoder().decode(musicXmlOrBuffer);
     try {
-      return await _parseUncompressedMusicXml(musicXml, queries);
+      return await _parseUncompressedMusicXML(musicXml, queries);
     } catch {
       // Do nothing: just keep going.
     }
 
     // Try the buffer as a compressed document.
-    return await _parseCompressedMusicXml(musicXmlOrBuffer, queries);
+    return await _parseCompressedMusicXML(musicXmlOrBuffer, queries);
   } else {
     // A string is assumed to be an uncompressed document.
-    return await _parseUncompressedMusicXml(musicXmlOrBuffer, queries);
+    return await _parseUncompressedMusicXML(musicXmlOrBuffer, queries);
   }
 }
 
-async function _parseCompressedMusicXml(
+async function _parseCompressedMusicXML(
   mxml: ArrayBuffer,
-  queries: MusicXmlParseQuery | undefined,
-): Promise<MusicXmlParseResult> {
+  queries: MusicXMLParseQuery | undefined,
+): Promise<MusicXMLParseResult> {
   const { entries } = await unzip(mxml);
 
   // Extract rootfile from META-INF/container.xml.
@@ -50,13 +50,13 @@ async function _parseCompressedMusicXml(
 
   // Parse root document as MusicXML.
   const rootBuf = await entries[rootFile.value].arrayBuffer();
-  return _parseUncompressedMusicXml(decoder.decode(rootBuf), queries);
+  return _parseUncompressedMusicXML(decoder.decode(rootBuf), queries);
 }
 
-async function _parseUncompressedMusicXml(
+async function _parseUncompressedMusicXML(
   musicXml: string,
-  queries: MusicXmlParseQuery | undefined,
-): Promise<MusicXmlParseResult> {
+  queries: MusicXMLParseQuery | undefined,
+): Promise<MusicXMLParseResult> {
   const doc = await SaxonJS.getResource({
     type: 'xml',
     encoding: 'utf8',
@@ -65,8 +65,8 @@ async function _parseUncompressedMusicXml(
   const version = SaxonJS.XPath.evaluate('//score-partwise/@version', doc) ?? {
     value: '(unknown)',
   };
-  console.debug(`[parseMusicXml] MusicXML version ${version.value}`);
-  const parseResult: MusicXmlParseResult = {
+  console.debug(`[parseMusicXML] MusicXML version ${version.value}`);
+  const parseResult: MusicXMLParseResult = {
     musicXml,
     queries: {},
   };
