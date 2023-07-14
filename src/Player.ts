@@ -252,6 +252,7 @@ export class Player implements IMidiOutput {
   }
 
   set timingsrc(timingsrc: ITimingObject | null) {
+    this._timingsrc?.update({ position: 0, velocity: 0 });
     this._timingsrc?.removeEventListener('change', this._changeEventListener);
     this._timingsrc = timingsrc;
     this._timingsrc?.addEventListener('change', this._changeEventListener);

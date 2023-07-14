@@ -357,7 +357,7 @@ function handleIRealChange(e) {
   }
 }
 
-function handleOptionchange(e) {
+function handleOptionChange(e) {
   g_state.options = {
     unroll: !!document.getElementById('option-unroll').checked,
     horizontal: !!document.getElementById('option-horizontal').checked,
@@ -438,7 +438,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!!g_state.options[element.id.replace('option-', '')]) {
       element.setAttribute('checked', 'checked');
     }
-    element.addEventListener('change', handleOptionchange);
+    element.addEventListener('change', handleOptionChange);
   });
   window.addEventListener('keydown', handlePlayPauseKey);
 
