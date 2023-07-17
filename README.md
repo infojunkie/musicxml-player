@@ -19,7 +19,7 @@ This component synchronizes rendering and playback of MusicXML documents. Render
 The crucial part of this functionality is to synchronize the measures and beats in the MusicXML file with the events of the MIDI file. In a nutshell, the player expects the provider of the MIDI file (an implementation of `IMidiConverter`) to supply a "timemap", which associates each measure in the MusicXML file to a timestamp at which this measure occurs. In the case of repeats and jumps, the same measure will be referenced several times in the timemap.
 
 There are 3 bundled implementations of `IMidiConverter` in this module:
-- An API client that connects to the [`musicxml-mma`](https://github.com/infojunkie/musicxml-mma) server. `musicxml-mma` is a work-in-progress whose major contribution is to generate a MIDI accompaniment in addition to the music in the MusicXML score.
+- An API client that connects to the [`musicxml-midi`](https://github.com/infojunkie/musicxml-midi) API server. `musicxml-midi` is a converter whose major contribution is to generate a MIDI accompaniment in addition to the music in the MusicXML score.
 - [Verovio](https://github.com/rism-digital/verovio), that generates a faithful rendition of the MusicXML score.
 - It is also possible to hand-craft the MIDI and timemap files, and instruct the player to read those explicitly.
 
