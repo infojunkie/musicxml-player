@@ -50,7 +50,6 @@ export declare class Player implements IMidiOutput {
     private _converter;
     private _container;
     private _musicXml;
-    private _timingsrc;
     private _title;
     static load(options: PlayerOptions): Promise<Player>;
     private _midiPlayer;
@@ -61,7 +60,8 @@ export declare class Player implements IMidiOutput {
     private _measureOffset;
     private _timemap;
     private _observer;
-    private _changeEventListener;
+    private _timingsrc;
+    private _timingsrcListener;
     /**
      * A dynamic flag to mute the player's MIDI output.
      */

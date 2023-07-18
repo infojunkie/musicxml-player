@@ -13,7 +13,7 @@ import SaxonJS from './saxon-js/SaxonJS2.rt';
 import pkg from '../package.json';
 
 const XSL_UNROLL =
-  'https://raw.githubusercontent.com/infojunkie/musicxml-mma/main/musicxml-unroll.sef.json';
+  'https://raw.githubusercontent.com/infojunkie/musicxml-midi/main/build/unroll.sef.json';
 
 export type MeasureIndex = number;
 export type MillisecsTimestamp = number;
@@ -118,7 +118,8 @@ export class Player implements IMidiOutput {
     }
   >;
   private _observer: ResizeObserver;
-  private _changeEventListener: EventListener;
+  private _timingsrc: ITimingObject | null;
+  private _timingsrcListener: EventListener;
 
   /**
    * A dynamic flag to mute the player's MIDI output.
@@ -131,7 +132,7 @@ export class Player implements IMidiOutput {
     private _converter: IMidiConverter,
     private _container: HTMLElement,
     private _musicXml: string,
-    private _timingsrc: ITimingObject | null,
+    timingsrc: ITimingObject | null,
     private _title: string | null,
   ) {
     // Create the MIDI player.
@@ -177,8 +178,9 @@ export class Player implements IMidiOutput {
     this._observer.observe(this._container);
 
     // Set up TimingObject listeners.
-    this._changeEventListener = (event) => this._handleTimingsrcChange(event);
-    this.timingsrc = this._timingsrc;
+    this._timingsrc = null;
+    this._timingsrcListener = (event) => this._handleTimingsrcChange(event);
+    this.timingsrc = timingsrc;
   }
 
   destroy(): void {
@@ -253,9 +255,9 @@ export class Player implements IMidiOutput {
 
   set timingsrc(timingsrc: ITimingObject | null) {
     this._timingsrc?.update({ position: 0, velocity: 0 });
-    this._timingsrc?.removeEventListener('change', this._changeEventListener);
+    this._timingsrc?.removeEventListener('change', this._timingsrcListener);
     this._timingsrc = timingsrc;
-    this._timingsrc?.addEventListener('change', this._changeEventListener);
+    this._timingsrc?.addEventListener('change', this._timingsrcListener);
   }
 
   // We implement IMidiOutput here to capture any interesting events
@@ -359,7 +361,9 @@ export class Player implements IMidiOutput {
           stylesheetLocation: XSL_UNROLL,
           sourceText: musicXml,
           destination: 'serialized',
-          stylesheetParams: { renumberMeasures: true },
+          stylesheetParams: {
+            renumberMeasures: true
+          },
         },
         'async',
       );
