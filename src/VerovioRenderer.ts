@@ -206,8 +206,7 @@ export class VerovioRenderer implements ISheetRenderer {
       const scrollOffset = Math.round(
         this._measures.rects[index].left -
           this._cursorOptions.scrollOffset +
-          Math.min(1.0, offset / duration) *
-            this._measures.rects[index].width,
+          Math.min(1.0, offset / duration) * this._measures.rects[index].width,
       );
       if (scrollOffset !== this._scroll.offset) {
         this._container?.scrollTo({ behavior: 'auto', left: scrollOffset });
@@ -253,10 +252,7 @@ export class VerovioRenderer implements ISheetRenderer {
         window.scrollX +
           this._measures.rects[this._measure.index].left -
           this._container!.scrollLeft +
-          Math.min(
-            1.0,
-            this._measure.offset / this._measure.duration,
-          ) *
+          Math.min(1.0, this._measure.offset / this._measure.duration) *
             this._measures.rects[this._measure.index].width,
       );
     } else {
@@ -334,7 +330,9 @@ export class VerovioRenderer implements ISheetRenderer {
       this._measures.elements.push(measure);
       const staff = measure.querySelector('g.staff');
       const rect = staff!.getBoundingClientRect();
-      const note = measure.querySelector(`#${firstNoteid}`) ?? measure.querySelector(`g.mRest`);
+      const note =
+        measure.querySelector(`#${firstNoteid}`) ??
+        measure.querySelector(`g.mRest`);
       if (i > 0 || !note) {
         this._measures.rects.push(
           DOMRect.fromRect({

@@ -3,111 +3,263 @@
 <score-partwise version="4.0">
   <work>
     <work-title>Rast tetrachord in multiple tunings</work-title>
-    </work>
+  </work>
   <identification>
     <encoding>
-      <software>MuseScore 4.0.2</software>
-      <encoding-date>2023-05-22</encoding-date>
-      <supports element="accidental" type="yes"/>
-      <supports element="beam" type="yes"/>
-      <supports element="print" attribute="new-page" type="no"/>
-      <supports element="print" attribute="new-system" type="no"/>
-      <supports element="stem" type="yes"/>
-      </encoding>
-    </identification>
+      <software>@infojunkie/scalextric 0.4.1</software>
+      <encoding-date>2023-08-02</encoding-date>
+    </encoding>
+  </identification>
   <part-list>
     <score-part id="P1">
       <part-name print-object="no">Rast tetrachord in multiple tunings</part-name>
-      <score-instrument id="P1-I1">
-        <instrument-name></instrument-name>
-        </score-instrument>
-      <midi-device id="P1-I1" port="1"></midi-device>
-      <midi-instrument id="P1-I1">
-        <midi-channel>1</midi-channel>
-        <midi-program>1</midi-program>
-        <volume>78.7402</volume>
-        <pan>0</pan>
-        </midi-instrument>
-      </score-part>
-    </part-list>
+    </score-part>
+  </part-list>
   <part id="P1">
     <measure number="1">
       <attributes>
-        <divisions>1</divisions>
+        <divisions>768</divisions>
         <key>
           <fifths>0</fifths>
-          </key>
+          <mode>major</mode>
+        </key>
         <time>
           <beats>4</beats>
           <beat-type>4</beat-type>
-          </time>
+        </time>
         <clef>
           <sign>G</sign>
           <line>2</line>
-          </clef>
-        </attributes>
+        </clef>
+      </attributes>
+      <direction placement="above">
+        <direction-type>
+          <metronome parentheses="no">
+            <beat-unit>quarter</beat-unit>
+            <per-minute>60</per-minute>
+          </metronome>
+        </direction-type>
+        <sound tempo="60"/>
+      </direction>
       <direction placement="above">
         <direction-type>
           <words>24-TET (Arabic standard tuning)</words>
-          </direction-type>
-        </direction>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>C</step>
+          <alter>0</alter>
           <octave>4</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
+        </pitch>
+        <duration>768</duration>
         <type>quarter</type>
-        <stem>up</stem>
-        </note>
+      </note>
       <note>
         <pitch>
           <step>D</step>
+          <alter>0</alter>
           <octave>4</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
+        </pitch>
+        <duration>768</duration>
         <type>quarter</type>
-        <stem>up</stem>
-        </note>
+      </note>
       <note>
         <pitch>
           <step>E</step>
           <alter>-0.5</alter>
           <octave>4</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
+        </pitch>
+        <duration>768</duration>
         <type>quarter</type>
-        <accidental>slash-flat</accidental>
-        <stem>up</stem>
-        </note>
+        <accidental>quarter-flat</accidental>
+      </note>
       <note>
         <pitch>
           <step>F</step>
+          <alter>0</alter>
           <octave>4</octave>
-          </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
+        </pitch>
+        <duration>768</duration>
         <type>quarter</type>
-        <stem>up</stem>
-        </note>
-      </measure>
+      </note>
+    </measure>
     <measure number="2">
       <note>
         <pitch>
           <step>G</step>
+          <alter>0</alter>
           <octave>4</octave>
-          </pitch>
-        <duration>4</duration>
-        <voice>1</voice>
-        <type>whole</type>
-        <stem>up</stem>
-        </note>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <rest/>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <rest/>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <rest/>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
       <barline location="right">
         <bar-style>light-light</bar-style>
-        </barline>
-      </measure>
-    </part>
-  </score-partwise>
+      </barline>
+    </measure>
+    <measure number="3">
+      <print new-system="yes"/>
+      <direction placement="above">
+        <direction-type>
+          <words>53-TET (Holdrian comma tuning)</words>
+        </direction-type>
+      </direction>
+      <note>
+        <pitch>
+          <step>C</step>
+          <alter>0</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>D</step>
+          <alter>0.05</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>E</step>
+          <alter>-0.15</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+        <accidental>quarter-flat</accidental>
+      </note>
+      <note>
+        <pitch>
+          <step>F</step>
+          <alter>0</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+    </measure>
+    <measure number="4">
+      <note>
+        <pitch>
+          <step>G</step>
+          <alter>0</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <rest/>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <rest/>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <rest/>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <barline location="right">
+        <bar-style>light-light</bar-style>
+      </barline>
+    </measure>
+    <measure number="5">
+      <print new-system="yes"/>
+      <direction placement="above">
+        <direction-type>
+          <words>Ederer tuning</words>
+        </direction-type>
+      </direction>
+      <note>
+        <pitch>
+          <step>C</step>
+          <alter>0</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>D</step>
+          <alter>0.05</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>E</step>
+          <alter>-0.15</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+        <accidental>quarter-flat</accidental>
+      </note>
+      <note>
+        <pitch>
+          <step>F</step>
+          <alter>0</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+    </measure>
+    <measure number="6">
+      <note>
+        <pitch>
+          <step>G</step>
+          <alter>0</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <rest/>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <rest/>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <rest/>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <barline location="right">
+        <bar-style>light-light</bar-style>
+      </barline>
+    </measure>
+  </part>
+</score-partwise>

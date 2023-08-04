@@ -26,6 +26,7 @@ type Note = {
   channel: number;
   pitch: number;
   velocity: number;
+  timestamp: number;
   when: number;
   off: number | null;
   envelope: any;
@@ -34,6 +35,7 @@ type Note = {
 type PitchBend = {
   channel: number;
   pitchBend: number;
+  timestamp: number;
   when: number;
 };
 
@@ -149,14 +151,13 @@ export class WebAudioFontOutput implements IMidiOutput {
         : this._instruments[event.channel].instrumentInfo!.variable;
     const when = this._timestampToAudioContext(timestamp);
 
-    // Find the latest pitch bend that applies here.
-    const pb = this._pitchBends
-      .filter((pb) => {
-        return event.channel === pb.channel && when >= pb.when;
-      })
-      .reduce((max: PitchBend | null, pb) => {
-        return !max || pb.when > max.when ? pb : max;
-      }, null);
+    // Find the pitch bend that applies to this note.
+    const pitchBend = this._pitchBends.find((pb) => {
+      return (
+        event.channel === pb.channel &&
+        Math.abs(timestamp - pb.timestamp) < Number.EPSILON
+      );
+    });
 
     // Schedule the note.
     const envelope = this._player.queueWaveTable(
@@ -167,11 +168,11 @@ export class WebAudioFontOutput implements IMidiOutput {
       event.noteOn.noteNumber,
       SCHEDULER_NOTE_LENGTH,
       event.noteOn.velocity / 127,
-      pb
+      pitchBend
         ? [
             {
               // Pitch bend range is [0, 16384] which corresponds to [-2, +2] semitones.
-              delta: (pb.pitchBend - 8192) / 4096,
+              delta: (pitchBend.pitchBend - 8192) / 4096,
               when: 0,
             },
           ]
@@ -181,6 +182,7 @@ export class WebAudioFontOutput implements IMidiOutput {
       channel: event.channel,
       pitch: event.noteOn.noteNumber,
       velocity: event.noteOn.velocity,
+      timestamp,
       when: envelope.when,
       off: null,
       envelope,
@@ -204,10 +206,27 @@ export class WebAudioFontOutput implements IMidiOutput {
   }
 
   private _pitchBend(event: IMidiPitchBendEvent, timestamp: number) {
+    // Remove any previous pitch bend that occurs at the same timestamp.
+    this._pitchBends = this._pitchBends.filter(
+      (pb) => pb.timestamp !== timestamp,
+    );
+
+    // Check if the note has already been scheduled.
+    if (
+      this._notes.find(
+        (note) => Math.abs(note.timestamp - timestamp) < Number.EPSILON,
+      )
+    ) {
+      console.warn(
+        `[WebAudioFontOutput] Received a pitch bend for an already scheduled note.`,
+      );
+    }
+
     // Save the current pitch bend value. It will be used at the next noteOn event.
     this._pitchBends.push({
       channel: event.channel,
       pitchBend: event.pitchBend,
+      timestamp,
       when: this._timestampToAudioContext(timestamp),
     });
   }
@@ -221,5 +240,6 @@ export class WebAudioFontOutput implements IMidiOutput {
   clear() {
     this._player.cancelQueue(this._audioContext);
     this._notes = [];
+    this._pitchBends = [];
   }
 }

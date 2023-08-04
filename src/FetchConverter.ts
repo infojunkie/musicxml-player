@@ -70,8 +70,8 @@ export class FetchConverter implements IMidiConverter {
           sourceText: musicXml,
           destination: 'serialized',
           stylesheetParams: {
-            useSef: true
-          }
+            useSef: true,
+          },
         },
         'async',
       );

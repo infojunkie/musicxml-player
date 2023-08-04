@@ -344,12 +344,10 @@ export class Player implements IMidiOutput {
     if (vector?.velocity === 0) {
       if (vector?.position === 0) {
         this.rewind();
-      }
-      else {
+      } else {
         this.pause();
       }
-    }
-    else {
+    } else {
       this.play();
     }
   }
@@ -362,7 +360,7 @@ export class Player implements IMidiOutput {
           sourceText: musicXml,
           destination: 'serialized',
           stylesheetParams: {
-            renumberMeasures: true
+            renumberMeasures: true,
           },
         },
         'async',

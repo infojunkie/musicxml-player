@@ -140,32 +140,30 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     }
 
     // Setup event listeners for target stave notes to position the cursor.
-    this._osmd.GraphicSheet.MeasureList?.forEach(
-      (measureGroup, index) => {
-        measureGroup?.forEach((measure) => {
-          measure?.staffEntries?.forEach((se, _v) => {
-            se.graphicalVoiceEntries?.forEach((gve) => {
-              const vfve = <VexFlowVoiceEntry>gve;
-              (<HTMLElement>(
-                vfve.vfStaveNote?.getAttribute('el')
-              ))?.addEventListener('click', () => {
-                this._player?.moveTo(
-                  index,
-                  this._timestampToMillisecs(
-                    measure.parentSourceMeasure,
-                    measure.parentSourceMeasure.AbsoluteTimestamp,
-                  ),
-                  this._timestampToMillisecs(
-                    measure.parentSourceMeasure,
-                    se.relInMeasureTimestamp,
-                  ),
-                );
-              });
+    this._osmd.GraphicSheet.MeasureList?.forEach((measureGroup, index) => {
+      measureGroup?.forEach((measure) => {
+        measure?.staffEntries?.forEach((se, _v) => {
+          se.graphicalVoiceEntries?.forEach((gve) => {
+            const vfve = <VexFlowVoiceEntry>gve;
+            (<HTMLElement>(
+              vfve.vfStaveNote?.getAttribute('el')
+            ))?.addEventListener('click', () => {
+              this._player?.moveTo(
+                index,
+                this._timestampToMillisecs(
+                  measure.parentSourceMeasure,
+                  measure.parentSourceMeasure.AbsoluteTimestamp,
+                ),
+                this._timestampToMillisecs(
+                  measure.parentSourceMeasure,
+                  se.relInMeasureTimestamp,
+                ),
+              );
             });
           });
         });
-      },
-    );
+      });
+    });
   }
 
   // Staff entry timestamp to actual time relative to measure start.
