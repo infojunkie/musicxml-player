@@ -20,7 +20,7 @@ The crucial part of this functionality is to synchronize the measures and beats 
 
 There are 3 bundled implementations of `IMidiConverter` in this module:
 - An API client that connects to the [`musicxml-midi`](https://github.com/infojunkie/musicxml-midi) API server. `musicxml-midi` is a converter whose major contribution is to generate a MIDI accompaniment in addition to the music in the MusicXML score.
-- [Verovio](https://github.com/rism-digital/verovio), that generates a faithful rendition of the MusicXML score.
+- [Verovio](https://github.com/rism-digital/verovio), that generates a faithful rendition of the MusicXML score but lacks advanced features like microtonal support and accompaniment generation.
 - It is also possible to hand-craft the MIDI and timemap files, and instruct the player to read those explicitly.
 
 # API usage
