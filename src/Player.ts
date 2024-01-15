@@ -4,6 +4,7 @@ import {
   IMidiPlayer,
   PlayerState,
 } from 'midi-player';
+import { encode as encodeMidiFile } from 'json-midi-encoder';
 import { binarySearch, parseMidiEvent, parseMusicXML } from './helpers';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
@@ -230,6 +231,10 @@ export class Player implements IMidiOutput {
 
   get musicXml(): string {
     return this._musicXml;
+  }
+
+  async midi(): Promise<ArrayBuffer> {
+    return await encodeMidiFile(this._converter.midi);
   }
 
   get state(): PlayerState {

@@ -73,6 +73,7 @@ export declare class Player implements IMidiOutput {
     pause(): Promise<void>;
     rewind(): Promise<void>;
     get musicXml(): string;
+    midi(): Promise<ArrayBuffer>;
     get state(): PlayerState;
     get title(): string;
     get version(): Record<string, string>;

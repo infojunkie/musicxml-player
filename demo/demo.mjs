@@ -52,7 +52,8 @@ async function createPlayer() {
   if (!upload.value.endsWith(sheet)) {
     upload.value = '';
   }
-  document.getElementById('download').innerHTML = '';
+  document.getElementById('download-musicxml').innerHTML = '';
+  document.getElementById('download-midi').innerHTML = '';
   document.getElementById('error').textContent = '';
   document.getElementById('ireal').value = '';
   document.getElementById('grooves').value = groove === DEFAULT_GROOVE ? null : groove;
@@ -73,12 +74,17 @@ async function createPlayer() {
       document.getElementById('version').textContent = JSON.stringify(player.version);
 
       // Update the UI elements.
-      const title = (player.title?.toLowerCase().replace(/[/\\?%*:|"'<>\s]/g, '-') ?? 'untitled') + '.musicxml';
-      const a = document.createElement('a');
-      a.setAttribute('href', 'data:text/xml;charset=utf-8,' + encodeURIComponent(player.musicXml));
-      a.setAttribute('download', title);
-      a.innerText = title;
-      download.appendChild(a);
+      const title = player.title?.toLowerCase().replace(/[/\\?%*:|"'<>\s]/g, '-') ?? 'untitled';
+      const a1 = document.createElement('a');
+      a1.setAttribute('href', 'data:text/xml;charset=utf-8,' + encodeURIComponent(player.musicXml));
+      a1.setAttribute('download', `${title}.musicxml`);
+      a1.innerText = `${title}.musicxml`;
+      document.getElementById('download-musicxml').appendChild(a1);
+      const a2 = document.createElement('a');
+      a2.setAttribute('href', URL.createObjectURL(new Blob([await player.midi()], { type: 'audio/midi' })));
+      a2.setAttribute('download', `${title}.mid`);
+      a2.innerText = `${title}.mid`;
+      document.getElementById('download-midi').appendChild(a2);
 
       // Save the state and player parameters.
       g_state.player = player;
@@ -94,6 +100,7 @@ async function createPlayer() {
       }
     }
     catch (error) {
+      console.error(error);
       document.getElementById('error').textContent = 'Error creating player. Please try another setting.';
     }
   }
