@@ -322,13 +322,14 @@ function handleSheetSelect(e) {
 }
 
 async function handleFileBuffer(buffer) {
-  const parseResult = await MusicXMLPlayer.parseMusicXML(buffer);
-  if (parseResult) {
+  try {
+    const parseResult = await MusicXMLPlayer.parseMusicXML(buffer);
+    console.log(parseResult);
     g_state.musicXml = parseResult.musicXml;
     g_state.params.delete('sheet');
     createPlayer();
   }
-  else {
+  catch (error) {
     try {
       const ireal = new TextDecoder().decode(buffer);
       populateSheets(ireal);

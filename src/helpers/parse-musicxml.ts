@@ -43,10 +43,11 @@ async function _parseCompressedMusicXML(
     text: decoder.decode(containerBuf),
   });
   const rootFile = SaxonJS.XPath.evaluate('//rootfile[1]/@full-path', doc);
-  if (!rootFile)
+  if (!rootFile) {
     throw new Error(
-      'Invalid compressed MusicXML file does not contain rootfile/@full-path.',
+      '[parseMusicXML] Invalid compressed MusicXML file does not contain rootfile/@full-path.',
     );
+  }
 
   // Parse root document as MusicXML.
   const rootBuf = await entries[rootFile.value].arrayBuffer();
@@ -62,7 +63,13 @@ async function _parseUncompressedMusicXML(
     encoding: 'utf8',
     text: musicXml,
   });
-  const version = SaxonJS.XPath.evaluate('//score-partwise/@version', doc) ?? {
+  const valid = SaxonJS.XPath.evaluate('boolean(//score-partwise | //score-timewise)', doc);
+  if (!valid) {
+    throw new Error(
+      '[parseMusicXML] Invalid MusicXML file contains neither score-partwise nor score-timewise.',
+    )
+  }
+  const version = SaxonJS.XPath.evaluate('//score-partwise/@version | //score-timewise/@version', doc) ?? {
     value: '(unknown)',
   };
   console.debug(`[parseMusicXML] MusicXML version ${version.value}`);
