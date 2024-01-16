@@ -324,7 +324,6 @@ function handleSheetSelect(e) {
 async function handleFileBuffer(buffer) {
   try {
     const parseResult = await MusicXMLPlayer.parseMusicXML(buffer);
-    console.log(parseResult);
     g_state.musicXml = parseResult.musicXml;
     g_state.params.delete('sheet');
     createPlayer();
