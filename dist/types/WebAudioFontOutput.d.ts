@@ -7,11 +7,12 @@ export declare class WebAudioFontOutput implements IMidiOutput {
     private _instruments;
     private _pitchBends;
     constructor(midiJson: IMidiFile);
+    clear(): void;
+    init(): Promise<void>;
     send(data: number[] | Uint8Array, timestamp: number): void;
     private _noteOn;
     private _noteOff;
     private _pitchBend;
     private _timestampToAudioContext;
-    clear(): void;
 }
 //# sourceMappingURL=WebAudioFontOutput.d.ts.map

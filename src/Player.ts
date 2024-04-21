@@ -214,6 +214,9 @@ export class Player implements IMidiOutput {
 
   async play() {
     if (this._midiPlayer.state === PlayerState.Playing) return;
+    if (this._output instanceof WebAudioFontOutput) {
+      await (this._output as WebAudioFontOutput).init();
+    }
     await this._play();
   }
 

@@ -130,6 +130,20 @@ export class WebAudioFontOutput implements IMidiOutput {
     setTimeout(scheduleNotes, SCHEDULER_TIMEOUT);
   }
 
+  clear() {
+    this._player.cancelQueue(this._audioContext);
+    this._notes = [];
+    this._pitchBends = [];
+  }
+
+  async init() {
+    if (this._audioContext.state !== 'running') {
+      await this._audioContext.resume();
+      // Not sure why it's necessary to yield another cycle in order for the audio context to be fully ready.
+      await new Promise(r => setTimeout(r, 1));
+    }
+  }
+
   send(data: number[] | Uint8Array, timestamp: number) {
     const event = parseMidiEvent(data);
     if ('noteOn' in event) {
@@ -235,11 +249,5 @@ export class WebAudioFontOutput implements IMidiOutput {
     return (
       this._audioContext.currentTime + (timestamp - performance.now()) / 1000
     );
-  }
-
-  clear() {
-    this._player.cancelQueue(this._audioContext);
-    this._notes = [];
-    this._pitchBends = [];
   }
 }

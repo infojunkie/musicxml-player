@@ -1,6 +1,6 @@
 {
   "name": "musicxml-player",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "description": "A simple JavaScript component that loads and plays MusicXML files in the browser using Web Audio and Web MIDI.",
   "main": "dist/musicxml-player.esm.js",
   "type": "module",
@@ -58,7 +58,7 @@
     "develop": "rollup --watch --config ./rollup.config.mjs",
     "demo": "concurrently --kill-others \"PORT=3000 musicxml-midi\" \"npm run demo:develop\"",
     "demo:develop": "ws -d demo --rewrite '/mma/(.*) -> http://localhost:3000/$1' -p ${PORT:-8080}",
-    "demo:server": "ws -d demo -p 8082 -z --log.format combined",
+    "demo:server": "ws -d demo -p ${PORT:-8082} -z --log.format combined",
     "prepublishOnly": "npm run build:lint && npm run test && npm run build",
     "postinstall": "./apply-patches.sh"
   },
