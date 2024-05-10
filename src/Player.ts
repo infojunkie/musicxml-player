@@ -188,7 +188,7 @@ export class Player implements IMidiOutput {
     this.timingsrc = null;
     this._container.remove();
     this._observer.disconnect();
-    this._midiPlayer.stop();
+    this._midiPlayerStop();
     this._renderer.destroy();
   }
 
@@ -199,13 +199,13 @@ export class Player implements IMidiOutput {
   ) {
     // Set the playback position.
     const now = performance.now();
-    const timestamp = this._timemap[measureIndex].start + measureOffset;
-    this._midiPlayer.seek(timestamp);
+    const playbackOffset = this._timemap[measureIndex].start + measureOffset;
+    this._midiPlayer.seek(playbackOffset);
     this._measureIndex = measureIndex;
     // The local measure start is measured in absolute time,
     // whereas the incoming measure start is measured relative to the MIDI file.
     this._measureStart = now - measureOffset;
-    this._playbackStart = now - timestamp;
+    this._playbackStart = now - playbackOffset;
     this._playbackPause = now;
 
     // Set the cursor position.
@@ -227,7 +227,7 @@ export class Player implements IMidiOutput {
   }
 
   async rewind() {
-    this._midiPlayer.stop();
+    this._midiPlayerStop();
     this._playbackStart = 0;
     this._renderer.moveTo(0, 0, 0);
   }
@@ -360,6 +360,12 @@ export class Player implements IMidiOutput {
     }
   }
 
+  private _midiPlayerStop() {
+    if (this._midiPlayer.state !== PlayerState.Stopped) {
+      this._midiPlayer.stop();
+    }
+  }
+
   private static async _unroll(musicXml: string): Promise<string> {
     try {
       const unroll = await SaxonJS.transform(
@@ -375,7 +381,7 @@ export class Player implements IMidiOutput {
       );
       return unroll.principalResult;
     } catch (error) {
-      console.warn(`[Player._unroll] ${error}`);
+      console.error(`[Player._unroll] ${error}`);
     }
     return musicXml;
   }

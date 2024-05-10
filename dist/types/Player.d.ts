@@ -83,6 +83,7 @@ export declare class Player implements IMidiOutput {
     clear(): void;
     private _play;
     private _handleTimingsrcChange;
+    private _midiPlayerStop;
     private static _unroll;
 }
 //# sourceMappingURL=Player.d.ts.map
