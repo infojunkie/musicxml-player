@@ -25,7 +25,10 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   private _currentVoiceEntryIndex: number;
   private _options: IOSMDOptions;
 
-  constructor(options?: IOSMDOptions, private _rules?: EngravingRulesOptions) {
+  constructor(
+    options?: IOSMDOptions,
+    private _rules?: EngravingRulesOptions,
+  ) {
     this._player = null;
     this._osmd = null;
     this._currentMeasureIndex = 0;

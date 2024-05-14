@@ -1,7 +1,7 @@
 import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 import { IOSMDOptions, EngravingRules } from 'opensheetmusicdisplay';
-export declare type EngravingRulesOptions = {
+export type EngravingRulesOptions = {
     [Prop in keyof EngravingRules]: EngravingRules[Prop];
 };
 /**

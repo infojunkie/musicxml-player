@@ -53,58 +53,61 @@ export class WebAudioFontOutput implements IMidiOutput {
     this._pitchBends = [];
 
     // Scan the MIDI for "program change" events, and load the corresponding instrument sample for each.
-    this._instruments = midiJson.tracks.reduce((channels, track) => {
-      const pc =
-        <IMidiProgramChangeEvent>track.find((e) => 'programChange' in e) ||
-        <IMidiProgramChangeEvent>track.reduce(
-          (pc: TMidiEvent | null, e: TMidiEvent) => {
-            if ('noteOn' in e) {
-              return <TMidiEvent>{
-                channel: e.channel,
-                programChange: {
-                  programNumber: MIDI_PROGRAM_DEFAULT,
-                },
-              };
-            }
-            return pc;
-          },
-          null,
-        );
-      if (pc) {
-        if (pc.channel !== MIDI_CHANNEL_DRUMS) {
-          const instrumentNumber = this._player.loader.findInstrument(
-            pc.programChange.programNumber,
+    this._instruments = midiJson.tracks.reduce(
+      (channels, track) => {
+        const pc =
+          <IMidiProgramChangeEvent>track.find((e) => 'programChange' in e) ||
+          <IMidiProgramChangeEvent>track.reduce(
+            (pc: TMidiEvent | null, e: TMidiEvent) => {
+              if ('noteOn' in e) {
+                return <TMidiEvent>{
+                  channel: e.channel,
+                  programChange: {
+                    programNumber: MIDI_PROGRAM_DEFAULT,
+                  },
+                };
+              }
+              return pc;
+            },
+            null,
           );
-          const instrumentInfo =
-            this._player.loader.instrumentInfo(instrumentNumber);
-          channels[pc.channel] = { instrumentInfo };
-          this._player.loader.startLoad(
-            this._audioContext,
-            instrumentInfo.url,
-            instrumentInfo.variable,
-          );
-        } else {
-          channels[MIDI_CHANNEL_DRUMS] = { beats: [] };
-          [
-            ...new Set(
-              track
-                .filter((e) => 'noteOn' in e)
-                .map((e) => (<IMidiNoteOnEvent>e).noteOn.noteNumber),
-            ),
-          ].forEach((beat) => {
-            const drumNumber = this._player.loader.findDrum(beat);
-            const drumInfo = this._player.loader.drumInfo(drumNumber);
-            channels[MIDI_CHANNEL_DRUMS].beats![beat] = { drumInfo };
+        if (pc) {
+          if (pc.channel !== MIDI_CHANNEL_DRUMS) {
+            const instrumentNumber = this._player.loader.findInstrument(
+              pc.programChange.programNumber,
+            );
+            const instrumentInfo =
+              this._player.loader.instrumentInfo(instrumentNumber);
+            channels[pc.channel] = { instrumentInfo };
             this._player.loader.startLoad(
               this._audioContext,
-              drumInfo.url,
-              drumInfo.variable,
+              instrumentInfo.url,
+              instrumentInfo.variable,
             );
-          });
+          } else {
+            channels[MIDI_CHANNEL_DRUMS] = { beats: [] };
+            [
+              ...new Set(
+                track
+                  .filter((e) => 'noteOn' in e)
+                  .map((e) => (<IMidiNoteOnEvent>e).noteOn.noteNumber),
+              ),
+            ].forEach((beat) => {
+              const drumNumber = this._player.loader.findDrum(beat);
+              const drumInfo = this._player.loader.drumInfo(drumNumber);
+              channels[MIDI_CHANNEL_DRUMS].beats![beat] = { drumInfo };
+              this._player.loader.startLoad(
+                this._audioContext,
+                drumInfo.url,
+                drumInfo.variable,
+              );
+            });
+          }
         }
-      }
-      return channels;
-    }, <InstrumentMap>{});
+        return channels;
+      },
+      <InstrumentMap>{},
+    );
 
     // Perform our own note scheduling.
     // Scan the current notes for those whose "off" timestamp has already occurred, and cancel their envelopes.
@@ -140,7 +143,7 @@ export class WebAudioFontOutput implements IMidiOutput {
     if (this._audioContext.state !== 'running') {
       await this._audioContext.resume();
       // Not sure why it's necessary to yield another cycle in order for the audio context to be fully ready.
-      await new Promise(r => setTimeout(r, 1));
+      await new Promise((r) => setTimeout(r, 1));
     }
   }
 

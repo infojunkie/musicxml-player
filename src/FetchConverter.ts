@@ -40,8 +40,8 @@ export class FetchConverter implements IMidiConverter {
       typeof this._timemapOrUri === 'undefined'
         ? await FetchConverter._parseTimemap(musicXml)
         : typeof this._timemapOrUri === 'string'
-        ? <MeasureTimemap>await (await fetish(this._timemapOrUri)).json()
-        : this._timemapOrUri;
+          ? <MeasureTimemap>await (await fetish(this._timemapOrUri)).json()
+          : this._timemapOrUri;
   }
 
   get midi(): IMidiFile {

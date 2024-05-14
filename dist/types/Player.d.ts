@@ -2,8 +2,8 @@ import { IMidiOutput, PlayerState } from 'midi-player';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
 import { ITimingObject } from 'timing-object';
-export declare type MeasureIndex = number;
-export declare type MillisecsTimestamp = number;
+export type MeasureIndex = number;
+export type MillisecsTimestamp = number;
 export interface PlayerOptions {
     /**
      * The HTML element containing the sheet.

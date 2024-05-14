@@ -1,5 +1,5 @@
-export declare type MusicXMLParseQuery = Record<string, string>;
-export declare type MusicXMLParseResult = {
+export type MusicXMLParseQuery = Record<string, string>;
+export type MusicXMLParseResult = {
     musicXml: string;
     queries: Record<string, {
         query: string;

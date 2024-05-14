@@ -63,13 +63,19 @@ async function _parseUncompressedMusicXML(
     encoding: 'utf8',
     text: musicXml,
   });
-  const valid = SaxonJS.XPath.evaluate('boolean(//score-partwise | //score-timewise)', doc);
+  const valid = SaxonJS.XPath.evaluate(
+    'boolean(//score-partwise | //score-timewise)',
+    doc,
+  );
   if (!valid) {
     throw new Error(
       '[parseMusicXML] Invalid MusicXML file contains neither score-partwise nor score-timewise.',
-    )
+    );
   }
-  const version = SaxonJS.XPath.evaluate('//score-partwise/@version | //score-timewise/@version', doc) ?? {
+  const version = SaxonJS.XPath.evaluate(
+    '//score-partwise/@version | //score-timewise/@version',
+    doc,
+  ) ?? {
     value: '(unknown)',
   };
   console.debug(`[parseMusicXML] MusicXML version ${version.value}`);
