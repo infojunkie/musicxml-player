@@ -53,11 +53,6 @@ export declare class Player implements IMidiOutput {
     private _title;
     static load(options: PlayerOptions): Promise<Player>;
     private _midiPlayer;
-    private _playbackStart;
-    private _playbackPause;
-    private _measureIndex;
-    private _measureStart;
-    private _measureOffset;
     private _timemap;
     private _observer;
     private _timingsrc;

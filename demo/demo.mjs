@@ -268,10 +268,10 @@ function handlePlayPauseKey(e) {
   if (e.key === ' ' && g_state.player) {
     e.preventDefault();
     if (g_state.player.state === PLAYER_PLAYING) {
-      g_state.player.pause();
+      g_state.timingObject?.update({ velocity: 0 });
     }
     else {
-      g_state.player.play();
+      g_state.timingObject?.update({ velocity: 1 });
     }
   }
 }

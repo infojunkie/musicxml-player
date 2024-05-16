@@ -106,11 +106,6 @@ export class Player implements IMidiOutput {
   }
 
   private _midiPlayer: IMidiPlayer;
-  private _playbackStart: MillisecsTimestamp;
-  private _playbackPause: MillisecsTimestamp;
-  private _measureIndex: MeasureIndex;
-  private _measureStart: MillisecsTimestamp;
-  private _measureOffset: MillisecsTimestamp;
   private _timemap: Record<
     MeasureIndex,
     {
@@ -144,11 +139,6 @@ export class Player implements IMidiOutput {
     });
 
     // Initialize the playback state.
-    this._playbackStart = 0;
-    this._playbackPause = 0;
-    this._measureIndex = 0;
-    this._measureStart = 0;
-    this._measureOffset = 0;
     this.mute = false;
 
     // Build a specialized timemap for faster lookup.
@@ -198,15 +188,7 @@ export class Player implements IMidiOutput {
     measureOffset: MillisecsTimestamp,
   ) {
     // Set the playback position.
-    const now = performance.now();
-    const playbackOffset = this._timemap[measureIndex].start + measureOffset;
-    this._midiPlayer.seek(playbackOffset);
-    this._measureIndex = measureIndex;
-    // The local measure start is measured in absolute time,
-    // whereas the incoming measure start is measured relative to the MIDI file.
-    this._measureStart = now - measureOffset;
-    this._playbackStart = now - playbackOffset;
-    this._playbackPause = now;
+    this._midiPlayer.position = this._timemap[measureIndex].start + measureOffset;
 
     // Set the cursor position.
     this._renderer.moveTo(measureIndex, measureStart, measureOffset);
@@ -223,12 +205,10 @@ export class Player implements IMidiOutput {
   async pause() {
     if (this._midiPlayer.state !== PlayerState.Playing) return;
     this._midiPlayer.pause();
-    this._playbackPause = performance.now();
   }
 
   async rewind() {
     this._midiPlayerStop();
-    this._playbackStart = 0;
     this._renderer.moveTo(0, 0, 0);
   }
 
@@ -284,28 +264,16 @@ export class Player implements IMidiOutput {
   }
 
   private async _play() {
-    const now = performance.now();
-    if (
-      this._midiPlayer.state === PlayerState.Paused ||
-      this._playbackStart !== 0
-    ) {
-      this._playbackStart += now - this._playbackPause;
-      this._measureStart += now - this._playbackPause;
-    } else {
-      this._playbackStart = now;
-      this._measureIndex = 0;
-      this._measureStart = now;
-    }
-
-    const synchronizeMidi = (now: number) => {
+    const synchronizeMidi = () => {
       if (this._midiPlayer.state !== PlayerState.Playing) return;
 
       // Lookup the current measure number by binary-searching the timemap.
+      const timestamp = this._midiPlayer.position!;
       const index = binarySearch(
         this._converter.timemap,
         {
           measure: 0,
-          timestamp: now - this._playbackStart,
+          timestamp,
         },
         (a, b) => {
           const d = a.timestamp - b.timestamp;
@@ -315,16 +283,11 @@ export class Player implements IMidiOutput {
       );
       const entry =
         this._converter.timemap[index >= 0 ? index : Math.max(0, -index - 2)];
-      if (this._measureIndex !== entry.measure) {
-        this._measureIndex = entry.measure;
-        this._measureStart = now;
-      }
-      this._measureOffset = Math.max(0, now - this._measureStart);
       this._renderer.moveTo(
-        this._measureIndex,
-        this._timemap[this._measureIndex].start,
-        this._measureOffset,
-        this._timemap[this._measureIndex].duration,
+        entry.measure,
+        this._timemap[entry.measure].start,
+        Math.max(0, timestamp - entry.timestamp),
+        this._timemap[entry.measure].duration,
       );
 
       // Schedule next cursor movement.
@@ -339,11 +302,6 @@ export class Player implements IMidiOutput {
       await this._midiPlayer.resume();
     } else {
       await this._midiPlayer.play();
-    }
-
-    // Reset when done.
-    if (this._midiPlayer.state !== PlayerState.Paused) {
-      this._playbackStart = 0;
     }
   }
 
