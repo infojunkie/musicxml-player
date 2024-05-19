@@ -188,18 +188,19 @@ export class Player implements IMidiOutput {
     measureOffset: MillisecsTimestamp,
   ) {
     // Set the playback position.
-    this._midiPlayer.position = this._timemap[measureIndex].start + measureOffset;
+    this._midiPlayer.position =
+      this._timemap[measureIndex].start + measureOffset;
 
     // Set the cursor position.
     this._renderer.moveTo(measureIndex, measureStart, measureOffset);
   }
 
-  async play() {
+  async play(velocity: number = 1) {
     if (this._midiPlayer.state === PlayerState.Playing) return;
     if (this._output instanceof WebAudioFontOutput) {
       await (this._output as WebAudioFontOutput).init();
     }
-    await this._play();
+    await this._play(velocity);
   }
 
   async pause() {
@@ -263,7 +264,7 @@ export class Player implements IMidiOutput {
     this._output.clear?.();
   }
 
-  private async _play() {
+  private async _play(velocity: number) {
     const synchronizeMidi = () => {
       if (this._midiPlayer.state !== PlayerState.Playing) return;
 
@@ -299,22 +300,31 @@ export class Player implements IMidiOutput {
 
     // Activate the MIDI player.
     if (this._midiPlayer.state === PlayerState.Paused) {
-      await this._midiPlayer.resume();
+      await this._midiPlayer.resume(velocity);
     } else {
-      await this._midiPlayer.play();
+      await this._midiPlayer.play(velocity);
     }
   }
 
   private _handleTimingsrcChange(_event: Event) {
-    const vector = this._timingsrc?.query();
-    if (vector?.velocity === 0) {
-      if (vector?.position === 0) {
+    const timingsrc = this._timingsrc as ITimingObject;
+    const vector = timingsrc.query();
+    if (Math.abs(vector.velocity) < Number.EPSILON) {
+      if (Math.abs(vector.position) < Number.EPSILON) {
         this.rewind();
       } else {
         this.pause();
       }
     } else {
-      this.play();
+      switch (this._midiPlayer.state) {
+        case PlayerState.Playing:
+          this._midiPlayer.velocity = vector.velocity;
+          break;
+        case PlayerState.Paused:
+        case PlayerState.Stopped:
+          this.play(vector.velocity);
+          break;
+      }
     }
   }
 

@@ -64,7 +64,7 @@ export declare class Player implements IMidiOutput {
     private constructor();
     destroy(): void;
     moveTo(measureIndex: MeasureIndex, measureStart: MillisecsTimestamp, measureOffset: MillisecsTimestamp): void;
-    play(): Promise<void>;
+    play(velocity?: number): Promise<void>;
     pause(): Promise<void>;
     rewind(): Promise<void>;
     get musicXml(): string;

@@ -271,7 +271,7 @@ function handlePlayPauseKey(e) {
       g_state.timingObject?.update({ velocity: 0 });
     }
     else {
-      g_state.timingObject?.update({ velocity: 1 });
+      g_state.timingObject?.update({ velocity: Number(document.getElementById('velocity').value) });
     }
   }
 }
@@ -388,12 +388,16 @@ function handleAudioLoaded(e) {
   );
 }
 
-function handleAudioDelaychange(e) {
+function handleAudioDelayChange(e) {
   setTimingsrc(
     document.getElementById('audio-track'),
     g_state.timingObject,
     ({ position, ...vector }) => ({ ...vector, position: position + Number(document.getElementById('audio-offset').value) / 1000 })
   );
+}
+
+function handleVelocityChange(e) {
+  g_state.timingObject?.update({ velocity: Number(e.target.value) });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -424,7 +428,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
   document.getElementById('play').addEventListener('click', async () => {
-    g_state.timingObject?.update({ velocity: 1 });
+    g_state.timingObject?.update({ velocity: Number(document.getElementById('velocity').value) });
   });
   document.getElementById('pause').addEventListener('click', async () => {
     g_state.timingObject?.update({ velocity: 0 });
@@ -440,7 +444,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('ireal').addEventListener('change', handleIRealChange);
   document.getElementById('audio-file').addEventListener('change', handleAudioChange);
   document.getElementById('audio-track').addEventListener('loadeddata', handleAudioLoaded);
-  document.getElementById('audio-offset').addEventListener('change', handleAudioDelaychange);
+  document.getElementById('audio-offset').addEventListener('change', handleAudioDelayChange);
+  document.getElementById('velocity').addEventListener('change', handleVelocityChange);
   document.querySelectorAll('.player-option').forEach(element => {
     if (!!g_state.options[element.id.replace('option-', '')]) {
       element.setAttribute('checked', 'checked');
