@@ -57,6 +57,7 @@ async function createPlayer() {
   document.getElementById('error').textContent = '';
   document.getElementById('ireal').value = '';
   document.getElementById('grooves').value = groove === DEFAULT_GROOVE ? null : groove;
+  document.getElementById('velocity').value = 1;
 
   // Create new player.
   if (g_state.musicXml) {
