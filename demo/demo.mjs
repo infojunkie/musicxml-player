@@ -412,6 +412,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   catch {
     g_state.params = params;
   }
+  g_state.params['output'] = DEFAULT_OUTPUT; // Too complicated to wait for MIDI output
 
   // Build the UI.
   await populateGrooves();

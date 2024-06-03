@@ -239,6 +239,11 @@ export class WebAudioFontOutput implements IMidiOutput {
       );
     }
 
+    // Ignore zero pitch bend.
+    if (event.pitchBend - 8192 === 0) {
+      return;
+    }
+
     // Save the current pitch bend value. It will be used at the next noteOn event.
     this._pitchBends.push({
       channel: event.channel,

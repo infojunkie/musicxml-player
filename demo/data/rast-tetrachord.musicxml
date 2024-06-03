@@ -43,7 +43,7 @@
       </direction>
       <direction placement="above">
         <direction-type>
-          <words>24-TET (Arabic standard tuning)</words>
+          <words>12-TET (minor)</words>
         </direction-type>
       </direction>
       <note>
@@ -67,12 +67,12 @@
       <note>
         <pitch>
           <step>E</step>
-          <alter>-0.5</alter>
+          <alter>-1</alter>
           <octave>4</octave>
         </pitch>
         <duration>768</duration>
         <type>quarter</type>
-        <accidental>quarter-flat</accidental>
+        <accidental>flat</accidental>
       </note>
       <note>
         <pitch>
@@ -117,7 +117,7 @@
       <print new-system="yes"/>
       <direction placement="above">
         <direction-type>
-          <words>53-TET (Holdrian comma tuning)</words>
+          <words>24-TET (Arabic standard tuning)</words>
         </direction-type>
       </direction>
       <note>
@@ -132,7 +132,7 @@
       <note>
         <pitch>
           <step>D</step>
-          <alter>0.05</alter>
+          <alter>0</alter>
           <octave>4</octave>
         </pitch>
         <duration>768</duration>
@@ -141,7 +141,7 @@
       <note>
         <pitch>
           <step>E</step>
-          <alter>-0.15</alter>
+          <alter>-0.5</alter>
           <octave>4</octave>
         </pitch>
         <duration>768</duration>
@@ -191,7 +191,7 @@
       <print new-system="yes"/>
       <direction placement="above">
         <direction-type>
-          <words>Ederer tuning</words>
+          <words>53-TET (Holdrian comma tuning)</words>
         </direction-type>
       </direction>
       <note>
@@ -233,6 +233,77 @@
       </note>
     </measure>
     <measure number="6">
+      <note>
+        <pitch>
+          <step>G</step>
+          <alter>0</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <rest/>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <rest/>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <rest/>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <barline location="right">
+        <bar-style>light-light</bar-style>
+      </barline>
+    </measure>
+    <measure number="7">
+      <print new-system="yes"/>
+      <direction placement="above">
+        <direction-type>
+          <words>12-TET (major)</words>
+        </direction-type>
+      </direction>
+      <note>
+        <pitch>
+          <step>C</step>
+          <alter>0</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>D</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>E</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>F</step>
+          <alter>0</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>768</duration>
+        <type>quarter</type>
+      </note>
+    </measure>
+    <measure number="8">
       <note>
         <pitch>
           <step>G</step>
