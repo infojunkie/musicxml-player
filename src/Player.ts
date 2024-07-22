@@ -212,10 +212,15 @@ export class Player implements IMidiOutput {
     measureOffset: MillisecsTimestamp,
   ) {
     // Set the playback position.
-    // TODO: Find the closest instance of the measure based on current playback position.
-    const entry = this._options.converter.timemap.find(
+    // Find the closest instance of the measure based on current playback position.
+    const position = this._midiPlayer.position! - measureOffset;
+    const entry = this._options.converter.timemap.filter(
       (e) => e.measure == measureIndex,
-    );
+    ).sort((a, b) => {
+      const a_distance = Math.abs(a.timestamp - position);
+      const b_distance = Math.abs(b.timestamp - position);
+      return b_distance - a_distance;
+    }).last();
     if (entry) {
       this._midiPlayer.position = entry.timestamp + measureOffset;
     }
