@@ -30,7 +30,7 @@ export async function parseMusicXML(
 
 async function _parseCompressedMusicXML(
   mxml: ArrayBuffer,
-  queries: MusicXMLParseQuery | undefined,
+  queries?: MusicXMLParseQuery,
 ): Promise<MusicXMLParseResult> {
   const { entries } = await unzip(mxml);
 
@@ -56,7 +56,7 @@ async function _parseCompressedMusicXML(
 
 async function _parseUncompressedMusicXML(
   musicXml: string,
-  queries: MusicXMLParseQuery | undefined,
+  queries?: MusicXMLParseQuery,
 ): Promise<MusicXMLParseResult> {
   const doc = await SaxonJS.getResource({
     type: 'xml',

@@ -4,6 +4,7 @@ import type { MeasureIndex, MillisecsTimestamp } from './Player';
 export type MeasureTimemapEntry = {
   measure: MeasureIndex;
   timestamp: MillisecsTimestamp;
+  duration: MillisecsTimestamp;
 };
 export type MeasureTimemap = Array<MeasureTimemapEntry>;
 

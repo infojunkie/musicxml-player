@@ -8,7 +8,7 @@ export declare class WebAudioFontOutput implements IMidiOutput {
     private _pitchBends;
     constructor(midiJson: IMidiFile);
     clear(): void;
-    init(): Promise<void>;
+    initialize(): Promise<void>;
     send(data: number[] | Uint8Array, timestamp: number): void;
     private _noteOn;
     private _noteOff;

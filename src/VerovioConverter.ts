@@ -4,8 +4,7 @@ import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
 import { VerovioOptions } from 'verovio';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
-import type { MeasureIndex } from './Player';
-import type { TimeMapEntryFixed } from './VerovioRenderer';
+import type { TimemapEntryFixed } from './VerovioRenderer';
 
 /**
  * Implementation of IMidiConverter that uses the Verovio library to convert a MusicXML file to MIDI and timemap.
@@ -41,16 +40,31 @@ export class VerovioConverter implements IMidiConverter {
 
     // Build timemap.
     if (!this._timemap.length) {
-      let measureIndex: MeasureIndex = 0;
-      this._vrv.renderToTimemap({ includeMeasures: true }).forEach((e) => {
-        const event = <TimeMapEntryFixed>e;
-        if ('measureOn' in event) {
-          this._timemap.push({
-            measure: measureIndex++,
-            timestamp: event.tstamp,
-          });
-        }
-      });
+      let tstamp = 0;
+      this._vrv
+        .renderToTimemap({ includeMeasures: true, includeRests: true })
+        .forEach((e) => {
+          const event = <TimemapEntryFixed>e;
+
+          // If starting a measure, add it to the timemap.
+          if ('measureOn' in event) {
+            const i = this._timemap.length;
+            if (i > 0) {
+              this._timemap[i - 1].duration =
+                event.tstamp - this._timemap[i - 1].timestamp;
+            }
+            this._timemap.push({
+              measure: i,
+              timestamp: event.tstamp,
+              duration: 0,
+            });
+          }
+
+          // Find the duration of the last measure.
+          // Calculate the max tstamp and compute the last measure duration based on that.
+          tstamp = Math.max(tstamp, event.tstamp);
+        });
+      this._timemap.last().duration = tstamp - this._timemap.last().timestamp;
     }
 
     // Render to MIDI.

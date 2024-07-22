@@ -1,7 +1,7 @@
 import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 import { VerovioOptions } from 'verovio';
-export interface TimeMapEntryFixed {
+export interface TimemapEntryFixed {
     tstamp: number;
     qstamp: number;
     on?: string[];

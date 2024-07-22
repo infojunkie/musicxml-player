@@ -5,7 +5,7 @@ import { VerovioToolkit } from 'verovio/esm';
 import { VerovioOptions } from 'verovio';
 import { MeasureTimemap } from './IMidiConverter';
 
-export interface TimeMapEntryFixed {
+export interface TimemapEntryFixed {
   tstamp: number;
   qstamp: number;
   on?: string[];
@@ -299,11 +299,12 @@ export class VerovioRenderer implements ISheetRenderer {
     this._vrv
       .renderToTimemap({ includeMeasures: true, includeRests: true })
       .forEach((e) => {
-        const event = <TimeMapEntryFixed>e;
+        const event = <TimemapEntryFixed>e;
         if ('measureOn' in event) {
           this._timemap.push({
             measure: this._timemap.length,
             timestamp: event.tstamp,
+            duration: 0, // Don't care about the duration for this renderer
           });
         }
 

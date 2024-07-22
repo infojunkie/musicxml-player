@@ -45,18 +45,17 @@ export interface PlayerOptions {
     mute?: boolean;
 }
 export declare class Player implements IMidiOutput {
-    private _output;
-    private _renderer;
-    private _converter;
-    private _container;
+    private _options;
+    private _sheet;
+    private _parseResult;
     private _musicXml;
-    private _title;
     static load(options: PlayerOptions): Promise<Player>;
+    private _output;
     private _midiPlayer;
-    private _timemap;
     private _observer;
     private _timingsrc;
     private _timingsrcListener;
+    private _midiFile;
     /**
      * A dynamic flag to mute the player's MIDI output.
      */
@@ -72,13 +71,12 @@ export declare class Player implements IMidiOutput {
     get state(): PlayerState;
     get title(): string;
     get version(): Record<string, string>;
-    get timingsrc(): ITimingObject | null;
-    set timingsrc(timingsrc: ITimingObject | null);
+    get timingsrc(): ITimingObject | undefined;
+    set timingsrc(timingsrc: ITimingObject | undefined);
     send(data: number[] | Uint8Array, timestamp?: number): void;
     clear(): void;
     private _play;
     private _handleTimingsrcChange;
-    private _midiPlayerStop;
     private static _unroll;
 }
 //# sourceMappingURL=Player.d.ts.map

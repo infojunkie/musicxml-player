@@ -139,7 +139,7 @@ export class WebAudioFontOutput implements IMidiOutput {
     this._pitchBends = [];
   }
 
-  async init() {
+  async initialize() {
     if (this._audioContext.state !== 'running') {
       await this._audioContext.resume();
       // Not sure why it's necessary to yield another cycle in order for the audio context to be fully ready.

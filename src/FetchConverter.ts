@@ -64,7 +64,7 @@ export class FetchConverter implements IMidiConverter {
     musicXml: string,
   ): Promise<MeasureTimemap> {
     try {
-      const unroll = await SaxonJS.transform(
+      const timemap = await SaxonJS.transform(
         {
           stylesheetLocation: XSL_TIMEMAP,
           sourceText: musicXml,
@@ -75,7 +75,7 @@ export class FetchConverter implements IMidiConverter {
         },
         'async',
       );
-      return JSON.parse(unroll.principalResult);
+      return JSON.parse(timemap.principalResult);
     } catch (error) {
       console.warn(`[FetchConverter._parseTimemap] ${error}`);
     }
