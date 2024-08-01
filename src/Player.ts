@@ -225,6 +225,7 @@ export class Player implements IMidiOutput {
    * Destroy the instance by freeing all resources and disconnecting observers.
    */
   destroy(): void {
+    this._repeatCounter = 0;
     this._timingObject.removeEventListener(
       'change',
       this._timingObjectListener,
