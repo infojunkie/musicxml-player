@@ -71,7 +71,6 @@ export declare class Player implements IMidiOutput {
     private _repeatCounter;
     private _timingObject;
     private _timingObjectListener;
-    private _timingObjectUpdating;
     private constructor();
     /**
      * Destroy the instance by freeing all resources and disconnecting observers.

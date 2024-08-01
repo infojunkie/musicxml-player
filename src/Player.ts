@@ -130,7 +130,7 @@ export class Player implements IMidiOutput {
   private _repeatCounter: number;
   private _timingObject: ITimingObject;
   private _timingObjectListener: EventListener;
-  private _timingObjectUpdating: boolean;
+  //private _timingObjectUpdating: boolean;
 
   private constructor(
     private _options: PlayerOptions,
@@ -210,14 +210,14 @@ export class Player implements IMidiOutput {
 
     // Create the TimingObject.
     this._timingObject = new TimingObject(
-      { velocity: 1, position: 0 },
+      { velocity: this._options.velocity ?? 1, position: 0 },
       0,
       this._options.converter.timemap.last().timestamp +
         this._options.converter.timemap.last().duration,
     );
     this._timingObjectListener = (event) =>
       this._handleTimingObjectChange(event);
-    this._timingObjectUpdating = false;
+    //this._timingObjectUpdating = false;
     this._timingObject.addEventListener('change', this._timingObjectListener);
   }
 
@@ -436,10 +436,7 @@ export class Player implements IMidiOutput {
         Math.max(0, timestamp - entry.timestamp),
         entry.duration,
       );
-      this._timingObjectUpdate({
-        position: timestamp,
-        velocity: this._options.velocity ?? 1,
-      });
+      this._timingObjectUpdate({ position: timestamp });
 
       // Schedule next cursor movement.
       requestAnimationFrame(synchronizeMidi);
@@ -449,10 +446,11 @@ export class Player implements IMidiOutput {
     requestAnimationFrame(synchronizeMidi);
 
     // Activate the MIDI player.
+    const { velocity } = this.timingObject.query();
     if (this._midiPlayer.state === PlayerState.Paused) {
-      await this._midiPlayer.resume(this._options.velocity ?? 1);
+      await this._midiPlayer.resume(velocity);
     } else {
-      await this._midiPlayer.play(this._options.velocity ?? 1);
+      await this._midiPlayer.play(velocity);
     }
 
     // Repeat if needed.
@@ -466,31 +464,30 @@ export class Player implements IMidiOutput {
   private async _timingObjectUpdate(
     newVector: TTimingStateVectorUpdate,
   ): Promise<void> {
-    this._timingObjectUpdating = true;
+    //this._timingObjectUpdating = true;
     this._timingObject.update(newVector);
   }
 
   private _handleTimingObjectChange(_event: Event) {
-    // Don't handle our internally-generated events.
-    if (this._timingObjectUpdating) {
-      this._timingObjectUpdating = false;
-      return;
-    }
-
-    // Handle externally-generated events.
-    const { velocity, position } = this.timingObject.query();
-    if (velocity === 0) {
-      if (position === 0) {
-        this.rewind();
-      } else {
-        this.pause();
-      }
-    } else {
-      if (this._midiPlayer.state !== PlayerState.Stopped) {
-        this._midiPlayer.velocity = velocity;
-        this._midiPlayer.position = position;
-      }
-    }
+    // // Don't handle our internally-generated events.
+    // if (this._timingObjectUpdating) {
+    //   this._timingObjectUpdating = false;
+    //   return;
+    // }
+    // // Handle externally-generated events.
+    // const { velocity, position } = this.timingObject.query();
+    // if (velocity === 0) {
+    //   if (position === 0) {
+    //     this.rewind();
+    //   } else {
+    //     this.pause();
+    //   }
+    // } else {
+    //   if (this._midiPlayer.state !== PlayerState.Stopped) {
+    //     this._midiPlayer.velocity = velocity;
+    //     this._midiPlayer.position = position;
+    //   }
+    // }
   }
 
   private static async _unroll(musicXml: string): Promise<string> {
