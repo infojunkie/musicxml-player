@@ -1,6 +1,5 @@
 import * as MusicXMLPlayer from './dist/musicxml-player.esm.js';
 import iRealMusicXML from 'https://cdn.jsdelivr.net/npm/ireal-musicxml/+esm';
-import { TimingObject } from 'https://cdn.jsdelivr.net/npm/timing-object@3.1.61/+esm';
 import { setTimingsrc } from 'https://cdn.jsdelivr.net/npm/timingsrc@1.4.5/+esm';
 
 const DEFAULT_RENDERER = 'vrv';
@@ -8,6 +7,8 @@ const DEFAULT_OUTPUT = 'local';
 const DEFAULT_SHEET = 'data/asa-branca.musicxml';
 const DEFAULT_GROOVE = 'Default';
 const DEFAULT_CONVERTER = 'midi';
+const DEFAULT_VELOCITY = 1;
+const DEFAULT_REPEAT = 1;
 const DEFAULT_OPTIONS = {
   unroll: false,
   horizontal: false,
@@ -24,11 +25,11 @@ const g_state = {
   params: null,
   musicXml: null,
   options: DEFAULT_OPTIONS,
-  timingObject: null,
 }
 
 async function createPlayer() {
   // Destroy previous player.
+  g_state.player?.timingObject.removeEventListener(handleTimingObjectChange);
   g_state.player?.destroy();
 
   // Set the player parameters.
@@ -37,6 +38,8 @@ async function createPlayer() {
   const renderer = g_state.params.get('renderer') ?? DEFAULT_RENDERER;
   const groove = g_state.params.get('groove') ?? DEFAULT_GROOVE;
   const converter = g_state.params.get('converter') ?? DEFAULT_CONVERTER;
+  const velocity = g_state.params.get('velocity') ?? DEFAULT_VELOCITY;
+  const repeat = g_state.params.get('repeat') ?? DEFAULT_REPEAT;
   const options = g_state.options;
 
   // Reset UI elements.
@@ -57,48 +60,45 @@ async function createPlayer() {
   document.getElementById('error').textContent = '';
   document.getElementById('ireal').value = '';
   document.getElementById('grooves').value = groove === DEFAULT_GROOVE ? null : groove;
-  document.getElementById('velocity').value = 1;
+  document.getElementById('velocity').value = velocity;
+  document.getElementById('repeat').value = repeat;
 
   // Create new player.
   if (g_state.musicXml) {
     try {
-      const player = await MusicXMLPlayer.Player.load({
+      const player = await MusicXMLPlayer.Player.create({
         musicXml: g_state.musicXml,
         container: 'sheet-container',
         renderer: createRenderer(renderer, options),
         output: createOutput(output),
         converter: await createConverter(converter, sheet, groove),
         unroll: options.unroll,
-        timingsrc: g_state.timingObject,
         mute: options.mute,
+        repeat: Number(repeat),
+        velocity: Number(velocity),
       });
-      document.getElementById('version').textContent = JSON.stringify(player.version);
+
+      // Create the TimingObject listener.
+      player.timingObject.addEventListener('change', handleTimingObjectChange);
 
       // Update the UI elements.
-      const title = player.title?.toLowerCase().replace(/[/\\?%*:|"'<>\s]/g, '-') ?? 'untitled';
+      document.getElementById('version').textContent = JSON.stringify(player.version);
+      const filename = player.title.toLowerCase().replace(/[/\\?%*:|"'<>\s]/g, '-') ?? 'untitled';
       const a1 = document.createElement('a');
-      a1.setAttribute('href', 'data:text/xml;charset=utf-8,' + encodeURIComponent(player.musicXml));
-      a1.setAttribute('download', `${title}.musicxml`);
-      a1.innerText = `${title}.musicxml`;
+      a1.setAttribute('href', URL.createObjectURL(new Blob([player.musicXml], { type: 'text/xml' })));
+      a1.setAttribute('download', `${filename}.musicxml`);
+      a1.innerText = `${filename}.musicxml`;
       document.getElementById('download-musicxml').appendChild(a1);
       const a2 = document.createElement('a');
       a2.setAttribute('href', URL.createObjectURL(new Blob([await player.midi()], { type: 'audio/midi' })));
-      a2.setAttribute('download', `${title}.mid`);
-      a2.innerText = `${title}.mid`;
+      a2.setAttribute('download', `${filename}.mid`);
+      a2.innerText = `${filename}.mid`;
       document.getElementById('download-midi').appendChild(a2);
 
       // Save the state and player parameters.
       g_state.player = player;
       g_state.options = options;
-      try {
-        window.localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify({
-          params: [...g_state.params.entries()],
-          options: g_state.options,
-        }));
-      }
-      catch (error) {
-        console.warn(`Error saving player state: ${error}`);
-      }
+      savePlayerOptions();
     }
     catch (error) {
       console.error(error);
@@ -242,6 +242,9 @@ async function populateGrooves() {
   }
 }
 
+function handleTimingObjectChange(e) {
+}
+
 function handleGrooveSelect(e) {
   if ([...document.getElementById('grooves-list').options].find(g => g.value === e.target.value)) {
     g_state.params.set('groove', e.target.value);
@@ -269,10 +272,10 @@ function handlePlayPauseKey(e) {
   if (e.key === ' ' && g_state.player) {
     e.preventDefault();
     if (g_state.player.state === PLAYER_PLAYING) {
-      g_state.timingObject?.update({ velocity: 0 });
+      g_state.player.pause();
     }
     else {
-      g_state.timingObject?.update({ velocity: Number(document.getElementById('velocity').value) });
+      g_state.player.resume();
     }
   }
 }
@@ -371,7 +374,15 @@ function handleOptionChange(e) {
     horizontal: !!document.getElementById('option-horizontal').checked,
     mute: !!document.getElementById('option-mute').checked,
   };
-  createPlayer();
+  if (e.target.id === 'option-mute') {
+    if (g_state.player) {
+      g_state.player.mute = g_state.options.mute;
+    }
+    savePlayerOptions();
+  }
+  else {
+    createPlayer();
+  }
 }
 
 function handleAudioChange(e) {
@@ -384,7 +395,7 @@ function handleAudioLoaded(e) {
   document.getElementById('audio-offset').disabled = false;
   setTimingsrc(
     document.getElementById('audio-track'),
-    g_state.timingObject,
+    g_state.player?.timingObject,
     ({ position, ...vector }) => ({ ...vector, position: position + Number(document.getElementById('audio-offset').value) / 1000 })
   );
 }
@@ -392,13 +403,35 @@ function handleAudioLoaded(e) {
 function handleAudioDelayChange(e) {
   setTimingsrc(
     document.getElementById('audio-track'),
-    g_state.timingObject,
+    g_state.player?.timingObject,
     ({ position, ...vector }) => ({ ...vector, position: position + Number(document.getElementById('audio-offset').value) / 1000 })
   );
 }
 
 function handleVelocityChange(e) {
-  g_state.timingObject?.update({ velocity: Number(e.target.value) });
+  g_state.params.set('velocity', e.target.value);
+  g_state.player?.timingObject.update({ velocity: Number(e.target.value) });
+  savePlayerOptions();
+}
+
+function handleRepeatChange(e) {
+  g_state.params.set('repeat', e.target.value);
+  if (g_state.player) {
+    g_state.player.repeat = Number(e.target.value);
+  }
+  savePlayerOptions();
+}
+
+function savePlayerOptions() {
+  try {
+    window.localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify({
+      params: [...g_state.params.entries()],
+      options: g_state.options,
+    }));
+  }
+  catch (error) {
+    console.warn(`Error saving player state: ${error}`);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -412,7 +445,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   catch {
     g_state.params = params;
   }
-  g_state.params['output'] = DEFAULT_OUTPUT; // Too complicated to wait for MIDI output
+  g_state.params.set('output', DEFAULT_OUTPUT); // Too complicated to wait for MIDI output
+  window.g_state = g_state;
 
   // Build the UI.
   await populateGrooves();
@@ -430,13 +464,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
   document.getElementById('play').addEventListener('click', async () => {
-    g_state.timingObject?.update({ velocity: Number(document.getElementById('velocity').value) });
+    g_state.player?.play();
   });
   document.getElementById('pause').addEventListener('click', async () => {
-    g_state.timingObject?.update({ velocity: 0 });
+    g_state.player?.pause();
   });
   document.getElementById('rewind').addEventListener('click', async () => {
-    g_state.timingObject?.update({ position: 0, velocity: 0 });
+    g_state.player?.rewind();
   });
   document.getElementById('upload').addEventListener('change', handleFileUpload);
   document.getElementById('samples').addEventListener('change', handleSampleSelect);
@@ -448,6 +482,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('audio-track').addEventListener('loadeddata', handleAudioLoaded);
   document.getElementById('audio-offset').addEventListener('change', handleAudioDelayChange);
   document.getElementById('velocity').addEventListener('change', handleVelocityChange);
+  document.getElementById('repeat').addEventListener('change', handleRepeatChange);
   document.querySelectorAll('.player-option').forEach(element => {
     if (!!g_state.options[element.id.replace('option-', '')]) {
       element.setAttribute('checked', 'checked');
@@ -465,9 +500,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error(error);
     populateMidiOutputs();
   });
-
-  // Create the TimingObject.
-  g_state.timingObject = new TimingObject();
 
   // Start the app.
   await handleSampleSelect({ target: { value: g_state.params.get('sheet') ?? DEFAULT_SHEET }});
