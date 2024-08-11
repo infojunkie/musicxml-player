@@ -410,7 +410,9 @@ function handleAudioDelayChange(e) {
 
 function handleVelocityChange(e) {
   g_state.params.set('velocity', e.target.value);
-  g_state.player?.timingObject.update({ velocity: Number(e.target.value) });
+  if (g_state.player) {
+    g_state.player.velocity = Number(e.target.value);
+  }
   savePlayerOptions();
 }
 

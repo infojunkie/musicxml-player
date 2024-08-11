@@ -15,11 +15,7 @@ import {
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
 import { WebAudioFontOutput } from './WebAudioFontOutput';
-import {
-  ITimingObject,
-  TimingObject,
-  TTimingStateVectorUpdate,
-} from 'timing-object';
+import { ITimingObject, TimingObject } from 'timing-object';
 import SaxonJS from './saxon-js/SaxonJS2.rt';
 import pkg from '../package.json';
 
@@ -70,7 +66,7 @@ export interface PlayerOptions {
   repeat?: number;
   /**
    * (Optional) Playback speed. A value of 1 means normal speed.
-   * Can also be changed dynamically via Player.timingObject.update({ velocity }).
+   * Can also be changed dynamically via Player.velocity attribute.
    */
   velocity?: number;
 }
@@ -125,12 +121,12 @@ export class Player implements IMidiOutput {
   private _midiPlayer: IMidiPlayer;
   private _observer: ResizeObserver;
   private _midiFile: IMidiFile;
+  private _duration: number;
   private _mute: boolean;
   private _repeat: number;
-  private _repeatCounter: number;
+  private _velocity: number;
   private _timingObject: ITimingObject;
   private _timingObjectListener: EventListener;
-  //private _timingObjectUpdating: boolean;
 
   private constructor(
     private _options: PlayerOptions,
@@ -194,8 +190,12 @@ export class Player implements IMidiOutput {
     );
 
     // Initialize the playback options.
-    this._repeat = this._repeatCounter = this._options.repeat ?? 1;
+    this._repeat = this._options.repeat ?? 1;
     this._mute = this._options.mute ?? false;
+    this._velocity = this._options.velocity ?? 1;
+    this._duration =
+      this._options.converter.timemap.last().timestamp +
+      this._options.converter.timemap.last().duration;
 
     // Set up resize handling.
     // Throttle the resize event https://stackoverflow.com/a/5490021/209184
@@ -210,14 +210,12 @@ export class Player implements IMidiOutput {
 
     // Create the TimingObject.
     this._timingObject = new TimingObject(
-      { velocity: this._options.velocity ?? 1, position: 0 },
+      { velocity: this._velocity, position: 0 },
       0,
-      this._options.converter.timemap.last().timestamp +
-        this._options.converter.timemap.last().duration,
+      this.duration,
     );
     this._timingObjectListener = (event) =>
       this._handleTimingObjectChange(event);
-    //this._timingObjectUpdating = false;
     this._timingObject.addEventListener('change', this._timingObjectListener);
   }
 
@@ -225,7 +223,6 @@ export class Player implements IMidiOutput {
    * Destroy the instance by freeing all resources and disconnecting observers.
    */
   destroy(): void {
-    this._repeatCounter = 0;
     this._timingObject.removeEventListener(
       'change',
       this._timingObjectListener,
@@ -256,7 +253,7 @@ export class Player implements IMidiOutput {
 
     // Set the playback position.
     // Find the closest instance of the measure based on current playback position.
-    const position = this._midiPlayer.position! - measureOffset;
+    const position = this.position - measureOffset;
     const entry = this._options.converter.timemap
       .filter((e) => e.measure == measureIndex)
       .sort((a, b) => {
@@ -284,7 +281,6 @@ export class Player implements IMidiOutput {
     if (this._output instanceof WebAudioFontOutput) {
       await (this._output as WebAudioFontOutput).initialize();
     }
-    this._repeatCounter = this._repeat;
     await this._play();
   }
 
@@ -294,17 +290,16 @@ export class Player implements IMidiOutput {
   pause() {
     if (this._midiPlayer.state !== PlayerState.Playing) return;
     this._midiPlayer.pause();
-    this._timingObjectUpdate({ velocity: 0 });
+    this._timingObject.update({ velocity: 0 });
   }
 
   /**
    * Stop playback and rewind to start.
    */
   rewind() {
-    this._repeatCounter = 0;
     this._midiPlayer.stop();
     this._options.renderer.moveTo(0, 0, 0);
-    this._timingObjectUpdate({ velocity: 0, position: 0 });
+    this._timingObject.update({ velocity: 0, position: 0 });
   }
 
   /**
@@ -349,11 +344,19 @@ export class Player implements IMidiOutput {
 
   /**
    * The duration of the score/MIDI file (ms).
+   * Precomputed in the constructor.
    */
   get duration(): number {
-    return (
-      this._options.converter.timemap.last().timestamp +
-      this._options.converter.timemap.last().duration
+    return this._duration;
+  }
+
+  /**
+   * Current position of the player (ms).
+   */
+  get position(): number {
+    return Math.max(
+      0,
+      Math.min(this._midiPlayer.position ?? 0, this._duration - 1),
     );
   }
 
@@ -368,7 +371,7 @@ export class Player implements IMidiOutput {
    * Repeat count. A value of -1 means loop forever.
    */
   set repeat(value: number) {
-    this._repeat = value < 0 ? -1 : Math.max(1, Math.trunc(value));
+    this._repeat = value;
   }
 
   /**
@@ -378,6 +381,18 @@ export class Player implements IMidiOutput {
     this._mute = value;
     if (this._mute) {
       this.clear();
+    }
+  }
+
+  /**
+   * Playback speed. A value of 1 means normal speed.
+   */
+  set velocity(value: number) {
+    this._velocity = value;
+    if (this._midiPlayer.state === PlayerState.Playing) {
+      this._midiPlayer.pause();
+      this._timingObject.update({ velocity: this._velocity });
+      this._play();
     }
   }
 
@@ -411,7 +426,8 @@ export class Player implements IMidiOutput {
       if (this._midiPlayer.state !== PlayerState.Playing) return;
 
       // Lookup the current measure number by binary-searching the timemap.
-      const timestamp = this._midiPlayer.position!;
+      // TODO Optimize search by starting at current measure.
+      const timestamp = this.position;
       const index = binarySearch(
         this._options.converter.timemap,
         {
@@ -437,7 +453,7 @@ export class Player implements IMidiOutput {
         Math.max(0, timestamp - entry.timestamp),
         entry.duration,
       );
-      this._timingObjectUpdate({ position: timestamp });
+      this._timingObject.update({ position: timestamp });
 
       // Schedule next cursor movement.
       requestAnimationFrame(synchronizeMidi);
@@ -447,26 +463,11 @@ export class Player implements IMidiOutput {
     requestAnimationFrame(synchronizeMidi);
 
     // Activate the MIDI player.
-    const { velocity } = this.timingObject.query();
     if (this._midiPlayer.state === PlayerState.Paused) {
-      await this._midiPlayer.resume(velocity);
+      await this._midiPlayer.resume(this._velocity, this._repeat);
     } else {
-      await this._midiPlayer.play(velocity);
+      await this._midiPlayer.play(this._velocity, this._repeat);
     }
-
-    // Repeat if needed.
-    if (this._midiPlayer.state === PlayerState.Stopped) {
-      if (this._repeatCounter < 0 || Math.max(0, --this._repeatCounter) > 0) {
-        this._play();
-      }
-    }
-  }
-
-  private async _timingObjectUpdate(
-    newVector: TTimingStateVectorUpdate,
-  ): Promise<void> {
-    //this._timingObjectUpdating = true;
-    this._timingObject.update(newVector);
   }
 
   private _handleTimingObjectChange(_event: Event) {

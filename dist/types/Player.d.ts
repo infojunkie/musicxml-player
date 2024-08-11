@@ -45,7 +45,7 @@ export interface PlayerOptions {
     repeat?: number;
     /**
      * (Optional) Playback speed. A value of 1 means normal speed.
-     * Can also be changed dynamically via Player.timingObject.update({ velocity }).
+     * Can also be changed dynamically via Player.velocity attribute.
      */
     velocity?: number;
 }
@@ -66,9 +66,10 @@ export declare class Player implements IMidiOutput {
     private _midiPlayer;
     private _observer;
     private _midiFile;
+    private _duration;
     private _mute;
     private _repeat;
-    private _repeatCounter;
+    private _velocity;
     private _timingObject;
     private _timingObjectListener;
     private constructor();
@@ -122,8 +123,13 @@ export declare class Player implements IMidiOutput {
     get title(): string;
     /**
      * The duration of the score/MIDI file (ms).
+     * Precomputed in the constructor.
      */
     get duration(): number;
+    /**
+     * Current position of the player (ms).
+     */
+    get position(): number;
     /**
      * The TimingObject attached to the player.
      */
@@ -136,6 +142,10 @@ export declare class Player implements IMidiOutput {
      * A flag to mute the player's MIDI output.
      */
     set mute(value: boolean);
+    /**
+     * Playback speed. A value of 1 means normal speed.
+     */
+    set velocity(value: number);
     /**
      * Implementation of IMidiOutput.send().
      *
@@ -151,7 +161,6 @@ export declare class Player implements IMidiOutput {
      */
     clear(): void;
     private _play;
-    private _timingObjectUpdate;
     private _handleTimingObjectChange;
     private static _unroll;
 }
