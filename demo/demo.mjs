@@ -441,7 +441,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(document.location.search);
   try {
     const stored = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_KEY));
-    g_state.params = new URLSearchParams([...stored.params, ...[...params.entries()]]);
+    g_state.params = new URLSearchParams([...stored.params]);
+    params.entries().forEach(([key, value]) => { g_state.params.set(key, value); });
     g_state.options = stored.options;
   }
   catch {
