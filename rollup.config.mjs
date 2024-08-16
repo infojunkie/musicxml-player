@@ -1,13 +1,12 @@
 // @ts-check
 import typescript from '@rollup/plugin-typescript';
-import terser from '@rollup/plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import json from '@rollup/plugin-json';
 import css from 'rollup-plugin-import-css';
 
-import pkg from './package.json' assert { type: 'json' };
+import pkg from './package.json' with { type: 'json' };
 
 /**
  * Comment with library information to be appended in the generated bundles.
