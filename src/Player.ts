@@ -223,14 +223,20 @@ export class Player implements IMidiOutput {
    * Destroy the instance by freeing all resources and disconnecting observers.
    */
   destroy(): void {
-    this._timingObject.removeEventListener(
-      'change',
-      this._timingObjectListener,
-    );
-    this._sheet.remove();
-    this._observer.disconnect();
-    this._midiPlayer.stop();
-    this._options.renderer.destroy();
+    // Never fail during destruction.
+    try {
+      this._timingObject.removeEventListener(
+        'change',
+        this._timingObjectListener,
+      );
+      this._sheet.remove();
+      this._observer.disconnect();
+      this._midiPlayer.stop();
+      this._options.renderer.destroy();
+    }
+    catch (error) {
+      console.error(`[Player.destroy] ${error}`);
+    }
   }
 
   /**
