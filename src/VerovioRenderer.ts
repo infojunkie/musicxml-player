@@ -36,13 +36,13 @@ interface VerovioToolkitFixed extends VerovioToolkit {
  * Implementation of ISheetRenderer that uses Verovio @see https://github.com/rism-digital/verovio
  */
 export class VerovioRenderer implements ISheetRenderer {
-  private _vrv: VerovioToolkitFixed | null;
-  private _player: Player | null;
-  private _notes: Array<string>;
-  private _container: HTMLElement | null;
+  player?: Player;
+  private _vrv?: VerovioToolkitFixed;
+  private _container?: HTMLElement;
+  private _notes: string[] = [];
   private _vrvOptions: VerovioOptions;
   private _cursorOptions: CursorOptions;
-  private _timemap: MeasureTimemap;
+  private _timemap: MeasureTimemap = [];
   private _measures: {
     rects: DOMRect[];
     elements: SVGGElement[];
@@ -66,10 +66,6 @@ export class VerovioRenderer implements ISheetRenderer {
   };
 
   constructor(vrvOptions?: VerovioOptions, cursorOptions?: CursorOptions) {
-    this._vrv = null;
-    this._player = null;
-    this._notes = [];
-    this._container = null;
     this._vrvOptions = {
       ...{
         breaks: 'encoded',
@@ -85,7 +81,6 @@ export class VerovioRenderer implements ISheetRenderer {
       },
       ...cursorOptions,
     };
-    this._timemap = [];
     this._measures = {
       rects: [],
       elements: [],
@@ -116,11 +111,9 @@ export class VerovioRenderer implements ISheetRenderer {
   }
 
   async initialize(
-    player: Player,
     container: HTMLElement,
     musicXml: string,
   ): Promise<void> {
-    this._player = player;
     this._container = container;
 
     // Create the Verovio toolkit.
@@ -132,11 +125,11 @@ export class VerovioRenderer implements ISheetRenderer {
     // FIXME Create the sheet div inside the sheet container instead of using the container parent.
     this._container.parentElement!.appendChild(this._cursor);
     this._container.addEventListener('scroll', () => {
-      this._moveCursor();
+      this._move();
     });
 
     // First rendering.
-    this._drawSheet();
+    this._redraw();
     this.moveTo(0, 0, 0);
   }
 
@@ -215,12 +208,12 @@ export class VerovioRenderer implements ISheetRenderer {
     }
 
     // Move the cursor.
-    this._moveCursor();
+    this._move();
   }
 
   resize(): void {
     if (this._container && this._vrv) {
-      this._drawSheet();
+      this._redraw();
 
       // Force the notes highlighting and cursor position to be recalculated.
       this._notes = [];
@@ -242,7 +235,7 @@ export class VerovioRenderer implements ISheetRenderer {
     return this._vrvOptions.breaks === 'none';
   }
 
-  private _moveCursor() {
+  private _move() {
     if (!this._notes.length) return;
 
     // FIXME Handle the case where the measure contains elements before the first note.
@@ -271,7 +264,7 @@ export class VerovioRenderer implements ISheetRenderer {
     this._cursor.style.height = `${this._position.height}px`;
   }
 
-  private _drawSheet() {
+  private _redraw() {
     if (!this._container || !this._vrv) throw 'TODO';
 
     this._vrv.setOptions({
@@ -317,7 +310,7 @@ export class VerovioRenderer implements ISheetRenderer {
             firstNoteid = noteid;
           }
           document.getElementById(noteid)?.addEventListener('click', () => {
-            this._player?.moveTo(localIndex, localStart, localOffset);
+            this.player?.moveTo(localIndex, localStart, localOffset);
           });
         });
       });

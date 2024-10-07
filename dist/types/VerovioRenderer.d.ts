@@ -18,10 +18,10 @@ export interface CursorOptions {
  * Implementation of ISheetRenderer that uses Verovio @see https://github.com/rism-digital/verovio
  */
 export declare class VerovioRenderer implements ISheetRenderer {
-    private _vrv;
-    private _player;
+    player?: Player;
+    private _vrv?;
+    private _container?;
     private _notes;
-    private _container;
     private _vrvOptions;
     private _cursorOptions;
     private _timemap;
@@ -32,12 +32,12 @@ export declare class VerovioRenderer implements ISheetRenderer {
     private _measure;
     constructor(vrvOptions?: VerovioOptions, cursorOptions?: CursorOptions);
     destroy(): void;
-    initialize(player: Player, container: HTMLElement, musicXml: string): Promise<void>;
+    initialize(container: HTMLElement, musicXml: string): Promise<void>;
     moveTo(index: MeasureIndex, start: MillisecsTimestamp, offset: MillisecsTimestamp, duration?: MillisecsTimestamp): void;
     resize(): void;
     get version(): string;
     private _isHorizontalLayout;
-    private _moveCursor;
-    private _drawSheet;
+    private _move;
+    private _redraw;
 }
 //# sourceMappingURL=VerovioRenderer.d.ts.map

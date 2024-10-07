@@ -7,11 +7,11 @@ import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 export declare class MmaConverter implements IMidiConverter {
     private _apiUri;
     private _parameters?;
-    private _version;
-    private _midi;
-    private _timemap;
+    private _version?;
+    private _midi?;
+    private _timemap?;
     constructor(_apiUri: string, _parameters?: Record<string, string> | undefined);
-    initialize(musicXml: string): Promise<void>;
+    initialize(_container: HTMLElement, musicXml: string): Promise<void>;
     get midi(): IMidiFile;
     get timemap(): MeasureTimemap;
     get version(): string;

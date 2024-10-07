@@ -12,20 +12,22 @@ import { fetish } from './helpers';
  * to convert a MusicXML to a MIDI file. It extracts the timemap contained within the MIDI file, expressed as MIDI marker events.
  */
 export class MmaConverter implements IMidiConverter {
-  private _version: any;
-  private _midi: IMidiFile | null;
-  private _timemap: MeasureTimemap;
+  private _version?: {
+    name: string,
+    version: string
+  };
+  private _midi?: IMidiFile;
+  private _timemap?: MeasureTimemap;
 
   constructor(
     private _apiUri: string,
     private _parameters?: Record<string, string>,
-  ) {
-    this._version = null;
-    this._midi = null;
-    this._timemap = [];
-  }
+  ) {}
 
-  async initialize(musicXml: string): Promise<void> {
+  async initialize(
+    _container: HTMLElement,
+    musicXml: string,
+  ): Promise<void> {
     // First get the API version.
     this._version = await (await fetish(`${this._apiUri}/`)).json();
 
@@ -51,6 +53,7 @@ export class MmaConverter implements IMidiConverter {
   }
 
   get timemap(): MeasureTimemap {
+    if (!this._timemap) throw 'TODO';
     return this._timemap;
   }
 

@@ -105,11 +105,10 @@ export class Player implements IMidiOutput {
       }
 
       // Initialize the various objects.
-      // This is done in a specific sequence to ensure the dependency chain is respected.
       // It's too bad that constructors cannot be made async because that would simplify the code.
-      await options.converter.initialize(musicXml);
+      await options.converter.initialize(sheet, musicXml);
+      await options.renderer.initialize(sheet, musicXml);
       const player = new Player(options, sheet, parseResult, musicXml);
-      await options.renderer.initialize(player, sheet, musicXml);
       return player;
     } catch (error) {
       console.error(`[Player.load] ${error}`);
@@ -134,6 +133,10 @@ export class Player implements IMidiOutput {
     private _parseResult: MusicXMLParseResult,
     private _musicXml: string,
   ) {
+    // Inform the converter and renderer that we're here.
+    this._options.renderer.player = this;
+    this._options.converter.player = this;
+
     // Manipulate the incoming MIDI file to move the MIDI End Of Track message to the end of the last measure.
     this._midiFile = this._options.converter.midi;
     try {

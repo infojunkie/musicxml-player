@@ -1,5 +1,5 @@
 import type { IMidiFile } from 'midi-json-parser-worker';
-import type { MeasureIndex, MillisecsTimestamp } from './Player';
+import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 export type MeasureTimemapEntry = {
     measure: MeasureIndex;
     timestamp: MillisecsTimestamp;
@@ -20,7 +20,8 @@ export type MeasureTimemap = Array<MeasureTimemapEntry>;
  * Refer to the various implementations of this interface for details.
  */
 export interface IMidiConverter {
-    initialize(musicXml: string): Promise<void>;
+    player?: Player;
+    initialize(container: HTMLElement, musicXml: string): Promise<void>;
     get midi(): IMidiFile;
     get timemap(): MeasureTimemap;
     get version(): string;

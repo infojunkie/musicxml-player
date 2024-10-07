@@ -9,14 +9,14 @@ export type EngravingRulesOptions = {
  */
 export declare class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     private _rules?;
-    private _player;
+    player?: Player;
     private _osmd;
     private _currentMeasureIndex;
     private _currentVoiceEntryIndex;
     private _options;
     constructor(options?: IOSMDOptions, _rules?: EngravingRulesOptions | undefined);
     destroy(): void;
-    initialize(player: Player, container: HTMLElement, musicXml: string): Promise<void>;
+    initialize(container: HTMLElement, musicXml: string): Promise<void>;
     moveTo(index: MeasureIndex, _start: MillisecsTimestamp, offset: MillisecsTimestamp, _duration?: MillisecsTimestamp): void;
     resize(): void;
     get version(): string;

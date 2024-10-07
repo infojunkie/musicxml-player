@@ -12,10 +12,10 @@ import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 export declare class FetchConverter implements IMidiConverter {
     private _midiOrUri;
     private _timemapOrUri?;
-    private _timemap;
-    private _midi;
+    private _timemap?;
+    private _midi?;
     constructor(_midiOrUri: IMidiFile | string, _timemapOrUri?: (MeasureTimemap | string) | undefined);
-    initialize(musicXml: string): Promise<void>;
+    initialize(_container: HTMLElement, musicXml: string): Promise<void>;
     get midi(): IMidiFile;
     get timemap(): MeasureTimemap;
     get version(): string;

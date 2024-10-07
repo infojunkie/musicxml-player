@@ -8,8 +8,9 @@ import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
  * - Detect user interactions on the sheet, and call back the Player.moveTo() function for playback sync
  */
 export interface ISheetRenderer {
+    player?: Player;
     destroy(): void;
-    initialize(player: Player, container: HTMLElement, musicXml: string): Promise<void>;
+    initialize(container: HTMLElement, musicXml: string): Promise<void>;
     moveTo(index: MeasureIndex, start: MillisecsTimestamp, offset: MillisecsTimestamp, duration?: MillisecsTimestamp): void;
     resize(): void;
     get version(): string;

@@ -66,12 +66,13 @@ async function createPlayer() {
   // Create new player.
   if (g_state.musicXml) {
     try {
+      const rendererObject = await createRenderer(renderer, sheet, options);
       const player = await MusicXMLPlayer.Player.create({
         musicXml: g_state.musicXml,
         container: 'sheet-container',
-        renderer: createRenderer(renderer, options),
+        renderer: rendererObject,
         output: createOutput(output),
-        converter: await createConverter(converter, sheet, groove),
+        converter: await createConverter(rendererObject, converter, sheet, groove),
         unroll: options.unroll,
         mute: options.mute,
         repeat: Number(repeat),
@@ -107,7 +108,7 @@ async function createPlayer() {
   }
 }
 
-function createRenderer(renderer, options) {
+async function createRenderer(renderer, sheet, options) {
   switch (renderer) {
     case 'osmd':
       return new MusicXMLPlayer.OpenSheetMusicDisplayRenderer({
@@ -124,8 +125,19 @@ function createRenderer(renderer, options) {
       }, {
         scrollOffset: 100,
       });
+    case 'mscore':
+      const base = sheet.startsWith('http') || sheet.startsWith('data/') ? sheet : `data/${sheet}`;
+      const mscore = base.replace(/\.musicxml$|\.mxl$/, '.mscore.json');
+      try {
+        await MusicXMLPlayer.fetish(mscore, { method: 'HEAD' });
+        return new MusicXMLPlayer.MuseScoreRendererConverter(mscore);
+      }
+      catch {
+        console.warn(`MuseScore rendering not available for ${sheet}. Falling back to default.`);
+        return createRenderer(DEFAULT_RENDERER);
+      }
     default:
-      console.warn(`Unknown renderer ${renderer}`);
+      console.warn(`Unknown renderer ${renderer}. Falling back to default.`);
       return createRenderer(DEFAULT_RENDERER);
   }
 }
@@ -134,7 +146,7 @@ function getMmaEndpoint() {
   return window.location.href + 'mma';
 }
 
-async function createConverter(converter, sheet, groove) {
+async function createConverter(rendererObject, converter, sheet, groove) {
   const candidates = [{
     converter: new MusicXMLPlayer.VerovioConverter(),
     id: 'converter-vrv',
@@ -181,6 +193,15 @@ async function createConverter(converter, sheet, groove) {
   }
   catch {
     document.querySelector('input[name="converter"][id="converter-mma"]').disabled = true;
+  }
+
+  console.log(rendererObject);
+  if (rendererObject instanceof MusicXMLPlayer.MuseScoreRendererConverter) {
+    candidates.push({
+      converter: rendererObject,
+      id: 'converter-mscore',
+      priority: 20
+    });
   }
 
   const chosen = candidates.reduce((chosen, candidate) => {

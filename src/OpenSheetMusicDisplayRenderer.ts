@@ -19,20 +19,16 @@ export type EngravingRulesOptions = {
  * Implementation of ISheetRenderer that uses OpenSheetMusicDisplay @see https://github.com/opensheetmusicdisplay/opensheetmusicdisplay
  */
 export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
-  private _player: Player | null;
-  private _osmd: OpenSheetMusicDisplay | null;
-  private _currentMeasureIndex: MeasureIndex;
-  private _currentVoiceEntryIndex: number;
+  player?: Player;
+  private _osmd: OpenSheetMusicDisplay | undefined;
+  private _currentMeasureIndex: MeasureIndex = 0;
+  private _currentVoiceEntryIndex: number = 0;
   private _options: IOSMDOptions;
 
   constructor(
     options?: IOSMDOptions,
     private _rules?: EngravingRulesOptions,
   ) {
-    this._player = null;
-    this._osmd = null;
-    this._currentMeasureIndex = 0;
-    this._currentVoiceEntryIndex = 0;
     this._options = {
       ...{
         backend: 'svg',
@@ -52,15 +48,13 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   destroy(): void {
     if (!this._osmd) return;
     this._osmd.clear();
-    this._osmd = null;
+    this._osmd = undefined;
   }
 
   async initialize(
-    player: Player,
     container: HTMLElement,
     musicXml: string,
   ): Promise<void> {
-    this._player = player;
     this._osmd = new OpenSheetMusicDisplay(container, this._options);
     if (this._rules) {
       let k: keyof EngravingRules;
@@ -112,7 +106,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
       }
     }
     console.error(
-      `Could not find suitable staff entry at time ${offset} for measure ${index}`,
+      `[OpenSheetMusicDisplayRenderer.moveTo] Could not find suitable staff entry at time ${offset} for measure ${index}`,
     );
   }
 
@@ -151,7 +145,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
             (<HTMLElement>(
               vfve.vfStaveNote?.getAttribute('el')
             ))?.addEventListener('click', () => {
-              this._player?.moveTo(
+              this.player?.moveTo(
                 index,
                 this._timestampToMillisecs(
                   measure.parentSourceMeasure,
