@@ -3,7 +3,7 @@ import type { IMidiFile } from 'midi-json-parser-worker';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp } from './Player';
-import { atoab, fetish } from './helpers';
+import { atoab, fetish, binarySearch, assertIsDefined } from './helpers';
 import SaxonJS from './saxon-js/SaxonJS2.rt';
 
 export type MuseScoreDownloader = (musicXml: string) => {
@@ -69,10 +69,23 @@ export class MuseScoreRendererConverter implements ISheetRenderer, IMidiConverte
   private _media?: ReturnType<MuseScoreDownloader>;
   private _midi?: IMidiFile;
   private _timemap?: MeasureTimemap;
+  private _cursor: HTMLDivElement;
+  private _positions?: {
+    x: number,
+    y: number,
+    sx: number,
+    sy: number,
+    page: number
+  }[];
 
-  constructor(private _downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>) {}
+  constructor(private _downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>) {
+    this._cursor = document.createElement('div');
+    this._cursor.className = 'player-cursor';
+  }
 
-  destroy(): void {}
+  destroy(): void {
+    this._cursor.remove();
+  }
 
   async initialize(
     container: HTMLElement,
@@ -124,15 +137,28 @@ export class MuseScoreRendererConverter implements ISheetRenderer, IMidiConverte
       if (this._timemap.length > 1) {
         this._timemap.last().duration = this._timemap[this._timemap.length - 2].duration;
       }
+
+      // Store info we'll need later.
+      this._positions = (<any[]>SaxonJS.XPath.evaluate('//elements/element', mpos)).map(element => { return {
+        x: parseInt(element.getAttribute('x')),
+        y: parseInt(element.getAttribute('y')),
+        sx: parseInt(element.getAttribute('sx')),
+        sy: parseInt(element.getAttribute('sy')),
+        page: parseInt(element.getAttribute('page')),
+      }});
     }
 
     // Render the SVGs.
-    this._media?.svgs.forEach(svg => {
+    this._media?.svgs.forEach((svg, i) => {
       const page = document.createElement('div');
+      page.setAttribute('id', `page-${i}`);
       page.innerHTML = window.atob(svg);
       page.getElementsByTagName('path')[0]?.setAttribute('fill', 'transparent');
       container.appendChild(page);
     });
+
+    // Initialize the cursor.
+    container.parentElement!.appendChild(this._cursor);
   }
 
   moveTo(
@@ -140,7 +166,30 @@ export class MuseScoreRendererConverter implements ISheetRenderer, IMidiConverte
     _start: MillisecsTimestamp,
     _offset: MillisecsTimestamp,
     _duration?: MillisecsTimestamp,
-  ): void {}
+  ): void {
+    assertIsDefined(this._timemap);
+    assertIsDefined(this._positions);
+
+    const index = binarySearch(
+      this._timemap,
+      {
+        measure: 0,
+        timestamp: _start,
+        duration: 0,
+      },
+      (a, b) => {
+        const d = a.timestamp - b.timestamp;
+        if (Math.abs(d) < Number.EPSILON) return 0;
+        return d;
+      },
+    );
+
+    const x = this._positions[index].x;
+    const y = this._positions[index].y;
+    const height = this._positions[index].sy;
+    this._cursor.style.transform = `translate()`;
+    this._cursor.style.height = ``;
+  }
 
   resize(): void {}
 

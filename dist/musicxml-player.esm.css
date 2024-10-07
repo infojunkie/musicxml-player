@@ -1,5 +1,6 @@
 .player-sheet {
   overflow: auto;
+  position: relative;
 }
 .player-cursor {
   z-index: 2;

@@ -65,6 +65,8 @@ export declare class MuseScoreRendererConverter implements ISheetRenderer, IMidi
     private _media?;
     private _midi?;
     private _timemap?;
+    private _cursor;
+    private _positions?;
     constructor(_downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>);
     destroy(): void;
     initialize(container: HTMLElement, musicXml: string): Promise<void>;

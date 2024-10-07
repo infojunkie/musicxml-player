@@ -4,6 +4,7 @@ import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
 import { VerovioOptions } from 'verovio';
 import { MeasureTimemap } from './IMidiConverter';
+import { assertIsDefined } from './helpers';
 
 export interface TimemapEntryFixed {
   tstamp: number;
@@ -106,7 +107,7 @@ export class VerovioRenderer implements ISheetRenderer {
   }
 
   destroy() {
-    this._cursor?.remove();
+    this._cursor.remove();
     this._vrv?.destroy();
   }
 
@@ -212,23 +213,23 @@ export class VerovioRenderer implements ISheetRenderer {
   }
 
   resize(): void {
-    if (this._container && this._vrv) {
-      this._redraw();
+    assertIsDefined(this._container);
+    assertIsDefined(this._vrv);
 
-      // Force the notes highlighting and cursor position to be recalculated.
-      this._notes = [];
-      this.moveTo(
-        this._measure.index,
-        this._measure.start,
-        this._measure.offset,
-        this._measure.duration,
-      );
-    }
+    this._redraw();
+
+    // Force the notes highlighting and cursor position to be recalculated.
+    this._notes = [];
+    this.moveTo(
+      this._measure.index,
+      this._measure.start,
+      this._measure.offset,
+      this._measure.duration,
+    );
   }
 
   get version(): string {
-    if (!this._vrv) throw 'TODO';
-    return `verovio v${this._vrv.getVersion()}`;
+    return `verovio v${this._vrv?.getVersion() ?? `Unknown`}`;
   }
 
   private _isHorizontalLayout(): boolean {
@@ -265,7 +266,8 @@ export class VerovioRenderer implements ISheetRenderer {
   }
 
   private _redraw() {
-    if (!this._container || !this._vrv) throw 'TODO';
+    assertIsDefined(this._container);
+    assertIsDefined(this._vrv);
 
     this._vrv.setOptions({
       ...this._vrvOptions,
