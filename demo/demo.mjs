@@ -195,7 +195,6 @@ async function createConverter(rendererObject, converter, sheet, groove) {
     document.querySelector('input[name="converter"][id="converter-mma"]').disabled = true;
   }
 
-  console.log(rendererObject);
   if (rendererObject instanceof MusicXMLPlayer.MuseScoreRendererConverter) {
     candidates.push({
       converter: rendererObject,
