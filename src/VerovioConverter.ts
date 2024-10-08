@@ -5,7 +5,7 @@ import { VerovioToolkit } from 'verovio/esm';
 import { VerovioOptions } from 'verovio';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import type { TimemapEntryFixed } from './VerovioRenderer';
-import { atoab } from './helpers';
+import { assertIsDefined, atoab } from './helpers';
 
 /**
  * Implementation of IMidiConverter that uses the Verovio library to convert a MusicXML file to MIDI and timemap.
@@ -36,7 +36,7 @@ export class VerovioConverter implements IMidiConverter {
     this._vrv = new VerovioToolkit(VerovioModule);
     this._vrv.setOptions(this._options);
     if (!this._vrv.loadData(musicXml)) {
-      throw 'TODO';
+      throw new Error(`[VerovioConverter.initialize] Failed to load MusicXML.`);
     }
 
     // Build timemap.
@@ -73,7 +73,7 @@ export class VerovioConverter implements IMidiConverter {
   }
 
   get midi(): IMidiFile {
-    if (!this._midi) throw 'TODO';
+    assertIsDefined(this._midi);
     return this._midi;
   }
 
@@ -82,7 +82,6 @@ export class VerovioConverter implements IMidiConverter {
   }
 
   get version(): string {
-    if (!this._vrv) throw 'TODO';
-    return `verovio v${this._vrv.getVersion()}`;
+    return `verovio v${this._vrv?.getVersion() ?? 'Unknown'}`;
   }
 }

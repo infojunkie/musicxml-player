@@ -9,7 +9,7 @@ export declare function parseMidiEvent(data: number[] | Uint8Array): TMidiEvent;
  * Copied from https://github.com/chrisguttandin/midi-json-parser-worker
  * because the original code only runs in a Web Worker.
  */
-export declare const parseMidiFile: (arrayBuffer: ArrayBuffer) => {
+export declare const parseMidiFile: (arrayBuffer: ArrayBuffer, callback?: (trackNum: number, track: TMidiEvent[]) => void) => {
     division: number;
     format: number;
     tracks: (IMidiChannelPrefixEvent | IMidiCopyrightNoticeEvent | IMidiCuePointEvent | IMidiDeviceNameEvent | IMidiEndOfTrackEvent | IMidiInstrumentNameEvent | IMidiKeySignatureEvent | IMidiLyricEvent | IMidiMarkerEvent | IMidiMidiPortEvent | IMidiProgramNameEvent | IMidiSequencerSpecificEvent | IMidiSetTempoEvent | IMidiSmpteOffsetEvent | IMidiTextEvent | IMidiTimeSignatureEvent | IMidiTrackNameEvent | IMidiChannelPressureEvent | IMidiControlChangeEvent | IMidiKeyPressureEvent | IMidiNoteOffEvent | IMidiNoteOnEvent | IMidiPitchBendEvent | IMidiProgramChangeEvent | IMidiSysexEvent)[][];

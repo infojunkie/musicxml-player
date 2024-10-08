@@ -62,15 +62,16 @@ export type MuseScoreDownloader = (musicXml: string) => {
  */
 export declare class MuseScoreRendererConverter implements ISheetRenderer, IMidiConverter {
     private _downloader;
-    private _media?;
+    private _mscore?;
     private _midi?;
     private _timemap?;
     private _cursor;
-    private _positions?;
+    private _measures?;
+    private _segments?;
     constructor(_downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>);
     destroy(): void;
     initialize(container: HTMLElement, musicXml: string): Promise<void>;
-    moveTo(_index: MeasureIndex, _start: MillisecsTimestamp, _offset: MillisecsTimestamp, _duration?: MillisecsTimestamp): void;
+    moveTo(index: MeasureIndex, start: MillisecsTimestamp, offset: MillisecsTimestamp, _duration?: MillisecsTimestamp): void;
     resize(): void;
     get midi(): IMidiFile;
     get timemap(): MeasureTimemap;

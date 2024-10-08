@@ -295,7 +295,7 @@ function handlePlayPauseKey(e) {
       g_state.player.pause();
     }
     else {
-      g_state.player.resume();
+      g_state.player.play();
     }
   }
 }

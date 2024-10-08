@@ -6,7 +6,7 @@ export type MeasureTimemapEntry = {
   timestamp: MillisecsTimestamp;
   duration: MillisecsTimestamp;
 };
-export type MeasureTimemap = Array<MeasureTimemapEntry>;
+export type MeasureTimemap = MeasureTimemapEntry[];
 
 /**
  * Interface to a MusicXML-to-MIDI converter.

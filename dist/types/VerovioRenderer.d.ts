@@ -15,7 +15,8 @@ export interface CursorOptions {
     scrollOffset: number;
 }
 /**
- * Implementation of ISheetRenderer that uses Verovio @see https://github.com/rism-digital/verovio
+ * Implementation of ISheetRenderer that uses Verovio.
+ * @see https://github.com/rism-digital/verovio
  */
 export declare class VerovioRenderer implements ISheetRenderer {
     player?: Player;

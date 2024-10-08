@@ -5,7 +5,7 @@ import type {
   IMidiSetTempoEvent,
 } from 'midi-json-parser-worker';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
-import { fetish } from './helpers';
+import { assertIsDefined, fetish } from './helpers';
 
 /**
  * Implementation of IMidiConverter that queries the musicxml-midi API (@see https://github.com/infojunkie/musicxml-midi)
@@ -48,26 +48,23 @@ export class MmaConverter implements IMidiConverter {
   }
 
   get midi(): IMidiFile {
-    if (!this._midi) throw 'TODO';
+    assertIsDefined(this._midi);
     return this._midi;
   }
 
   get timemap(): MeasureTimemap {
-    if (!this._timemap) throw 'TODO';
+    assertIsDefined(this._timemap);
     return this._timemap;
   }
 
   get version(): string {
-    if (!this._version) throw 'TODO';
-    return `${this._version.name} v${this._version.version}`;
+    return `MmaConverter v${this._version?.version ?? 'Unknown'}`;
   }
 
   /**
    * Parse an IMidiFile into a timemap.
    */
   private static _parseTimemap(midi: IMidiFile): MeasureTimemap {
-    if (!midi.tracks.length) throw 'TODO';
-
     const timemap: MeasureTimemap = [];
     let microsecondsPerQuarter = 500000; // 60,000,000 microseconds per minute / 120 beats per minute
     let offset = 0;

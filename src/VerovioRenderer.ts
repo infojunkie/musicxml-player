@@ -34,7 +34,8 @@ interface VerovioToolkitFixed extends VerovioToolkit {
 }
 
 /**
- * Implementation of ISheetRenderer that uses Verovio @see https://github.com/rism-digital/verovio
+ * Implementation of ISheetRenderer that uses Verovio.
+ * @see https://github.com/rism-digital/verovio
  */
 export class VerovioRenderer implements ISheetRenderer {
   player?: Player;
@@ -120,7 +121,9 @@ export class VerovioRenderer implements ISheetRenderer {
     // Create the Verovio toolkit.
     const VerovioModule = await createVerovioModule();
     this._vrv = <VerovioToolkitFixed>new VerovioToolkit(VerovioModule);
-    if (!this._vrv.loadData(musicXml)) throw 'TODO';
+    if (!this._vrv.loadData(musicXml)) {
+      throw new Error(`[VerovioRenderer.initialize] Failed to load MusicXML.`);
+    }
 
     // Initialize the cursor.
     // FIXME Create the sheet div inside the sheet container instead of using the container parent.
@@ -213,9 +216,6 @@ export class VerovioRenderer implements ISheetRenderer {
   }
 
   resize(): void {
-    assertIsDefined(this._container);
-    assertIsDefined(this._vrv);
-
     this._redraw();
 
     // Force the notes highlighting and cursor position to be recalculated.
@@ -268,7 +268,6 @@ export class VerovioRenderer implements ISheetRenderer {
   private _redraw() {
     assertIsDefined(this._container);
     assertIsDefined(this._vrv);
-
     this._vrv.setOptions({
       ...this._vrvOptions,
       ...{

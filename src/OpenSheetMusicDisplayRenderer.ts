@@ -1,3 +1,4 @@
+import { assertIsDefined } from './helpers';
 import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 import {
@@ -80,7 +81,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     offset: MillisecsTimestamp,
     _duration?: MillisecsTimestamp,
   ): void {
-    if (!this._osmd) throw 'TODO';
+    assertIsDefined(this._osmd);
     const measure = this._osmd.Sheet.SourceMeasures[index];
 
     // Find the time within the measure.
@@ -117,12 +118,12 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   }
 
   get version(): string {
-    if (!this._osmd) throw 'TODO';
+    assertIsDefined(this._osmd);
     return `opensheetmusicdisplay v${this._osmd.Version}`;
   }
 
   private _redraw() {
-    if (!this._osmd) throw 'TODO';
+    assertIsDefined(this._osmd);
     if (
       this._osmd.GraphicSheet?.GetCalculator instanceof
       VexFlowMusicSheetCalculator
@@ -169,7 +170,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   }
 
   private _updateCursor(index: number, voiceEntryIndex: number) {
-    if (!this._osmd) throw 'TODO';
+    assertIsDefined(this._osmd);
     const measure = this._osmd.Sheet.SourceMeasures[index]!;
     const vsse = measure.VerticalSourceStaffEntryContainers[voiceEntryIndex]!;
 

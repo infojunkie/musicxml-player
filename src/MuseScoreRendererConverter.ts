@@ -3,8 +3,14 @@ import type { IMidiFile } from 'midi-json-parser-worker';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp } from './Player';
-import { atoab, fetish, binarySearch, assertIsDefined } from './helpers';
+import { atoab, fetish, assertIsDefined, binarySearch } from './helpers';
 import SaxonJS from './saxon-js/SaxonJS2.rt';
+
+// Constant to convert incoming coordinates in DPI into pixels.
+// @see https://github.com/musescore/MuseScore/blob/v4.4.2/src/engraving/dom/mscore.h#DPI
+// @see https://github.com/musescore/MuseScore/blob/v4.4.2/src/notation/internal/positionswriter.cpp#PositionsWriter::pngDpiResolution
+// ASSUMPTION PNG resolution is not overridden.
+const DOTS_PER_PIXEL = 72 * 5 * 12 / 96;
 
 export type MuseScoreDownloader = (musicXml: string) => {
   pngs?: string[],
@@ -60,23 +66,29 @@ export type MuseScoreDownloader = (musicXml: string) => {
   }
 }
 
+type MuseScorePosition = {
+  x: number,
+  y: number,
+  sx: number,
+  sy: number,
+  page: number
+}
+
 /**
  * Implementation of ISheetRenderer and IMidiConverter that uses MuseScore to generate the SVG, MIDI, and timemap files.
  *
  * Generate the score media with MuseScore as follows: `./mscore /path/to/score.musicxml --score-media > /path/to/score.json`
  */
 export class MuseScoreRendererConverter implements ISheetRenderer, IMidiConverter {
-  private _media?: ReturnType<MuseScoreDownloader>;
+  private _mscore?: ReturnType<MuseScoreDownloader>;
   private _midi?: IMidiFile;
   private _timemap?: MeasureTimemap;
   private _cursor: HTMLDivElement;
-  private _positions?: {
-    x: number,
-    y: number,
-    sx: number,
-    sy: number,
-    page: number
-  }[];
+  private _measures?: MuseScorePosition[];
+  private _segments?: (MuseScorePosition & {
+    timestamp: MillisecsTimestamp;
+    duration: MillisecsTimestamp;
+  })[];
 
   constructor(private _downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>) {
     this._cursor = document.createElement('div');
@@ -92,64 +104,85 @@ export class MuseScoreRendererConverter implements ISheetRenderer, IMidiConverte
     musicXml: string,
   ): Promise<void> {
     // We will be called twice because this is both a renderer and a converter.
-    if (this._media) return;
+    if (this._mscore) return;
 
+    // retrieve MuseScore metadata.
     // Given a URL: Download the score media.
     if (typeof this._downloader === 'string') {
-      this._media = await (await fetish(this._downloader)).json();
+      this._mscore = await (await fetish(this._downloader)).json();
     }
     // Given media structure.
     else if ('pngs' in this._downloader) {
-      this._media = this._downloader;
+      this._mscore = this._downloader;
     }
     // Given a function to get the media.
     else {
-      this._media = (<MuseScoreDownloader>this._downloader)(musicXml);
+      this._mscore = (<MuseScoreDownloader>this._downloader)(musicXml);
+    }
+    if (!this._mscore) {
+      throw new Error(`[MuseScoreRenderer.initialize] Failed to retrieve MuseScore metadata.`);
     }
 
     // Parse the MIDI.
-    if (this._media) {
-      this._midi = await parseMidiBuffer(atoab(this._media.midi));
-    }
+    this._midi = await parseMidiBuffer(atoab(this._mscore.midi));
 
     // Parse and create the timemap.
-    if (this._media) {
-      this._timemap = [];
-      const mpos = await SaxonJS.getResource({
-        type: 'xml',
-        encoding: 'utf8',
-        text: window.atob(this._media.mposXML),
-      });
-      const measures: any[] = SaxonJS.XPath.evaluate('//events/event', mpos);
-      measures.forEach((measure, i) => {
-        const timestamp = parseInt(measure.getAttribute('position'))
-        if (i > 0) {
-          this._timemap![i - 1].duration = timestamp - this._timemap![i - 1].timestamp
-        }
-        this._timemap!.push({
-          measure: i,
-          timestamp,
-          duration: 0
-        })
-      })
-
-      // FIXME: Fake last measure duration by assuming it's equal to the previous one.
-      if (this._timemap.length > 1) {
-        this._timemap.last().duration = this._timemap[this._timemap.length - 2].duration;
+    this._timemap = [];
+    const mpos = await SaxonJS.getResource({
+      type: 'xml',
+      encoding: 'utf8',
+      text: window.atob(this._mscore.mposXML),
+    });
+    (<any[]>SaxonJS.XPath.evaluate('//events/event', mpos)).forEach((measure, i) => {
+      const timestamp = parseInt(measure.getAttribute('position'))
+      if (i > 0) {
+        this._timemap![i - 1].duration = timestamp - this._timemap![i - 1].timestamp
       }
+      this._timemap!.push({
+        measure: i,
+        timestamp,
+        duration: 0
+      })
+    })
 
-      // Store info we'll need later.
-      this._positions = (<any[]>SaxonJS.XPath.evaluate('//elements/element', mpos)).map(element => { return {
-        x: parseInt(element.getAttribute('x')),
-        y: parseInt(element.getAttribute('y')),
-        sx: parseInt(element.getAttribute('sx')),
-        sy: parseInt(element.getAttribute('sy')),
-        page: parseInt(element.getAttribute('page')),
-      }});
-    }
+    // Compute last measure duration by getting total duration minus last measure onset.
+    this._timemap.last().duration = this._mscore.metadata.duration * 1000 - this._timemap.last().timestamp;
+
+    // Store information we'll need later:
+    // - Measure space positions
+    // - Segments (musical events) space and time positions
+    this._measures = (<any[]>SaxonJS.XPath.evaluate('//elements/element', mpos)).map(element => { return {
+      x: parseInt(element.getAttribute('x')) / DOTS_PER_PIXEL,
+      y: parseInt(element.getAttribute('y')) / DOTS_PER_PIXEL,
+      sx: parseInt(element.getAttribute('sx')) / DOTS_PER_PIXEL,
+      sy: parseInt(element.getAttribute('sy')) / DOTS_PER_PIXEL,
+      page: parseInt(element.getAttribute('page')),
+    }});
+    const spos = await SaxonJS.getResource({
+      type: 'xml',
+      encoding: 'utf8',
+      text: window.atob(this._mscore.sposXML),
+    });
+    this._segments = (<any[]>SaxonJS.XPath.evaluate('//elements/element', spos)).map(element => { return {
+      x: parseInt(element.getAttribute('x')) / DOTS_PER_PIXEL,
+      y: parseInt(element.getAttribute('y')) / DOTS_PER_PIXEL,
+      sx: parseInt(element.getAttribute('sx')) / DOTS_PER_PIXEL,
+      sy: parseInt(element.getAttribute('sy')) / DOTS_PER_PIXEL,
+      page: parseInt(element.getAttribute('page')),
+      timestamp: 0,
+      duration: 0,
+    }});
+    (<any[]>SaxonJS.XPath.evaluate('//events/event', spos)).forEach((segment, i) => {
+      const timestamp = parseInt(segment.getAttribute('position'))
+      if (i > 0) {
+        this._segments![i - 1].duration = timestamp - this._segments![i - 1].timestamp
+      }
+      this._segments![i].timestamp = timestamp;
+    });
+    this._segments.last().duration = this._mscore.metadata.duration * 1000 - this._segments.last().timestamp;
 
     // Render the SVGs.
-    this._media?.svgs.forEach((svg, i) => {
+    this._mscore.svgs.forEach((svg, i) => {
       const page = document.createElement('div');
       page.setAttribute('id', `page-${i}`);
       page.innerHTML = window.atob(svg);
@@ -158,52 +191,52 @@ export class MuseScoreRendererConverter implements ISheetRenderer, IMidiConverte
     });
 
     // Initialize the cursor.
-    container.parentElement!.appendChild(this._cursor);
+    container.appendChild(this._cursor);
+    this.moveTo(0, 0, 0);
   }
 
   moveTo(
-    _index: MeasureIndex,
-    _start: MillisecsTimestamp,
-    _offset: MillisecsTimestamp,
+    index: MeasureIndex,
+    start: MillisecsTimestamp,
+    offset: MillisecsTimestamp,
     _duration?: MillisecsTimestamp,
   ): void {
-    assertIsDefined(this._timemap);
-    assertIsDefined(this._positions);
+    assertIsDefined(this._measures);
+    assertIsDefined(this._segments);
 
-    const index = binarySearch(
-      this._timemap,
-      {
-        measure: 0,
-        timestamp: _start,
-        duration: 0,
-      },
-      (a, b) => {
-        const d = a.timestamp - b.timestamp;
-        if (Math.abs(d) < Number.EPSILON) return 0;
-        return d;
-      },
-    );
+    // Find the segment position based on time.
+    const segment = binarySearch(this._segments, {
+      x: 0, y: 0, sx: 0, sy: 0, page: 0,
+      timestamp: start + offset,
+      duration: 0
+    }, (a, b) => {
+      const d = a.timestamp - b.timestamp;
+      if (Math.abs(d) < Number.EPSILON) return 0;
+      return d;
+    });
+    const sindex = segment >= 0 ? segment : Math.max(0, -segment - 2);
 
-    const x = this._positions[index].x;
-    const y = this._positions[index].y;
-    const height = this._positions[index].sy;
-    this._cursor.style.transform = `translate()`;
-    this._cursor.style.height = ``;
+    // Move the cursor to this position.
+    const x = this._segments[sindex].x;
+    const y = this._segments[sindex].y;
+    const height = this._measures[index].sy;
+    this._cursor.style.transform = `translate(${x}px,${y}px)`;
+    this._cursor.style.height = `${height}px`;
   }
 
   resize(): void {}
 
   get midi(): IMidiFile {
-    if (!this._midi) throw 'TODO';
+    assertIsDefined(this._midi);
     return this._midi;
   }
 
   get timemap(): MeasureTimemap {
-    if (!this._timemap) throw 'TODO';
+    assertIsDefined(this._timemap);
     return this._timemap;
   }
 
   get version(): string {
-    return `MuseScore v${this._media?.devinfo.version ?? 'Unknown'}`
+    return `MuseScore v${this._mscore?.devinfo.version ?? 'Unknown'}`
   }
 }
