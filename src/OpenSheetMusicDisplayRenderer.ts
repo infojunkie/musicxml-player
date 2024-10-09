@@ -52,10 +52,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     this._osmd = undefined;
   }
 
-  async initialize(
-    container: HTMLElement,
-    musicXml: string,
-  ): Promise<void> {
+  async initialize(container: HTMLElement, musicXml: string): Promise<void> {
     this._osmd = new OpenSheetMusicDisplay(container, this._options);
     if (this._rules) {
       let k: keyof EngravingRules;

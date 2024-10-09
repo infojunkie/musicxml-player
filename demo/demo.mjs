@@ -6,7 +6,7 @@ const DEFAULT_RENDERER = 'vrv';
 const DEFAULT_OUTPUT = 'local';
 const DEFAULT_SHEET = 'data/asa-branca.musicxml';
 const DEFAULT_GROOVE = 'Default';
-const DEFAULT_CONVERTER = 'midi';
+const DEFAULT_CONVERTER = 'vrv';
 const DEFAULT_VELOCITY = 1;
 const DEFAULT_REPEAT = 1;
 const DEFAULT_OPTIONS = {
@@ -35,9 +35,9 @@ async function createPlayer() {
   // Set the player parameters.
   const sheet = g_state.params.get('sheet');
   const output = g_state.params.get('output') ?? DEFAULT_OUTPUT;
-  const renderer = g_state.params.get('renderer') ?? DEFAULT_RENDERER;
+  let renderer = g_state.params.get('renderer') ?? DEFAULT_RENDERER;
   const groove = g_state.params.get('groove') ?? DEFAULT_GROOVE;
-  const converter = g_state.params.get('converter') ?? DEFAULT_CONVERTER;
+  let converter = g_state.params.get('converter') ?? DEFAULT_CONVERTER;
   const velocity = g_state.params.get('velocity') ?? DEFAULT_VELOCITY;
   const repeat = g_state.params.get('repeat') ?? DEFAULT_REPEAT;
   const options = g_state.options;
@@ -55,24 +55,71 @@ async function createPlayer() {
   if (!upload.value.endsWith(sheet)) {
     upload.value = '';
   }
-  document.getElementById('download-musicxml').innerHTML = '';
-  document.getElementById('download-midi').innerHTML = '';
+  document.getElementById('download-musicxml').textContent = '';
+  document.getElementById('download-midi').textContent = '';
   document.getElementById('error').textContent = '';
   document.getElementById('ireal').value = '';
   document.getElementById('grooves').value = groove === DEFAULT_GROOVE ? null : groove;
   document.getElementById('velocity').value = velocity;
   document.getElementById('repeat').value = repeat;
 
+  // Detect renderer and converter possibilities based on sheet.
+  const base = sheet.startsWith('http') || sheet.startsWith('data/') ? sheet : `data/${sheet}`;
+  for (const [k, v] of Object.entries({
+    'vrv': true,
+    'osmd': true,
+    'mscore': '.mscore.json',
+  })) {
+    const input = document.getElementById(`renderer-${k}`);
+    try {
+      if (typeof v === 'string') {
+        await MusicXMLPlayer.fetish(base.replace(/\.musicxml$|\.mxl$/, v), { method: 'HEAD' })
+      }
+      input.disabled = false;
+    }
+    catch {
+      input.disabled = true;
+      if (renderer === k) {
+        renderer = DEFAULT_RENDERER;
+      }
+    }
+  }
+  document.getElementById(`renderer-${renderer}`).setAttribute('checked', 'checked');
+  for (const [k, v] of Object.entries({
+    'vrv': true,
+    'mma': async () => MusicXMLPlayer.fetish(window.location.href + 'mma/', { method: 'HEAD' }),
+    'midi': '.mid',
+    'timemap': '.timemap.json',
+    'mscore': '.mscore.json',
+  })) {
+    const input = document.getElementById(`converter-${k}`);
+    try {
+      if (typeof v === 'string') {
+        await MusicXMLPlayer.fetish(base.replace(/\.musicxml$|\.mxl$/, v), { method: 'HEAD' })
+      }
+      else if (typeof v === 'function') {
+        await v();
+      }
+      input.disabled = false;
+    }
+    catch {
+      input.disabled = true;
+      if (converter === k) {
+        converter = DEFAULT_CONVERTER;
+      }
+    }
+  }
+  document.getElementById(`converter-${converter}`).setAttribute('checked', 'checked');
+
   // Create new player.
   if (g_state.musicXml) {
     try {
-      const rendererObject = await createRenderer(renderer, sheet, options);
       const player = await MusicXMLPlayer.Player.create({
         musicXml: g_state.musicXml,
         container: 'sheet-container',
-        renderer: rendererObject,
+        renderer: await createRenderer(renderer, sheet, options),
         output: createOutput(output),
-        converter: await createConverter(rendererObject, converter, sheet, groove),
+        converter: await createConverter(converter, sheet, groove),
         unroll: options.unroll,
         mute: options.mute,
         repeat: Number(repeat),
@@ -109,6 +156,7 @@ async function createPlayer() {
 }
 
 async function createRenderer(renderer, sheet, options) {
+  const base = sheet.startsWith('http') || sheet.startsWith('data/') ? sheet : `data/${sheet}`;
   switch (renderer) {
     case 'osmd':
       return new MusicXMLPlayer.OpenSheetMusicDisplayRenderer({
@@ -126,100 +174,29 @@ async function createRenderer(renderer, sheet, options) {
         scrollOffset: 100,
       });
     case 'mscore':
-      const base = sheet.startsWith('http') || sheet.startsWith('data/') ? sheet : `data/${sheet}`;
-      const mscore = base.replace(/\.musicxml$|\.mxl$/, '.mscore.json');
-      try {
-        await MusicXMLPlayer.fetish(mscore, { method: 'HEAD' });
-        return new MusicXMLPlayer.MuseScoreRendererConverter(mscore);
-      }
-      catch {
-        console.warn(`MuseScore rendering not available for ${sheet}. Falling back to default.`);
-        return createRenderer(DEFAULT_RENDERER);
-      }
-    default:
-      console.warn(`Unknown renderer ${renderer}. Falling back to default.`);
-      return createRenderer(DEFAULT_RENDERER);
+      return new MusicXMLPlayer.MuseScoreRendererConverter(base.replace(/\.musicxml$|\.mxl$/, '.mscore.json'));
   }
 }
 
-function getMmaEndpoint() {
-  return window.location.href + 'mma';
-}
-
-async function createConverter(rendererObject, converter, sheet, groove) {
-  const candidates = [{
-    converter: new MusicXMLPlayer.VerovioConverter(),
-    id: 'converter-vrv',
-    priority: 1
-  }];
-
-  try {
-    if (!sheet.endsWith('.musicxml') && !sheet.endsWith('.mxl')) throw 'next';
-    const base = sheet.startsWith('http') || sheet.startsWith('data/') ? sheet : `data/${sheet}`;
-    const midi = base.replace(/\.musicxml$|\.mxl$/, '.mid');
-    const timemap = base.replace(/\.musicxml$|\.mxl$/, '.timemap.json');
-    await MusicXMLPlayer.fetish(midi, { method: 'HEAD' });
-    try {
-      await MusicXMLPlayer.fetish(timemap, { method: 'HEAD' });
-      candidates.push({
-        converter: new MusicXMLPlayer.FetchConverter(midi, timemap),
-        id: 'converter-midi',
-        priority: 5
-      });
-    }
-    catch {
-      candidates.push({
-        converter: new MusicXMLPlayer.FetchConverter(midi),
-        id: 'converter-midi',
-        priority: 5
-      });
-    }
+async function createConverter(converter, sheet, groove) {
+  const base = sheet.startsWith('http') || sheet.startsWith('data/') ? sheet : `data/${sheet}`;
+  switch (converter) {
+    case 'midi':
+      return new MusicXMLPlayer.FetchConverter(base.replace(/\.musicxml$|\.mxl$/, '.mid'));
+    case 'timemap':
+      return new MusicXMLPlayer.FetchConverter(base.replace(/\.musicxml$|\.mxl$/, '.mid'), base.replace(/\.musicxml$|\.mxl$/, '.timemap.json'));
+    case 'vrv':
+      return new MusicXMLPlayer.VerovioConverter();
+    case 'mma':
+      const parameters = {};
+      if (groove !== DEFAULT_GROOVE) {
+        parameters['globalGroove'] = groove;
+      }
+      return new MusicXMLPlayer.MmaConverter(window.location.href + 'mma/', parameters);
+    case 'mscore':
+      // FIXME Return same instance as renderer.
+      return new MusicXMLPlayer.MuseScoreRendererConverter(base.replace(/\.musicxml$|\.mxl$/, '.mscore.json'));
   }
-  catch {
-    document.querySelector('input[name="converter"][id="converter-midi"]').disabled = true;
-  }
-
-  try {
-    await MusicXMLPlayer.fetish(`${getMmaEndpoint()}/`, { method: 'HEAD' });
-    const parameters = {};
-    if (groove !== DEFAULT_GROOVE) {
-      parameters['globalGroove'] = groove;
-    }
-    candidates.push({
-      converter: new MusicXMLPlayer.MmaConverter(getMmaEndpoint(), parameters),
-      id: 'converter-mma',
-      priority: 10
-    });
-  }
-  catch {
-    document.querySelector('input[name="converter"][id="converter-mma"]').disabled = true;
-  }
-
-  if (rendererObject instanceof MusicXMLPlayer.MuseScoreRendererConverter) {
-    candidates.push({
-      converter: rendererObject,
-      id: 'converter-mscore',
-      priority: 20
-    });
-  }
-
-  const chosen = candidates.reduce((chosen, candidate) => {
-    document.querySelector(`input[name="converter"][id="${candidate.id}"]`).disabled = false;
-    if (candidate.id === `converter-${converter}`) {
-      candidate.priority = Number.POSITIVE_INFINITY;
-    }
-    if (!chosen || chosen.priority < candidate.priority) {
-      return candidate;
-    }
-    return chosen;
-  }, null);
-  document.querySelector(`input[name="converter"][id="${chosen.id}"]`).checked = true;
-
-  if (chosen.id !== 'converter-mma') {
-    g_state.params.set('groove', DEFAULT_GROOVE);
-  }
-
-  return chosen.converter;
 }
 
 function createOutput(output) {
@@ -232,7 +209,7 @@ function createOutput(output) {
 function populateMidiOutputs(webmidi) {
   const outputs = document.getElementById('outputs');
   const current = outputs.value;
-  outputs.innerHTML = '';
+  outputs.textContent = '';
   [{ id: 'local', name: '(local synth)' }].concat(...(webmidi?.outputs?.values() ?? [])).forEach(output => {
     const option = document.createElement('option');
     option.value = output.id;
@@ -303,14 +280,13 @@ function handlePlayPauseKey(e) {
 function populateSheets(ireal) {
   const playlist = new iRealMusicXML.Playlist(ireal);
   const sheets = document.getElementById('sheets');
-  sheets.innerHTML = '';
+  sheets.textContent = '';
   playlist.songs.forEach(song => {
     const option = document.createElement('option');
     option.value = JSON.stringify(song);
     option.text = song.title;
     sheets.add(option);
   });
-  g_state.params.delete('sheet');
   g_state.params.set('groove', DEFAULT_GROOVE);
   sheets.dispatchEvent(new Event('change'));
 }

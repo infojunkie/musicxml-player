@@ -26,10 +26,7 @@ export class FetchConverter implements IMidiConverter {
     private _timemapOrUri?: MeasureTimemap | string,
   ) {}
 
-  async initialize(
-    _container: HTMLElement,
-    musicXml: string,
-  ): Promise<void> {
+  async initialize(_container: HTMLElement, musicXml: string): Promise<void> {
     this._midi =
       typeof this._midiOrUri === 'string'
         ? await parseMidiBuffer(

@@ -1,5 +1,6 @@
 .player-sheet {
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
   position: relative;
 }
 .player-cursor {

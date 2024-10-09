@@ -23,10 +23,7 @@ export type MeasureTimemap = MeasureTimemapEntry[];
  */
 export interface IMidiConverter {
   player?: Player;
-  initialize(
-    container: HTMLElement,
-    musicXml: string,
-  ): Promise<void>;
+  initialize(container: HTMLElement, musicXml: string): Promise<void>;
   get midi(): IMidiFile;
   get timemap(): MeasureTimemap;
   get version(): string;

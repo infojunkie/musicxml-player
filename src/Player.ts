@@ -236,8 +236,7 @@ export class Player implements IMidiOutput {
       this._observer.disconnect();
       this._midiPlayer.stop();
       this._options.renderer.destroy();
-    }
-    catch (error) {
+    } catch (error) {
       console.error(`[Player.destroy] ${error}`);
     }
   }

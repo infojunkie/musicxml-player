@@ -112,10 +112,7 @@ export class VerovioRenderer implements ISheetRenderer {
     this._vrv?.destroy();
   }
 
-  async initialize(
-    container: HTMLElement,
-    musicXml: string,
-  ): Promise<void> {
+  async initialize(container: HTMLElement, musicXml: string): Promise<void> {
     this._container = container;
 
     // Create the Verovio toolkit.
@@ -125,9 +122,7 @@ export class VerovioRenderer implements ISheetRenderer {
       throw new Error(`[VerovioRenderer.initialize] Failed to load MusicXML.`);
     }
 
-    // Initialize the cursor.
-    // FIXME Create the sheet div inside the sheet container instead of using the container parent.
-    this._container.parentElement!.appendChild(this._cursor);
+    // Handle scrolling.
     this._container.addEventListener('scroll', () => {
       this._move();
     });
@@ -143,6 +138,8 @@ export class VerovioRenderer implements ISheetRenderer {
     offset: MillisecsTimestamp,
     duration?: MillisecsTimestamp,
   ) {
+    assertIsDefined(this._vrv);
+
     // Cache the incoming measure params.
     this._measure = {
       index,
@@ -154,7 +151,7 @@ export class VerovioRenderer implements ISheetRenderer {
     // Find the Verovio notes at the current timestamp.
     const timestamp = this._timemap[index].timestamp + offset;
     const elements = <ElementsAtTimeFixed>(
-      this._vrv!.getElementsAtTime(timestamp)
+      this._vrv.getElementsAtTime(timestamp)
     );
     const notes = [...(elements.notes || []), ...(elements.rests || [])];
     if (!notes.length) {
@@ -163,7 +160,7 @@ export class VerovioRenderer implements ISheetRenderer {
       if (mRest) notes.push(mRest.id);
     }
 
-    // Highlight the notes.
+    // Highlight the notes, only if they changed.
     if (
       notes.length !== this._notes.length ||
       !this._notes.every((noteid, index) => notes[index] === noteid)
@@ -171,6 +168,7 @@ export class VerovioRenderer implements ISheetRenderer {
       this._notes.forEach((noteid) => {
         if (!notes.includes(noteid)) {
           const note = document.getElementById(noteid);
+          // TODO Restore original attributes.
           note?.setAttribute('fill', '#000');
           note?.setAttribute('stroke', '#000');
         }
@@ -179,6 +177,8 @@ export class VerovioRenderer implements ISheetRenderer {
       this._notes.forEach((noteid) => {
         const note = document.getElementById(noteid);
         if (!note) return;
+
+        // TODO Store original attributes and make highlight attributes configurable.
         note.setAttribute('fill', 'rgb(234, 107, 36)');
         note.setAttribute('stroke', 'rgb(234, 107, 36)');
 
@@ -238,27 +238,26 @@ export class VerovioRenderer implements ISheetRenderer {
 
   private _move() {
     if (!this._notes.length) return;
+    assertIsDefined(this._container);
 
     // FIXME Handle the case where the measure contains elements before the first note.
-    let x = 0;
-    if (this._measure.duration) {
-      x = Math.round(
-        window.scrollX +
-          this._measures.rects[this._measure.index].left -
-          this._container!.scrollLeft +
-          Math.min(1.0, this._measure.offset / this._measure.duration) *
-            this._measures.rects[this._measure.index].width,
-      );
-    } else {
-      const note = document.getElementById(this._notes[0]);
-      x = note!.getBoundingClientRect().left;
-    }
     const system =
       this._measures.elements[this._measure.index].closest('g.system');
     const systemRect = system!.getBoundingClientRect();
+    const containerRect = this._container?.getBoundingClientRect();
     this._position = {
-      x,
-      y: systemRect.top + window.scrollY,
+      x:
+        -containerRect.left +
+        (this._measure.duration
+          ? Math.round(
+              this._measures.rects[this._measure.index].left -
+                this._container!.scrollLeft +
+                Math.min(1.0, this._measure.offset / this._measure.duration) *
+                  this._measures.rects[this._measure.index].width,
+            )
+          : document.getElementById(this._notes[0])!.getBoundingClientRect()
+              .left),
+      y: systemRect.top - containerRect.top,
       height: systemRect.height,
     };
     this._cursor.style.transform = `translate(${this._position.x}px,${this._position.y}px)`;
@@ -268,6 +267,7 @@ export class VerovioRenderer implements ISheetRenderer {
   private _redraw() {
     assertIsDefined(this._container);
     assertIsDefined(this._vrv);
+
     this._vrv.setOptions({
       ...this._vrvOptions,
       ...{
@@ -280,15 +280,17 @@ export class VerovioRenderer implements ISheetRenderer {
       },
     });
     this._vrv.redoLayout({ resetCache: false });
-    const pages = [];
-    for (let page = 1; page <= this._vrv.getPageCount(); page++) {
-      pages.push(this._vrv.renderToSVG(page));
+    this._container.textContent = '';
+    this._container.appendChild(this._cursor);
+    for (let i = 0; i < this._vrv.getPageCount(); i++) {
+      const page = document.createElement('div');
+      page.setAttribute('id', `page-${i}`);
+      page.innerHTML = this._vrv.renderToSVG(i + 1);
+      this._container.appendChild(page);
     }
-    const svg = pages.join('');
-    this._container.innerHTML = svg;
 
     // Setup event listeners on notes.
-    let firstNoteid: string | null = null;
+    let firstNoteid: string | undefined;
     this._timemap = [];
     this._vrv
       .renderToTimemap({ includeMeasures: true, includeRests: true })
@@ -320,7 +322,7 @@ export class VerovioRenderer implements ISheetRenderer {
     this._measures.elements = [];
     this._measures.rects = [];
     const measures =
-      this._container?.querySelectorAll<SVGGElement>('svg g.measure');
+      this._container!.querySelectorAll<SVGGElement>('svg g.measure');
     measures.forEach((measure, i) => {
       this._measures.elements.push(measure);
       const staff = measure.querySelector('g.staff');
@@ -331,8 +333,8 @@ export class VerovioRenderer implements ISheetRenderer {
       if (i > 0 || !note) {
         this._measures.rects.push(
           DOMRect.fromRect({
-            x: rect.x + window.scrollX + this._container!.scrollLeft,
-            y: rect.y + window.scrollY + this._container!.scrollTop,
+            x: rect.x + this._container!.scrollLeft,
+            y: rect.y + this._container!.scrollTop,
             height: rect.height,
             width: rect.width,
           }),
@@ -342,8 +344,8 @@ export class VerovioRenderer implements ISheetRenderer {
         const noteRect = note.getBoundingClientRect();
         this._measures.rects.push(
           DOMRect.fromRect({
-            x: noteRect.x + window.scrollX + this._container!.scrollLeft,
-            y: rect.y + window.scrollY + this._container!.scrollTop,
+            x: noteRect.x + this._container!.scrollLeft,
+            y: rect.y + this._container!.scrollTop,
             height: rect.height,
             width: rect.width - (noteRect.x - rect.x),
           }),

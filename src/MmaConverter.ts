@@ -13,23 +13,23 @@ import { assertIsDefined, fetish } from './helpers';
  */
 export class MmaConverter implements IMidiConverter {
   private _version?: {
-    name: string,
-    version: string
+    name: string;
+    version: string;
   };
   private _midi?: IMidiFile;
   private _timemap?: MeasureTimemap;
+  private _uri;
 
   constructor(
-    private _apiUri: string,
+    uri: string,
     private _parameters?: Record<string, string>,
-  ) {}
+  ) {
+    this._uri = uri.endsWith('/') ? uri.slice(0, -1) : uri;
+  }
 
-  async initialize(
-    _container: HTMLElement,
-    musicXml: string,
-  ): Promise<void> {
+  async initialize(_container: HTMLElement, musicXml: string): Promise<void> {
     // First get the API version.
-    this._version = await (await fetish(`${this._apiUri}/`)).json();
+    this._version = await (await fetish(`${this._uri}/`)).json();
 
     // Convert the score.
     const formData = new FormData();
@@ -39,7 +39,7 @@ export class MmaConverter implements IMidiConverter {
         formData.append(parameter, this._parameters[parameter]);
       }
     }
-    const response = await fetish(`${this._apiUri}/convert`, {
+    const response = await fetish(`${this._uri}/convert`, {
       method: 'POST',
       body: formData,
     });
