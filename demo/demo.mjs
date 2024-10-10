@@ -89,7 +89,6 @@ async function createPlayer() {
     'vrv': true,
     'mma': async () => MusicXMLPlayer.fetish(window.location.href + 'mma/', { method: 'HEAD' }),
     'midi': '.mid',
-    'timemap': '.timemap.json',
     'mscore': '.mscore.json',
   })) {
     const input = document.getElementById(`converter-${k}`);
@@ -188,9 +187,14 @@ async function createConverter(converter, sheet, groove) {
   const base = sheet.startsWith('http') || sheet.startsWith('data/') ? sheet : `data/${sheet}`;
   switch (converter) {
     case 'midi':
-      return new MusicXMLPlayer.FetchConverter(base.replace(/\.musicxml$|\.mxl$/, '.mid'));
-    case 'timemap':
-      return new MusicXMLPlayer.FetchConverter(base.replace(/\.musicxml$|\.mxl$/, '.mid'), base.replace(/\.musicxml$|\.mxl$/, '.timemap.json'));
+      try {
+        const timemap = base.replace(/\.musicxml$|\.mxl$/, '.timemap.json');
+        await MusicXMLPlayer.fetish(timemap, { method: 'HEAD' });
+        return new MusicXMLPlayer.FetchConverter(base.replace(/\.musicxml$|\.mxl$/, '.mid'), timemap);
+      }
+      catch {
+        return new MusicXMLPlayer.FetchConverter(base.replace(/\.musicxml$|\.mxl$/, '.mid'));
+      }
     case 'vrv':
       return new MusicXMLPlayer.VerovioConverter();
     case 'mma':
