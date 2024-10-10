@@ -507,7 +507,6 @@ const _readVariableLengthQuantity = (dataView: DataView, offset: number) => {
   let nextOffset = offset;
   let value = 0;
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const byte = dataView.getUint8(nextOffset);
 

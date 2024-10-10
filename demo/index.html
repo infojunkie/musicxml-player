@@ -90,11 +90,11 @@
       <input type="radio" id="renderer-vrv" name="renderer" value="vrv"/>
       <label for="renderer-vrv">Verovio</label>
       <input type="radio" id="renderer-mscore" name="renderer" value="mscore"/>
-      <label for="renderer-mscore">MuseScore</label>
-      <div class="player-options">
-        <input type="checkbox" class="player-option" id="option-unroll" value="unroll"/>
+      <label for="renderer-mscore">MuseScore (SVG)</label>
+      <div class="renderer-options">
+        <input type="checkbox" class="renderer-option" id="option-unroll" value="unroll"/>
         <label for="option-unroll">Unroll score</label>
-        <input type="checkbox" class="player-option" id="option-horizontal" value="horizontal"/>
+        <input type="checkbox" class="renderer-option" id="option-horizontal" value="horizontal"/>
         <label for="option-horizontal">Horizontal layout</label>
       </div>
     </div>
@@ -123,7 +123,7 @@
     <div>
       <label for="outputs">MIDI output</label>
       <select id="outputs"></select>
-      <input type="checkbox" class="player-option" id="option-mute" value="mute"/>
+      <input type="checkbox" class="renderer-option" id="option-mute" value="mute"/>
       <label for="option-mute">Mute</label>
       <div>
         If you're not using the local synth, you need to connect this output to a MIDI synth like FluidSynth, TiMidity, or <a href="https://mmontag.github.io/dx7-synth-js/" target="_blank">DX7 Synth</a>.

@@ -10,7 +10,7 @@ A TypeScript component that loads and plays MusicXML files in the browser using 
 npm install
 npm run build
 npm test
-npm run demo
+npm run demo:develop
 ```
 Then open http://127.0.0.1:8080/
 # Theory of operation

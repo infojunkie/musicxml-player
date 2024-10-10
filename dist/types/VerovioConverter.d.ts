@@ -1,4 +1,5 @@
 import type { IMidiFile } from 'midi-json-parser-worker';
+import { VerovioToolkit } from 'verovio/esm';
 import { VerovioOptions } from 'verovio';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 /**
@@ -7,12 +8,12 @@ import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
  * @see https://book.verovio.org/toolkit-reference/toolkit-methods.html#rendertotimemap
  */
 export declare class VerovioConverter implements IMidiConverter {
-    private _vrv?;
-    private _timemap;
-    private _midi?;
-    private _options;
+    protected _vrv?: VerovioToolkit;
+    protected _timemap: MeasureTimemap;
+    protected _midi?: IMidiFile;
+    protected _options: VerovioOptions;
     constructor(options?: VerovioOptions);
-    initialize(_container: HTMLElement, musicXml: string): Promise<void>;
+    initialize(musicXml: string): Promise<void>;
     get midi(): IMidiFile;
     get timemap(): MeasureTimemap;
     get version(): string;

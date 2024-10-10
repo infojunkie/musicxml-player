@@ -157,6 +157,9 @@ async function createPlayer() {
 
 async function createRenderer(renderer, sheet, options) {
   const base = sheet.startsWith('http') || sheet.startsWith('data/') ? sheet : `data/${sheet}`;
+  document.querySelectorAll('.renderer-option').forEach(element => {
+    element.disabled = false;
+  });
   switch (renderer) {
     case 'osmd':
       return new MusicXMLPlayer.OpenSheetMusicDisplayRenderer({
@@ -174,7 +177,10 @@ async function createRenderer(renderer, sheet, options) {
         scrollOffset: 100,
       });
     case 'mscore':
-      return new MusicXMLPlayer.MuseScoreRendererConverter(base.replace(/\.musicxml$|\.mxl$/, '.mscore.json'));
+      document.querySelectorAll('.renderer-option').forEach(element => {
+        element.disabled = true;
+      });
+      return new MusicXMLPlayer.MuseScoreRenderer(base.replace(/\.musicxml$|\.mxl$/, '.mscore.json'));
   }
 }
 
@@ -194,8 +200,7 @@ async function createConverter(converter, sheet, groove) {
       }
       return new MusicXMLPlayer.MmaConverter(window.location.href + 'mma/', parameters);
     case 'mscore':
-      // FIXME Return same instance as renderer.
-      return new MusicXMLPlayer.MuseScoreRendererConverter(base.replace(/\.musicxml$|\.mxl$/, '.mscore.json'));
+      return new MusicXMLPlayer.MuseScoreConverter(base.replace(/\.musicxml$|\.mxl$/, '.mscore.json'));
   }
 }
 
@@ -482,7 +487,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('audio-offset').addEventListener('change', handleAudioDelayChange);
   document.getElementById('velocity').addEventListener('change', handleVelocityChange);
   document.getElementById('repeat').addEventListener('change', handleRepeatChange);
-  document.querySelectorAll('.player-option').forEach(element => {
+  document.querySelectorAll('.renderer-option').forEach(element => {
     if (!!g_state.options[element.id.replace('option-', '')]) {
       element.setAttribute('checked', 'checked');
     }

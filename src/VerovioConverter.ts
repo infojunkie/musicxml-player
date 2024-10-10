@@ -13,10 +13,10 @@ import { assertIsDefined, atoab } from './helpers';
  * @see https://book.verovio.org/toolkit-reference/toolkit-methods.html#rendertotimemap
  */
 export class VerovioConverter implements IMidiConverter {
-  private _vrv?: VerovioToolkit;
-  private _timemap: MeasureTimemap = [];
-  private _midi?: IMidiFile;
-  private _options: VerovioOptions;
+  protected _vrv?: VerovioToolkit;
+  protected _timemap: MeasureTimemap = [];
+  protected _midi?: IMidiFile;
+  protected _options: VerovioOptions;
 
   constructor(options?: VerovioOptions) {
     this._options = {
@@ -28,7 +28,7 @@ export class VerovioConverter implements IMidiConverter {
     };
   }
 
-  async initialize(_container: HTMLElement, musicXml: string): Promise<void> {
+  async initialize(musicXml: string): Promise<void> {
     const VerovioModule = await createVerovioModule();
     this._vrv = new VerovioToolkit(VerovioModule);
     this._vrv.setOptions(this._options);

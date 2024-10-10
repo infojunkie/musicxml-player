@@ -12,22 +12,22 @@ import { assertIsDefined, fetish } from './helpers';
  * to convert a MusicXML to a MIDI file. It extracts the timemap contained within the MIDI file, expressed as MIDI marker events.
  */
 export class MmaConverter implements IMidiConverter {
-  private _version?: {
+  protected _version?: {
     name: string;
     version: string;
   };
-  private _midi?: IMidiFile;
-  private _timemap?: MeasureTimemap;
-  private _uri;
+  protected _midi?: IMidiFile;
+  protected _timemap?: MeasureTimemap;
+  protected _uri;
 
   constructor(
     uri: string,
-    private _parameters?: Record<string, string>,
+    protected _parameters?: Record<string, string>,
   ) {
     this._uri = uri.endsWith('/') ? uri.slice(0, -1) : uri;
   }
 
-  async initialize(_container: HTMLElement, musicXml: string): Promise<void> {
+  async initialize(musicXml: string): Promise<void> {
     // First get the API version.
     this._version = await (await fetish(`${this._uri}/`)).json();
 
@@ -64,7 +64,7 @@ export class MmaConverter implements IMidiConverter {
   /**
    * Parse an IMidiFile into a timemap.
    */
-  private static _parseTimemap(midi: IMidiFile): MeasureTimemap {
+  protected static _parseTimemap(midi: IMidiFile): MeasureTimemap {
     const timemap: MeasureTimemap = [];
     let microsecondsPerQuarter = 500000; // 60,000,000 microseconds per minute / 120 beats per minute
     let offset = 0;

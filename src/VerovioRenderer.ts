@@ -39,28 +39,28 @@ interface VerovioToolkitFixed extends VerovioToolkit {
  */
 export class VerovioRenderer implements ISheetRenderer {
   player?: Player;
-  private _vrv?: VerovioToolkitFixed;
-  private _container?: HTMLElement;
-  private _notes: string[] = [];
-  private _vrvOptions: VerovioOptions;
-  private _cursorOptions: CursorOptions;
-  private _timemap: MeasureTimemap = [];
-  private _measures: {
+  protected _vrv?: VerovioToolkitFixed;
+  protected _container?: HTMLElement;
+  protected _notes: string[] = [];
+  protected _vrvOptions: VerovioOptions;
+  protected _cursorOptions: CursorOptions;
+  protected _timemap: MeasureTimemap = [];
+  protected _measures: {
     rects: DOMRect[];
     elements: SVGGElement[];
   };
-  private _cursor: HTMLDivElement;
-  private _position: {
+  protected _cursor: HTMLDivElement;
+  protected _position: {
     x: number;
     y: number;
     height: number;
   };
-  private _scroll: {
+  protected _scroll: {
     offset: number;
     left: number;
     top: number;
   };
-  private _measure: {
+  protected _measure: {
     index: MeasureIndex;
     start: MillisecsTimestamp;
     offset: MillisecsTimestamp;
@@ -232,11 +232,11 @@ export class VerovioRenderer implements ISheetRenderer {
     return `verovio v${this._vrv?.getVersion() ?? `Unknown`}`;
   }
 
-  private _isHorizontalLayout(): boolean {
+  protected _isHorizontalLayout(): boolean {
     return this._vrvOptions.breaks === 'none';
   }
 
-  private _move() {
+  protected _move() {
     if (!this._notes.length) return;
     assertIsDefined(this._container);
 
@@ -264,7 +264,7 @@ export class VerovioRenderer implements ISheetRenderer {
     this._cursor.style.height = `${this._position.height}px`;
   }
 
-  private _redraw() {
+  protected _redraw() {
     assertIsDefined(this._container);
     assertIsDefined(this._vrv);
 

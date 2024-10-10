@@ -40,11 +40,11 @@ type PitchBend = {
 };
 
 export class WebAudioFontOutput implements IMidiOutput {
-  private _audioContext: IAudioContext;
-  private _player: any;
-  private _notes: Array<Note>;
-  private _instruments: InstrumentMap;
-  private _pitchBends: Array<PitchBend>;
+  protected _audioContext: IAudioContext;
+  protected _player: any;
+  protected _notes: Array<Note>;
+  protected _instruments: InstrumentMap;
+  protected _pitchBends: Array<PitchBend>;
 
   constructor(midiJson: IMidiFile) {
     this._audioContext = new AudioContext();
@@ -158,7 +158,7 @@ export class WebAudioFontOutput implements IMidiOutput {
     }
   }
 
-  private _noteOn(event: IMidiNoteOnEvent, timestamp: number) {
+  protected _noteOn(event: IMidiNoteOnEvent, timestamp: number) {
     // Schedule the incoming notes to start at the incoming timestamp,
     // and add them to the current notes array waiting for their future "off" event.
     const instrument =
@@ -206,7 +206,7 @@ export class WebAudioFontOutput implements IMidiOutput {
     });
   }
 
-  private _noteOff(event: IMidiNoteOffEvent, timestamp: number) {
+  protected _noteOff(event: IMidiNoteOffEvent, timestamp: number) {
     // WebAudioFont cannot schedule a future note cancellation,
     // so we identify the target note and set its cancellation timestamp.
     // Our own scheduleNotes() scheduler will take care of cancelling the note
@@ -222,7 +222,7 @@ export class WebAudioFontOutput implements IMidiOutput {
     }
   }
 
-  private _pitchBend(event: IMidiPitchBendEvent, timestamp: number) {
+  protected _pitchBend(event: IMidiPitchBendEvent, timestamp: number) {
     // Remove any previous pitch bend that occurs at the same timestamp.
     this._pitchBends = this._pitchBends.filter(
       (pb) => pb.timestamp !== timestamp,
@@ -253,7 +253,7 @@ export class WebAudioFontOutput implements IMidiOutput {
     });
   }
 
-  private _timestampToAudioContext(timestamp: number) {
+  protected _timestampToAudioContext(timestamp: number) {
     return (
       this._audioContext.currentTime + (timestamp - performance.now()) / 1000
     );

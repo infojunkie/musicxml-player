@@ -21,14 +21,14 @@ export type EngravingRulesOptions = {
  */
 export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   player?: Player;
-  private _osmd: OpenSheetMusicDisplay | undefined;
-  private _currentMeasureIndex: MeasureIndex = 0;
-  private _currentVoiceEntryIndex: number = 0;
-  private _options: IOSMDOptions;
+  protected _osmd: OpenSheetMusicDisplay | undefined;
+  protected _currentMeasureIndex: MeasureIndex = 0;
+  protected _currentVoiceEntryIndex: number = 0;
+  protected _options: IOSMDOptions;
 
   constructor(
     options?: IOSMDOptions,
-    private _rules?: EngravingRulesOptions,
+    protected _rules?: EngravingRulesOptions,
   ) {
     this._options = {
       ...{
@@ -119,7 +119,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     return `opensheetmusicdisplay v${this._osmd.Version}`;
   }
 
-  private _redraw() {
+  protected _redraw() {
     assertIsDefined(this._osmd);
     if (
       this._osmd.GraphicSheet?.GetCalculator instanceof
@@ -162,11 +162,11 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   }
 
   // Staff entry timestamp to actual time relative to measure start.
-  private _timestampToMillisecs(measure: SourceMeasure, timestamp: Fraction) {
+  protected _timestampToMillisecs(measure: SourceMeasure, timestamp: Fraction) {
     return (timestamp.RealValue * 4 * 60 * 1000) / measure.TempoInBPM;
   }
 
-  private _updateCursor(index: number, voiceEntryIndex: number) {
+  protected _updateCursor(index: number, voiceEntryIndex: number) {
     assertIsDefined(this._osmd);
     const measure = this._osmd.Sheet.SourceMeasures[index]!;
     const vsse = measure.VerticalSourceStaffEntryContainers[voiceEntryIndex]!;

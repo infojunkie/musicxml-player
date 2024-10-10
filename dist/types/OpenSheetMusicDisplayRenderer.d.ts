@@ -1,6 +1,6 @@
 import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
-import { IOSMDOptions, EngravingRules } from 'opensheetmusicdisplay';
+import { Fraction, IOSMDOptions, OpenSheetMusicDisplay, SourceMeasure, EngravingRules } from 'opensheetmusicdisplay';
 export type EngravingRulesOptions = {
     [Prop in keyof EngravingRules]: EngravingRules[Prop];
 };
@@ -8,20 +8,20 @@ export type EngravingRulesOptions = {
  * Implementation of ISheetRenderer that uses OpenSheetMusicDisplay @see https://github.com/opensheetmusicdisplay/opensheetmusicdisplay
  */
 export declare class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
-    private _rules?;
+    protected _rules?: EngravingRulesOptions | undefined;
     player?: Player;
-    private _osmd;
-    private _currentMeasureIndex;
-    private _currentVoiceEntryIndex;
-    private _options;
+    protected _osmd: OpenSheetMusicDisplay | undefined;
+    protected _currentMeasureIndex: MeasureIndex;
+    protected _currentVoiceEntryIndex: number;
+    protected _options: IOSMDOptions;
     constructor(options?: IOSMDOptions, _rules?: EngravingRulesOptions | undefined);
     destroy(): void;
     initialize(container: HTMLElement, musicXml: string): Promise<void>;
     moveTo(index: MeasureIndex, _start: MillisecsTimestamp, offset: MillisecsTimestamp, _duration?: MillisecsTimestamp): void;
     resize(): void;
     get version(): string;
-    private _redraw;
-    private _timestampToMillisecs;
-    private _updateCursor;
+    protected _redraw(): void;
+    protected _timestampToMillisecs(measure: SourceMeasure, timestamp: Fraction): number;
+    protected _updateCursor(index: number, voiceEntryIndex: number): void;
 }
 //# sourceMappingURL=OpenSheetMusicDisplayRenderer.d.ts.map

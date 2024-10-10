@@ -106,7 +106,7 @@ export class Player implements IMidiOutput {
 
       // Initialize the various objects.
       // It's too bad that constructors cannot be made async because that would simplify the code.
-      await options.converter.initialize(sheet, musicXml);
+      await options.converter.initialize(musicXml);
       await options.renderer.initialize(sheet, musicXml);
       const player = new Player(options, sheet, parseResult, musicXml);
       return player;
@@ -116,26 +116,25 @@ export class Player implements IMidiOutput {
     }
   }
 
-  private _output: IMidiOutput;
-  private _midiPlayer: IMidiPlayer;
-  private _observer: ResizeObserver;
-  private _midiFile: IMidiFile;
-  private _duration: number;
-  private _mute: boolean;
-  private _repeat: number;
-  private _velocity: number;
-  private _timingObject: ITimingObject;
-  private _timingObjectListener: EventListener;
+  protected _output: IMidiOutput;
+  protected _midiPlayer: IMidiPlayer;
+  protected _observer: ResizeObserver;
+  protected _midiFile: IMidiFile;
+  protected _duration: number;
+  protected _mute: boolean;
+  protected _repeat: number;
+  protected _velocity: number;
+  protected _timingObject: ITimingObject;
+  protected _timingObjectListener: EventListener;
 
-  private constructor(
-    private _options: PlayerOptions,
-    private _sheet: HTMLElement,
-    private _parseResult: MusicXMLParseResult,
-    private _musicXml: string,
+  protected constructor(
+    protected _options: PlayerOptions,
+    protected _sheet: HTMLElement,
+    protected _parseResult: MusicXMLParseResult,
+    protected _musicXml: string,
   ) {
-    // Inform the converter and renderer that we're here.
+    // Inform the renderer that we're here.
     this._options.renderer.player = this;
-    this._options.converter.player = this;
 
     // Manipulate the incoming MIDI file to move the MIDI End Of Track message to the end of the last measure.
     this._midiFile = this._options.converter.midi;
@@ -429,7 +428,7 @@ export class Player implements IMidiOutput {
     this._output.clear?.();
   }
 
-  private async _play() {
+  protected async _play() {
     const synchronizeMidi = () => {
       if (this._midiPlayer.state !== PlayerState.Playing) return;
 
@@ -478,7 +477,7 @@ export class Player implements IMidiOutput {
     }
   }
 
-  private _handleTimingObjectChange(_event: Event) {
+  protected _handleTimingObjectChange(_event: Event) {
     // // Don't handle our internally-generated events.
     // if (this._timingObjectUpdating) {
     //   this._timingObjectUpdating = false;
@@ -500,7 +499,7 @@ export class Player implements IMidiOutput {
     // }
   }
 
-  private static async _unroll(musicXml: string): Promise<string> {
+  protected static async _unroll(musicXml: string): Promise<string> {
     try {
       const unroll = await SaxonJS.transform(
         {
