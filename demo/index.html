@@ -58,11 +58,10 @@
         <option value="">-- Choose --</option>
         <option value="data/salma-ya-salama.mxl">Salma ya Salama (Compressed MusicXML)</option>
         <option value="data/asa-branca.musicxml">Asa Branca (Uncompressed MusicXML)</option>
+        <option value="data/tutorial-apres-un-reve.musicxml">Après un rêve (MuseScore Rendering)</option>
         <option value="data/rast-tetrachord.musicxml">Rast Tetrachords (Microtonal MusicXML)</option>
         <option value="data/baiao-miranda.musicxml">Baião Groove (Rhythm MusicXML)</option>
         <option value="data/jazz.txt">Playlist: Jazz 1400 (iReal Pro)</option>
-        <option value="data/brazilian.txt">Playlist: Brazilian 150 (iReal Pro)</option>
-        <option value="data/stevie-wonder.txt">Playlist: Stevie Wonder 30 (iReal Pro)</option>
       </select>
     </div>
 
@@ -90,10 +89,12 @@
       <label for="renderer-osmd">OpenSheetMusicDisplay</label>
       <input type="radio" id="renderer-vrv" name="renderer" value="vrv"/>
       <label for="renderer-vrv">Verovio</label>
-      <div class="player-options">
-        <input type="checkbox" class="player-option" id="option-unroll" value="unroll"/>
+      <input type="radio" id="renderer-mscore" name="renderer" value="mscore"/>
+      <label for="renderer-mscore">MuseScore (SVG)</label>
+      <div class="renderer-options">
+        <input type="checkbox" class="renderer-option" id="option-unroll" value="unroll"/>
         <label for="option-unroll">Unroll score</label>
-        <input type="checkbox" class="player-option" id="option-horizontal" value="horizontal"/>
+        <input type="checkbox" class="renderer-option" id="option-horizontal" value="horizontal"/>
         <label for="option-horizontal">Horizontal layout</label>
       </div>
     </div>
@@ -102,10 +103,14 @@
       Converter
       <input type="radio" id="converter-midi" name="converter" value="midi"/>
       <label for="converter-midi">Custom MIDI</label>
+      <input type="radio" id="converter-timemap" name="converter" value="timemap"/>
+      <label for="converter-midi">Custom MIDI + Timemap</label>
       <input type="radio" id="converter-mma" name="converter" value="mma"/>
       <label for="converter-mma">MusicXML MMA</label>
       <input type="radio" id="converter-vrv" name="converter" value="vrv"/>
       <label for="converter-vrv">Verovio</label>
+      <input type="radio" id="converter-mscore" name="converter" value="mscore"/>
+      <label for="converter-mscore">MuseScore</label>
     </div>
 
     <div>

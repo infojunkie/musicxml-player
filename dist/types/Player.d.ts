@@ -1,4 +1,6 @@
-import { IMidiOutput, PlayerState } from 'midi-player';
+import { IMidiOutput, IMidiPlayer, PlayerState } from 'midi-player';
+import { IMidiFile } from 'midi-json-parser-worker';
+import { MusicXMLParseResult } from './helpers';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
 import { ITimingObject } from 'timing-object';
@@ -50,10 +52,10 @@ export interface PlayerOptions {
     velocity?: number;
 }
 export declare class Player implements IMidiOutput {
-    private _options;
-    private _sheet;
-    private _parseResult;
-    private _musicXml;
+    protected _options: PlayerOptions;
+    protected _sheet: HTMLElement;
+    protected _parseResult: MusicXMLParseResult;
+    protected _musicXml: string;
     /**
      * Create a new instance of the player.
      *
@@ -62,17 +64,17 @@ export declare class Player implements IMidiOutput {
      * @throws Error exception with various error messages.
      */
     static create(options: PlayerOptions): Promise<Player>;
-    private _output;
-    private _midiPlayer;
-    private _observer;
-    private _midiFile;
-    private _duration;
-    private _mute;
-    private _repeat;
-    private _velocity;
-    private _timingObject;
-    private _timingObjectListener;
-    private constructor();
+    protected _output: IMidiOutput;
+    protected _midiPlayer: IMidiPlayer;
+    protected _observer: ResizeObserver;
+    protected _midiFile: IMidiFile;
+    protected _duration: number;
+    protected _mute: boolean;
+    protected _repeat: number;
+    protected _velocity: number;
+    protected _timingObject: ITimingObject;
+    protected _timingObjectListener: EventListener;
+    protected constructor(_options: PlayerOptions, _sheet: HTMLElement, _parseResult: MusicXMLParseResult, _musicXml: string);
     /**
      * Destroy the instance by freeing all resources and disconnecting observers.
      */
@@ -160,8 +162,8 @@ export declare class Player implements IMidiOutput {
      * Implementation of IMidiOutput.clear().
      */
     clear(): void;
-    private _play;
-    private _handleTimingObjectChange;
-    private static _unroll;
+    protected _play(): Promise<void>;
+    protected _handleTimingObjectChange(_event: Event): void;
+    protected static _unroll(musicXml: string): Promise<string>;
 }
 //# sourceMappingURL=Player.d.ts.map

@@ -1,3 +1,4 @@
+import { assertIsDefined } from './helpers';
 import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 import {
@@ -19,20 +20,16 @@ export type EngravingRulesOptions = {
  * Implementation of ISheetRenderer that uses OpenSheetMusicDisplay @see https://github.com/opensheetmusicdisplay/opensheetmusicdisplay
  */
 export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
-  private _player: Player | null;
-  private _osmd: OpenSheetMusicDisplay | null;
-  private _currentMeasureIndex: MeasureIndex;
-  private _currentVoiceEntryIndex: number;
-  private _options: IOSMDOptions;
+  player?: Player;
+  protected _osmd: OpenSheetMusicDisplay | undefined;
+  protected _currentMeasureIndex: MeasureIndex = 0;
+  protected _currentVoiceEntryIndex: number = 0;
+  protected _options: IOSMDOptions;
 
   constructor(
     options?: IOSMDOptions,
-    private _rules?: EngravingRulesOptions,
+    protected _rules?: EngravingRulesOptions,
   ) {
-    this._player = null;
-    this._osmd = null;
-    this._currentMeasureIndex = 0;
-    this._currentVoiceEntryIndex = 0;
     this._options = {
       ...{
         backend: 'svg',
@@ -52,15 +49,10 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   destroy(): void {
     if (!this._osmd) return;
     this._osmd.clear();
-    this._osmd = null;
+    this._osmd = undefined;
   }
 
-  async initialize(
-    player: Player,
-    container: HTMLElement,
-    musicXml: string,
-  ): Promise<void> {
-    this._player = player;
+  async initialize(container: HTMLElement, musicXml: string): Promise<void> {
     this._osmd = new OpenSheetMusicDisplay(container, this._options);
     if (this._rules) {
       let k: keyof EngravingRules;
@@ -86,7 +78,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     offset: MillisecsTimestamp,
     _duration?: MillisecsTimestamp,
   ): void {
-    if (!this._osmd) throw 'TODO';
+    assertIsDefined(this._osmd);
     const measure = this._osmd.Sheet.SourceMeasures[index];
 
     // Find the time within the measure.
@@ -112,7 +104,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
       }
     }
     console.error(
-      `Could not find suitable staff entry at time ${offset} for measure ${index}`,
+      `[OpenSheetMusicDisplayRenderer.moveTo] Could not find suitable staff entry at time ${offset} for measure ${index}`,
     );
   }
 
@@ -123,12 +115,12 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   }
 
   get version(): string {
-    if (!this._osmd) throw 'TODO';
+    assertIsDefined(this._osmd);
     return `opensheetmusicdisplay v${this._osmd.Version}`;
   }
 
-  private _redraw() {
-    if (!this._osmd) throw 'TODO';
+  protected _redraw() {
+    assertIsDefined(this._osmd);
     if (
       this._osmd.GraphicSheet?.GetCalculator instanceof
       VexFlowMusicSheetCalculator
@@ -151,7 +143,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
             (<HTMLElement>(
               vfve.vfStaveNote?.getAttribute('el')
             ))?.addEventListener('click', () => {
-              this._player?.moveTo(
+              this.player?.moveTo(
                 index,
                 this._timestampToMillisecs(
                   measure.parentSourceMeasure,
@@ -170,12 +162,12 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   }
 
   // Staff entry timestamp to actual time relative to measure start.
-  private _timestampToMillisecs(measure: SourceMeasure, timestamp: Fraction) {
+  protected _timestampToMillisecs(measure: SourceMeasure, timestamp: Fraction) {
     return (timestamp.RealValue * 4 * 60 * 1000) / measure.TempoInBPM;
   }
 
-  private _updateCursor(index: number, voiceEntryIndex: number) {
-    if (!this._osmd) throw 'TODO';
+  protected _updateCursor(index: number, voiceEntryIndex: number) {
+    assertIsDefined(this._osmd);
     const measure = this._osmd.Sheet.SourceMeasures[index]!;
     const vsse = measure.VerticalSourceStaffEntryContainers[voiceEntryIndex]!;
 

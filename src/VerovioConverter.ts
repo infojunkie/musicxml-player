@@ -5,6 +5,7 @@ import { VerovioToolkit } from 'verovio/esm';
 import { VerovioOptions } from 'verovio';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import type { TimemapEntryFixed } from './VerovioRenderer';
+import { assertIsDefined, atoab } from './helpers';
 
 /**
  * Implementation of IMidiConverter that uses the Verovio library to convert a MusicXML file to MIDI and timemap.
@@ -12,15 +13,12 @@ import type { TimemapEntryFixed } from './VerovioRenderer';
  * @see https://book.verovio.org/toolkit-reference/toolkit-methods.html#rendertotimemap
  */
 export class VerovioConverter implements IMidiConverter {
-  private _vrv: VerovioToolkit | null;
-  private _timemap: MeasureTimemap;
-  private _midi: IMidiFile | null;
-  private _options: VerovioOptions;
+  protected _vrv?: VerovioToolkit;
+  protected _timemap: MeasureTimemap = [];
+  protected _midi?: IMidiFile;
+  protected _options: VerovioOptions;
 
   constructor(options?: VerovioOptions) {
-    this._vrv = null;
-    this._timemap = [];
-    this._midi = null;
     this._options = {
       ...{
         expand: 'expansion-repeat',
@@ -35,7 +33,7 @@ export class VerovioConverter implements IMidiConverter {
     this._vrv = new VerovioToolkit(VerovioModule);
     this._vrv.setOptions(this._options);
     if (!this._vrv.loadData(musicXml)) {
-      throw 'TODO';
+      throw new Error(`[VerovioConverter.initialize] Failed to load MusicXML.`);
     }
 
     // Build timemap.
@@ -68,13 +66,11 @@ export class VerovioConverter implements IMidiConverter {
     }
 
     // Render to MIDI.
-    this._midi = await parseMidiBuffer(
-      VerovioConverter._base64ToArrayBuffer(this._vrv.renderToMIDI()),
-    );
+    this._midi = await parseMidiBuffer(atoab(this._vrv.renderToMIDI()));
   }
 
   get midi(): IMidiFile {
-    if (!this._midi) throw 'TODO';
+    assertIsDefined(this._midi);
     return this._midi;
   }
 
@@ -83,17 +79,6 @@ export class VerovioConverter implements IMidiConverter {
   }
 
   get version(): string {
-    if (!this._vrv) throw 'TODO';
-    return `verovio v${this._vrv.getVersion()}`;
-  }
-
-  private static _base64ToArrayBuffer(base64: string): ArrayBuffer {
-    const binary_string = window.atob(base64);
-    const len = binary_string.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binary_string.charCodeAt(i);
-    }
-    return bytes.buffer;
+    return `verovio v${this._vrv?.getVersion() ?? 'Unknown'}`;
   }
 }

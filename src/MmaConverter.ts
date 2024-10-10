@@ -5,29 +5,31 @@ import type {
   IMidiSetTempoEvent,
 } from 'midi-json-parser-worker';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
-import { fetish } from './helpers';
+import { assertIsDefined, fetish } from './helpers';
 
 /**
  * Implementation of IMidiConverter that queries the musicxml-midi API (@see https://github.com/infojunkie/musicxml-midi)
  * to convert a MusicXML to a MIDI file. It extracts the timemap contained within the MIDI file, expressed as MIDI marker events.
  */
 export class MmaConverter implements IMidiConverter {
-  private _version: any;
-  private _midi: IMidiFile | null;
-  private _timemap: MeasureTimemap;
+  protected _version?: {
+    name: string;
+    version: string;
+  };
+  protected _midi?: IMidiFile;
+  protected _timemap?: MeasureTimemap;
+  protected _uri;
 
   constructor(
-    private _apiUri: string,
-    private _parameters?: Record<string, string>,
+    uri: string,
+    protected _parameters?: Record<string, string>,
   ) {
-    this._version = null;
-    this._midi = null;
-    this._timemap = [];
+    this._uri = uri.endsWith('/') ? uri.slice(0, -1) : uri;
   }
 
   async initialize(musicXml: string): Promise<void> {
     // First get the API version.
-    this._version = await (await fetish(`${this._apiUri}/`)).json();
+    this._version = await (await fetish(`${this._uri}/`)).json();
 
     // Convert the score.
     const formData = new FormData();
@@ -37,7 +39,7 @@ export class MmaConverter implements IMidiConverter {
         formData.append(parameter, this._parameters[parameter]);
       }
     }
-    const response = await fetish(`${this._apiUri}/convert`, {
+    const response = await fetish(`${this._uri}/convert`, {
       method: 'POST',
       body: formData,
     });
@@ -46,25 +48,23 @@ export class MmaConverter implements IMidiConverter {
   }
 
   get midi(): IMidiFile {
-    if (!this._midi) throw 'TODO';
+    assertIsDefined(this._midi);
     return this._midi;
   }
 
   get timemap(): MeasureTimemap {
+    assertIsDefined(this._timemap);
     return this._timemap;
   }
 
   get version(): string {
-    if (!this._version) throw 'TODO';
-    return `${this._version.name} v${this._version.version}`;
+    return `MmaConverter v${this._version?.version ?? 'Unknown'}`;
   }
 
   /**
    * Parse an IMidiFile into a timemap.
    */
-  private static _parseTimemap(midi: IMidiFile): MeasureTimemap {
-    if (!midi.tracks.length) throw 'TODO';
-
+  protected static _parseTimemap(midi: IMidiFile): MeasureTimemap {
     const timemap: MeasureTimemap = [];
     let microsecondsPerQuarter = 500000; // 60,000,000 microseconds per minute / 120 beats per minute
     let offset = 0;

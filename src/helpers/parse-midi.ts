@@ -66,7 +66,10 @@ export function parseMidiEvent(data: number[] | Uint8Array): TMidiEvent {
  * Copied from https://github.com/chrisguttandin/midi-json-parser-worker
  * because the original code only runs in a Web Worker.
  */
-export const parseMidiFile = (arrayBuffer: ArrayBuffer) => {
+export const parseMidiFile = (
+  arrayBuffer: ArrayBuffer,
+  callback?: (trackNum: number, track: TMidiEvent[]) => void,
+) => {
   const dataView = new DataView(arrayBuffer);
 
   const header = _parseHeaderChunk(dataView); // tslint:disable-line:no-use-before-declare
@@ -79,6 +82,10 @@ export const parseMidiFile = (arrayBuffer: ArrayBuffer) => {
     let track;
 
     ({ offset, track } = _parseTrackChunk(dataView, offset)); // tslint:disable-line:no-use-before-declare
+
+    if (callback) {
+      callback(i, track);
+    }
 
     tracks.push(track);
   }
@@ -500,7 +507,6 @@ const _readVariableLengthQuantity = (dataView: DataView, offset: number) => {
   let nextOffset = offset;
   let value = 0;
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const byte = dataView.getUint8(nextOffset);
 
