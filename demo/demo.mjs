@@ -1,5 +1,5 @@
-import * as MusicXMLPlayer from './dist/musicxml-player.esm.js';
-import iRealMusicXML from 'https://cdn.jsdelivr.net/npm/ireal-musicxml/+esm';
+import * as MusicXmlPlayer from './dist/musicxml-player.esm.js';
+import iRealMusicXml from 'https://cdn.jsdelivr.net/npm/ireal-musicxml@1.13.4/+esm';
 import { setTimingsrc } from 'https://cdn.jsdelivr.net/npm/timingsrc@1.4.5/+esm';
 
 const DEFAULT_RENDERER = 'vrv';
@@ -73,7 +73,7 @@ async function createPlayer() {
     const input = document.getElementById(`renderer-${k}`);
     try {
       if (typeof v === 'string') {
-        await MusicXMLPlayer.fetish(base.replace(/\.musicxml$|\.mxl$/, v), { method: 'HEAD' })
+        await MusicXmlPlayer.fetish(base.replace(/\.musicxml$|\.mxl$/, v), { method: 'HEAD' })
       }
       input.disabled = false;
     }
@@ -87,14 +87,14 @@ async function createPlayer() {
   document.getElementById(`renderer-${renderer}`).setAttribute('checked', 'checked');
   for (const [k, v] of Object.entries({
     'vrv': true,
-    'mma': async () => MusicXMLPlayer.fetish(window.location.href + 'mma/', { method: 'HEAD' }),
+    'mma': async () => MusicXmlPlayer.fetish(window.location.href + 'mma/', { method: 'HEAD' }),
     'midi': '.mid',
     'mscore': '.mscore.json',
   })) {
     const input = document.getElementById(`converter-${k}`);
     try {
       if (typeof v === 'string') {
-        await MusicXMLPlayer.fetish(base.replace(/\.musicxml$|\.mxl$/, v), { method: 'HEAD' })
+        await MusicXmlPlayer.fetish(base.replace(/\.musicxml$|\.mxl$/, v), { method: 'HEAD' })
       }
       else if (typeof v === 'function') {
         await v();
@@ -113,7 +113,7 @@ async function createPlayer() {
   // Create new player.
   if (g_state.musicXml) {
     try {
-      const player = await MusicXMLPlayer.Player.create({
+      const player = await MusicXmlPlayer.Player.create({
         musicXml: g_state.musicXml,
         container: 'sheet-container',
         renderer: await createRenderer(renderer, sheet, options),
@@ -129,7 +129,9 @@ async function createPlayer() {
       player.timingObject.addEventListener('change', handleTimingObjectChange);
 
       // Update the UI elements.
-      document.getElementById('version').textContent = JSON.stringify(player.version);
+      document.getElementById('version').textContent = JSON.stringify(Object.assign({}, player.version, {
+        'irealpro': `${iRealMusicXml.Version.name} ${iRealMusicXml.Version.version}`
+      }));
       const filename = player.title.toLowerCase().replace(/[/\\?%*:|"'<>\s]/g, '-') ?? 'untitled';
       const a1 = document.createElement('a');
       a1.setAttribute('href', URL.createObjectURL(new Blob([player.musicXml], { type: 'text/xml' })));
@@ -161,11 +163,11 @@ async function createRenderer(renderer, sheet, options) {
   });
   switch (renderer) {
     case 'osmd':
-      return new MusicXMLPlayer.OpenSheetMusicDisplayRenderer({
+      return new MusicXmlPlayer.OpenSheetMusicDisplayRenderer({
         renderSingleHorizontalStaffline: options.horizontal,
       });
     case 'vrv':
-      return new MusicXMLPlayer.VerovioRenderer({
+      return new MusicXmlPlayer.VerovioRenderer({
         breaks: options.horizontal ? 'none' : 'smart',
         spacingNonLinear: options.horizontal ? 1.0 : undefined,
         spacingLinear: options.horizontal ? 0.04 : undefined,
@@ -179,7 +181,7 @@ async function createRenderer(renderer, sheet, options) {
       document.querySelectorAll('.renderer-option').forEach(element => {
         element.disabled = true;
       });
-      return new MusicXMLPlayer.MuseScoreRenderer(base.replace(/\.musicxml$|\.mxl$/, '.mscore.json'));
+      return new MusicXmlPlayer.MuseScoreRenderer(base.replace(/\.musicxml$|\.mxl$/, '.mscore.json'));
   }
 }
 
@@ -189,22 +191,22 @@ async function createConverter(converter, sheet, groove) {
     case 'midi':
       try {
         const timemap = base.replace(/\.musicxml$|\.mxl$/, '.timemap.json');
-        await MusicXMLPlayer.fetish(timemap, { method: 'HEAD' });
-        return new MusicXMLPlayer.FetchConverter(base.replace(/\.musicxml$|\.mxl$/, '.mid'), timemap);
+        await MusicXmlPlayer.fetish(timemap, { method: 'HEAD' });
+        return new MusicXmlPlayer.FetchConverter(base.replace(/\.musicxml$|\.mxl$/, '.mid'), timemap);
       }
       catch {
-        return new MusicXMLPlayer.FetchConverter(base.replace(/\.musicxml$|\.mxl$/, '.mid'));
+        return new MusicXmlPlayer.FetchConverter(base.replace(/\.musicxml$|\.mxl$/, '.mid'));
       }
     case 'vrv':
-      return new MusicXMLPlayer.VerovioConverter();
+      return new MusicXmlPlayer.VerovioConverter();
     case 'mma':
       const parameters = {};
       if (groove !== DEFAULT_GROOVE) {
         parameters['globalGroove'] = groove;
       }
-      return new MusicXMLPlayer.MmaConverter(window.location.href + 'mma/', parameters);
+      return new MusicXmlPlayer.MmaConverter(window.location.href + 'mma/', parameters);
     case 'mscore':
-      return new MusicXMLPlayer.MuseScoreConverter(base.replace(/\.musicxml$|\.mxl$/, '.mscore.json'));
+      return new MusicXmlPlayer.MuseScoreConverter(base.replace(/\.musicxml$|\.mxl$/, '.mscore.json'));
   }
 }
 
@@ -232,7 +234,7 @@ async function populateGrooves() {
   const grooves = document.getElementById('grooves');
   const groovesList = document.getElementById('grooves-list');
   try {
-    const lines = await (await MusicXMLPlayer.fetish(`${getMmaEndpoint()}/grooves`)).text();
+    const lines = await (await MusicXmlPlayer.fetish(`${getMmaEndpoint()}/grooves`)).text();
     ['Default', 'No groove override, just whatever is specified in the score.', 'None', 'No groove, just the chords.'].concat(lines.split('\n')).forEach((line, index, lines) => {
       if (index % 2 === 1) {
         const option = document.createElement('option');
@@ -287,7 +289,7 @@ function handlePlayPauseKey(e) {
 }
 
 function populateSheets(ireal) {
-  const playlist = new iRealMusicXML.Playlist(ireal);
+  const playlist = new iRealMusicXml.Playlist(ireal);
   const sheets = document.getElementById('sheets');
   sheets.textContent = '';
   playlist.songs.forEach(song => {
@@ -305,14 +307,14 @@ async function handleSampleSelect(e) {
   const sheet = e.target.value;
   try {
     if (sheet.endsWith('.musicxml') || sheet.endsWith('.mxl')) {
-      const musicXml = await (await MusicXMLPlayer.fetish(sheet)).arrayBuffer();
+      const musicXml = await (await MusicXmlPlayer.fetish(sheet)).arrayBuffer();
       g_state.musicXml = musicXml;
       g_state.params.set('sheet', sheet);
       g_state.params.set('groove', DEFAULT_GROOVE);
       createPlayer();
     }
     else {
-      const ireal = await (await MusicXMLPlayer.fetish(sheet)).text();
+      const ireal = await (await MusicXmlPlayer.fetish(sheet)).text();
       populateSheets(ireal);
     }
   }
@@ -323,8 +325,9 @@ async function handleSampleSelect(e) {
 
 function handleSheetSelect(e) {
   const song = JSON.parse(e.target.value);
-  g_state.musicXml = iRealMusicXML.MusicXML.convert(song, {
-    notation: 'rhythmic'
+  g_state.musicXml = iRealMusicXml.MusicXML.convert(song, {
+    notation: 'rhythmic',
+    date: false,
   });
   g_state.params.set('groove', DEFAULT_GROOVE);
   createPlayer();
@@ -332,7 +335,7 @@ function handleSheetSelect(e) {
 
 async function handleFileBuffer(buffer) {
   try {
-    const parseResult = await MusicXMLPlayer.parseMusicXML(buffer);
+    const parseResult = await MusicXmlPlayer.parseMusicXML(buffer);
     g_state.musicXml = parseResult.musicXml;
     g_state.params.delete('sheet');
     createPlayer();
