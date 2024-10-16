@@ -73,7 +73,7 @@ async function createPlayer() {
     const input = document.getElementById(`renderer-${k}`);
     try {
       if (typeof v === 'string') {
-        await MusicXmlPlayer.fetish(base.replace(/\.musicxml$|\.mxl$/, v), { method: 'HEAD' })
+        await MusicXmlPlayer.fetish(base.replace(/\.\w+$/, v), { method: 'HEAD' })
       }
       input.disabled = false;
     }
@@ -94,7 +94,7 @@ async function createPlayer() {
     const input = document.getElementById(`converter-${k}`);
     try {
       if (typeof v === 'string') {
-        await MusicXmlPlayer.fetish(base.replace(/\.musicxml$|\.mxl$/, v), { method: 'HEAD' })
+        await MusicXmlPlayer.fetish(base.replace(/\.\w+$/, v), { method: 'HEAD' })
       }
       else if (typeof v === 'function') {
         await v();
@@ -165,6 +165,7 @@ async function createRenderer(renderer, sheet, options) {
     case 'osmd':
       return new MusicXmlPlayer.OpenSheetMusicDisplayRenderer({
         renderSingleHorizontalStaffline: options.horizontal,
+        newSystemFromXML: true,
       });
     case 'vrv':
       return new MusicXmlPlayer.VerovioRenderer({
@@ -181,7 +182,7 @@ async function createRenderer(renderer, sheet, options) {
       document.querySelectorAll('.renderer-option').forEach(element => {
         element.disabled = true;
       });
-      return new MusicXmlPlayer.MuseScoreRenderer(base.replace(/\.musicxml$|\.mxl$/, '.mscore.json'));
+      return new MusicXmlPlayer.MuseScoreRenderer(base.replace(/\.\w+$/, '.mscore.json'));
   }
 }
 
@@ -189,13 +190,14 @@ async function createConverter(converter, sheet, groove) {
   const base = sheet.startsWith('http') || sheet.startsWith('data/') ? sheet : `data/${sheet}`;
   switch (converter) {
     case 'midi':
+      const midi = base.replace(/\.\w+$/, '.mid');
       try {
-        const timemap = base.replace(/\.musicxml$|\.mxl$/, '.timemap.json');
+        const timemap = base.replace(/\.\w+$/, '.timemap.json');
         await MusicXmlPlayer.fetish(timemap, { method: 'HEAD' });
-        return new MusicXmlPlayer.FetchConverter(base.replace(/\.musicxml$|\.mxl$/, '.mid'), timemap);
+        return new MusicXmlPlayer.FetchConverter(midi, timemap);
       }
       catch {
-        return new MusicXmlPlayer.FetchConverter(base.replace(/\.musicxml$|\.mxl$/, '.mid'));
+        return new MusicXmlPlayer.FetchConverter(midi);
       }
     case 'vrv':
       return new MusicXmlPlayer.VerovioConverter();
@@ -206,7 +208,7 @@ async function createConverter(converter, sheet, groove) {
       }
       return new MusicXmlPlayer.MmaConverter(window.location.href + 'mma/', parameters);
     case 'mscore':
-      return new MusicXmlPlayer.MuseScoreConverter(base.replace(/\.musicxml$|\.mxl$/, '.mscore.json'));
+      return new MusicXmlPlayer.MuseScoreConverter(base.replace(/\.\w+$/, '.mscore.json'));
   }
 }
 
@@ -298,7 +300,6 @@ function populateSheets(ireal) {
     option.text = song.title;
     sheets.add(option);
   });
-  g_state.params.set('groove', DEFAULT_GROOVE);
   sheets.dispatchEvent(new Event('change'));
 }
 
@@ -315,11 +316,13 @@ async function handleSampleSelect(e) {
     }
     else {
       const ireal = await (await MusicXmlPlayer.fetish(sheet)).text();
+      g_state.params.set('sheet', sheet);
+      g_state.params.set('groove', DEFAULT_GROOVE);
       populateSheets(ireal);
     }
   }
   catch (error) {
-    console.error(`Failed to load sheet ${sheet}: ${error}`);
+    console.error(error);
   }
 }
 
@@ -340,7 +343,7 @@ async function handleFileBuffer(buffer) {
     g_state.params.delete('sheet');
     createPlayer();
   }
-  catch (error) {
+  catch {
     try {
       const ireal = new TextDecoder().decode(buffer);
       populateSheets(ireal);
