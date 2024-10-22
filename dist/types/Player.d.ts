@@ -1,6 +1,6 @@
 import { IMidiOutput, IMidiPlayer, PlayerState } from 'midi-player';
 import { IMidiFile } from 'midi-json-parser-worker';
-import { MusicXMLParseResult } from './helpers';
+import { MusicXmlParseResult } from './helpers';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
 import { ITimingObject } from 'timing-object';
@@ -54,7 +54,7 @@ export interface PlayerOptions {
 export declare class Player implements IMidiOutput {
     protected _options: PlayerOptions;
     protected _sheet: HTMLElement;
-    protected _parseResult: MusicXMLParseResult;
+    protected _parseResult: MusicXmlParseResult;
     protected _musicXml: string;
     /**
      * Create a new instance of the player.
@@ -74,7 +74,7 @@ export declare class Player implements IMidiOutput {
     protected _velocity: number;
     protected _timingObject: ITimingObject;
     protected _timingObjectListener: EventListener;
-    protected constructor(_options: PlayerOptions, _sheet: HTMLElement, _parseResult: MusicXMLParseResult, _musicXml: string);
+    protected constructor(_options: PlayerOptions, _sheet: HTMLElement, _parseResult: MusicXmlParseResult, _musicXml: string);
     /**
      * Destroy the instance by freeing all resources and disconnecting observers.
      */

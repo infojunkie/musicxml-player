@@ -1,37 +1,37 @@
 import { unzip } from 'unzipit';
 import SaxonJS from '../saxon-js/SaxonJS2.rt';
 
-export type MusicXMLParseQuery = Record<string, string>;
-export type MusicXMLParseResult = {
+export type MusicXmlParseQuery = Record<string, string>;
+export type MusicXmlParseResult = {
   musicXml: string;
   queries: Record<string, { query: string; result: any }>;
 };
 
-export async function parseMusicXML(
+export async function parseMusicXml(
   musicXmlOrBuffer: ArrayBuffer | string,
-  queries?: MusicXMLParseQuery,
-): Promise<MusicXMLParseResult> {
+  queries?: MusicXmlParseQuery,
+): Promise<MusicXmlParseResult> {
   if (musicXmlOrBuffer instanceof ArrayBuffer) {
     // Decode the buffer and try it as an uncompressed document.
     const musicXml = new TextDecoder().decode(musicXmlOrBuffer);
     try {
-      return await _parseUncompressedMusicXML(musicXml, queries);
+      return await _parseUncompressed(musicXml, queries);
     } catch {
       // Do nothing: just keep going.
     }
 
     // Try the buffer as a compressed document.
-    return await _parseCompressedMusicXML(musicXmlOrBuffer, queries);
+    return await _parseCompressed(musicXmlOrBuffer, queries);
   } else {
     // A string is assumed to be an uncompressed document.
-    return await _parseUncompressedMusicXML(musicXmlOrBuffer, queries);
+    return await _parseUncompressed(musicXmlOrBuffer, queries);
   }
 }
 
-async function _parseCompressedMusicXML(
+async function _parseCompressed(
   mxml: ArrayBuffer,
-  queries?: MusicXMLParseQuery,
-): Promise<MusicXMLParseResult> {
+  queries?: MusicXmlParseQuery,
+): Promise<MusicXmlParseResult> {
   const { entries } = await unzip(mxml);
 
   // Extract rootfile from META-INF/container.xml.
@@ -45,19 +45,19 @@ async function _parseCompressedMusicXML(
   const rootFile = SaxonJS.XPath.evaluate('//rootfile[1]/@full-path', doc);
   if (!rootFile) {
     throw new Error(
-      '[parseMusicXML] Invalid compressed MusicXML file does not contain rootfile/@full-path.',
+      '[parseMusicXml] Invalid compressed MusicXML file does not contain rootfile/@full-path.',
     );
   }
 
   // Parse root document as MusicXML.
   const rootBuf = await entries[rootFile.value].arrayBuffer();
-  return _parseUncompressedMusicXML(decoder.decode(rootBuf), queries);
+  return _parseUncompressed(decoder.decode(rootBuf), queries);
 }
 
-async function _parseUncompressedMusicXML(
+async function _parseUncompressed(
   musicXml: string,
-  queries?: MusicXMLParseQuery,
-): Promise<MusicXMLParseResult> {
+  queries?: MusicXmlParseQuery,
+): Promise<MusicXmlParseResult> {
   const doc = await SaxonJS.getResource({
     type: 'xml',
     encoding: 'utf8',
@@ -69,7 +69,7 @@ async function _parseUncompressedMusicXML(
   );
   if (!valid) {
     throw new Error(
-      '[parseMusicXML] Invalid MusicXML file contains neither score-partwise nor score-timewise.',
+      '[parseMusicXml] Invalid MusicXML file contains neither score-partwise nor score-timewise.',
     );
   }
   const version = SaxonJS.XPath.evaluate(
@@ -78,8 +78,8 @@ async function _parseUncompressedMusicXML(
   ) ?? {
     value: '(unknown)',
   };
-  console.debug(`[parseMusicXML] MusicXML version ${version.value}`);
-  const parseResult: MusicXMLParseResult = {
+  console.debug(`[parseMusicXml] MusicXML version ${version.value}`);
+  const parseResult: MusicXmlParseResult = {
     musicXml,
     queries: {},
   };

@@ -1,13 +1,13 @@
 import chai, { expect } from '@esm-bundle/chai';
 import chaiAsPromised from '@esm-bundle/chai-as-promised';
-import { parseMusicXML } from '../../dist/musicxml-player.esm';
+import { parseMusicXml } from '../../dist/musicxml-player.esm';
 
 chai.use(chaiAsPromised);
 
-describe('parseMusicXML', () => {
+describe('parseMusicXml', () => {
   it('correctly parses uncompressed MusicXML', async () => {
     await expect(
-      parseMusicXML(
+      parseMusicXml(
         `
     <?xml version="1.0" encoding="UTF-8" standalone="no"?>
     <!DOCTYPE score-partwise PUBLIC
@@ -53,7 +53,7 @@ describe('parseMusicXML', () => {
 
   it('correctly throws on invalid MusicXML', async () => {
     await expect(
-      parseMusicXML(
+      parseMusicXml(
         `
 THIS IS NOT MUSICXML
     `.trim(),
@@ -63,7 +63,7 @@ THIS IS NOT MUSICXML
 
   it('correctly throws on valid HTML', async () => {
     await expect(
-      parseMusicXML(
+      parseMusicXml(
         `
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
         <html xmlns="http://www.w3.org/1999/xhtml">

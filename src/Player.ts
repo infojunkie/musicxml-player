@@ -9,8 +9,8 @@ import { IMidiFile, IMidiSetTempoEvent } from 'midi-json-parser-worker';
 import {
   binarySearch,
   parseMidiEvent,
-  parseMusicXML,
-  MusicXMLParseResult,
+  parseMusicXml,
+  MusicXmlParseResult,
 } from './helpers';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
@@ -95,7 +95,7 @@ export class Player implements IMidiOutput {
 
     try {
       // Parse the incoming MusicXML and unroll it if needed.
-      const parseResult = await parseMusicXML(options.musicXml, {
+      const parseResult = await parseMusicXml(options.musicXml, {
         title: '//work/work-title/text()',
         version: '//score-partwise/@version',
       });
@@ -130,7 +130,7 @@ export class Player implements IMidiOutput {
   protected constructor(
     protected _options: PlayerOptions,
     protected _sheet: HTMLElement,
-    protected _parseResult: MusicXMLParseResult,
+    protected _parseResult: MusicXmlParseResult,
     protected _musicXml: string,
   ) {
     // Inform the renderer that we're here.
