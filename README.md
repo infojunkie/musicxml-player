@@ -3,7 +3,9 @@ MusicXML Player
 
 [![Build](https://github.com/infojunkie/musicxml-player/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/infojunkie/musicxml-player/actions/workflows/test.yml)
 
-A TypeScript component that loads and plays MusicXML files in the browser using Web Audio and Web MIDI.
+A TypeScript component that loads   and plays MusicXML files in the browser using Web Audio and Web MIDI.
+
+![Screenshot](https://github.com/infojunkie/musicxml-player/blob/main/screenshot.png?raw=true)
 
 # Getting started
 ```

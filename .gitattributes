@@ -7,3 +7,6 @@
 # Ignore differences on NPM's lockfile.
 # Since version 5.7.0, NPM automatically handles merge conflicts.
 package-lock.json -diff
+
+# Ignore built artifacts.
+build/**/* linguist-generated=true

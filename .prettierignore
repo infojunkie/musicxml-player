@@ -1,5 +1,0 @@
-# Unlinted files and folders.
-# References at https://prettier.io/docs/en/ignore.html#ignoring-files.
-
-# Generated docs, bundles and type definitions.
-dist/
