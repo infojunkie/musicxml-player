@@ -16,7 +16,7 @@ import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
 import { WebAudioFontOutput } from './WebAudioFontOutput';
 import { ITimingObject, TimingObject } from 'timing-object';
-import SaxonJS from './saxon-js/SaxonJS2.rt';
+import SaxonJS from './saxon-js/SaxonJS3.rt';
 import pkg from '../package.json';
 
 const XSL_UNROLL =

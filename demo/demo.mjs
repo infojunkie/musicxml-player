@@ -9,13 +9,13 @@ import {
   MmaConverter,
   FetchConverter,
   parseMusicXml,
-} from './dist/musicxml-player.esm.js';
+} from './build/musicxml-player.mjs';
 import {
   Playlist,
   Converter,
   Version
-} from 'https://cdn.jsdelivr.net/npm/ireal-musicxml@2.0.0/+esm';
-import { setTimingsrc } from 'https://cdn.jsdelivr.net/npm/timingsrc@1.4.21/+esm';
+} from 'https://cdn.jsdelivr.net/npm/ireal-musicxml@latest/+esm';
+import { setTimingsrc } from 'https://cdn.jsdelivr.net/npm/timingsrc@latest/+esm';
 
 const DEFAULT_RENDERER = 'vrv';
 const DEFAULT_OUTPUT = 'local';

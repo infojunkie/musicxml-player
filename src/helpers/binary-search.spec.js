@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai';
-import { binarySearch } from '../../dist/musicxml-player.esm';
+import { binarySearch } from '../../build/musicxml-player';
 
 describe('binary-search', () => {
   it('should correctly search', () => {

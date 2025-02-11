@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import chai, { expect } from '@esm-bundle/chai';
 import chaiAsPromised from '@esm-bundle/chai-as-promised';
-import { fetish } from '../../dist/musicxml-player.esm';
+import { fetish } from '../../build/musicxml-player';
 
 chai.use(chaiAsPromised);
 

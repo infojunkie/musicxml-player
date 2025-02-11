@@ -1,5 +1,5 @@
 import { unzip } from 'unzipit';
-import SaxonJS from '../saxon-js/SaxonJS2.rt';
+import SaxonJS from '../saxon-js/SaxonJS3.rt';
 
 export type MusicXmlParseQuery = Record<string, string>;
 export type MusicXmlParseResult = {

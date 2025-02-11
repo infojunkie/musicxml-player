@@ -3,7 +3,7 @@ import type { IMidiFile } from 'midi-json-parser-worker';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import pkg from '../package.json';
 import { assertIsDefined, fetish } from './helpers';
-import SaxonJS from './saxon-js/SaxonJS2.rt';
+import SaxonJS from './saxon-js/SaxonJS3.rt';
 
 const XSL_TIMEMAP =
   'https://raw.githubusercontent.com/infojunkie/musicxml-midi/main/build/timemap.sef.json';

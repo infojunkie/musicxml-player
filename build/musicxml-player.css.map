@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/player.css"],
+  "sourcesContent": [".player-sheet {\n  overflow-x: auto;\n  overflow-y: hidden;\n  position: relative;\n}\n.player-cursor {\n  z-index: 2;\n  width: 2px;\n  will-change: transform;\n  position: absolute;\n  top: 0;\n  left: 0;\n  background: rgb(234, 107, 36);\n}\n"],
+  "mappings": "AAAA,CAAC,aACC,WAAY,KACZ,WAAY,OACZ,SAAU,QACZ,CACA,CAAC,cACC,QAAS,EACT,MAAO,IACP,YAAa,UACb,SAAU,SACV,IAAK,EACL,KAAM,EACN,WAAY,OACd",
+  "names": []
+}

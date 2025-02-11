@@ -1,5 +1,5 @@
 import { encode } from 'json-midi-message-encoder';
-import { parseMidiFile, parseMidiEvent, fetish} from '../../dist/musicxml-player.esm';
+import { parseMidiFile, parseMidiEvent, fetish} from '../../build/musicxml-player';
 
 const encodeMidiMessage = (event) => {
   return new Uint8Array(encode(event));

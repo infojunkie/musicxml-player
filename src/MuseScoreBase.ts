@@ -2,7 +2,7 @@ import { parseArrayBuffer as parseMidiBuffer } from 'midi-json-parser';
 import type { IMidiFile } from 'midi-json-parser-worker';
 import type { MeasureTimemap } from './IMidiConverter';
 import { atoab, fetish } from './helpers';
-import SaxonJS from './saxon-js/SaxonJS2.rt';
+import SaxonJS from './saxon-js/SaxonJS3.rt';
 
 export type MuseScoreDownloader = (musicXml: string) => {
   pngs?: string[];

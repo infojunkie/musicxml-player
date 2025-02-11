@@ -29,7 +29,6 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "types": [
-      "webmidi",
     ],
 
     // Output settings.
@@ -37,10 +36,9 @@
 
     // Type declaration settings.
     "declaration": true,
-    "declarationDir": "./types",
+    "declarationDir": "./build/types",
     "declarationMap": true,
     "rootDir": "./src",
-    "outDir": "./dist"
   },
   "include": ["./src/**/*.ts"],
   "exclude": ["./src/**/*.spec.ts"],
