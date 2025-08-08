@@ -154,7 +154,7 @@ async function createPlayer() {
       a1.innerText = `${filename}.musicxml`;
       document.getElementById('download-musicxml').appendChild(a1);
       const a2 = document.createElement('a');
-      a2.setAttribute('href', URL.createObjectURL(new Blob([await player.midi()], { type: 'audio/midi' })));
+      a2.setAttribute('href', URL.createObjectURL(new Blob([player.midi], { type: 'audio/midi' })));
       a2.setAttribute('download', `${filename}.mid`);
       a2.innerText = `${filename}.mid`;
       document.getElementById('download-midi').appendChild(a2);

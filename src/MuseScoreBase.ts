@@ -65,8 +65,8 @@ export type MuseScoreDownloader = (musicXml: string) => {
  */
 export class MuseScoreBase {
   protected _mscore?: ReturnType<MuseScoreDownloader>;
-  protected _midiBuffer?: ArrayBuffer;
-  protected _midiObject?: IMidiFile;
+  protected _buffer?: ArrayBuffer;
+  protected _midi?: IMidiFile;
   protected _timemap?: MeasureTimemap;
   protected _mpos?: object;
 
@@ -98,8 +98,8 @@ export class MuseScoreBase {
     }
 
     // Parse the MIDI.
-    this._midiBuffer = atoab(this._mscore.midi);
-    this._midiObject = await parseMidiBuffer(this._midiBuffer);
+    this._buffer = atoab(this._mscore.midi);
+    this._midi = await parseMidiBuffer(structuredClone(this._buffer));
 
     // Parse and create the timemap.
     this._timemap = [];

@@ -15,8 +15,8 @@ import { assertIsDefined, atoab } from './helpers';
 export class VerovioConverter implements IMidiConverter {
   protected _vrv?: VerovioToolkit;
   protected _timemap: MeasureTimemap = [];
-  protected _midiBuffer?: ArrayBuffer;
-  protected _midiObject?: IMidiFile;
+  protected _buffer?: ArrayBuffer;
+  protected _midi?: IMidiFile;
   protected _options: VerovioOptions;
 
   constructor(options?: VerovioOptions) {
@@ -67,18 +67,18 @@ export class VerovioConverter implements IMidiConverter {
     }
 
     // Render to MIDI.
-    this._midiBuffer = atoab(this._vrv.renderToMIDI());
-    this._midiObject = await parseMidiBuffer(this._midiBuffer);
+    this._buffer = atoab(this._vrv.renderToMIDI());
+    this._midi = await parseMidiBuffer(structuredClone(this._buffer));
   }
 
-  get midiBuffer(): ArrayBuffer {
-    assertIsDefined(this._midiBuffer);
-    return this._midiBuffer;
+  get buffer(): ArrayBuffer {
+    assertIsDefined(this._buffer);
+    return this._buffer;
   }
 
-  get midiObject(): IMidiFile {
-    assertIsDefined(this._midiObject);
-    return this._midiObject;
+  get midi(): IMidiFile {
+    assertIsDefined(this._midi);
+    return this._midi;
   }
 
   get timemap(): MeasureTimemap {

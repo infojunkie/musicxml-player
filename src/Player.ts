@@ -140,9 +140,9 @@ export class Player {
     this._options.renderer.player = this;
 
     // Manipulate the incoming MIDI file to move the MIDI End Of Track message to the end of the last measure.
-    // this._midiObject = this._options.converter.midiObject;
+    // this._midi = this._options.converter.midi;
     // try {
-    //   const track = this._midiObject.tracks[0];
+    //   const track = this._midi.tracks[0];
     //   const event = track.last();
     //   if ('endOfTrack' in event) {
     //     const entry = this._options.converter.timemap.last();
@@ -152,7 +152,7 @@ export class Player {
     //         .filter((event): event is IMidiSetTempoEvent => 'setTempo' in event)
     //         .last()?.setTempo.microsecondsPerQuarter ?? 500000;
     //     event.delta +=
-    //       (entry.duration * this._midiObject.division * 1000) /
+    //       (entry.duration * this._midi.division * 1000) /
     //       microsecondsPerQuarter;
     //   } else {
     //     console.warn(
@@ -166,8 +166,7 @@ export class Player {
     // }
 
     // Create the MIDI player.
-    const ab = structuredClone(this._options.converter.midiBuffer);
-    this._midiPlayer = new Sequencer([{ binary: ab }], synth);
+    this._midiPlayer = new Sequencer([{ binary: this._options.converter.buffer }], synth);
     if (this._options.output) {
       this._midiPlayer.connectMidiOutput(this._options.output);
     }
@@ -298,7 +297,7 @@ export class Player {
    * The MIDI buffer.
    */
   get midi(): ArrayBuffer {
-    return this._options.converter.midiBuffer;
+    return this._options.converter.buffer;
   }
 
   /**

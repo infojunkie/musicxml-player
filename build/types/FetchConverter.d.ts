@@ -13,12 +13,12 @@ export declare class FetchConverter implements IMidiConverter {
     protected _midiOrUri: ArrayBuffer | string;
     protected _timemapOrUri?: string | MeasureTimemap | undefined;
     protected _timemap?: MeasureTimemap;
-    protected _midiBuffer?: ArrayBuffer;
-    protected _midiObject?: IMidiFile;
+    protected _buffer?: ArrayBuffer;
+    protected _midi?: IMidiFile;
     constructor(_midiOrUri: ArrayBuffer | string, _timemapOrUri?: string | MeasureTimemap | undefined);
     initialize(musicXml: string): Promise<void>;
-    get midiBuffer(): ArrayBuffer;
-    get midiObject(): IMidiFile;
+    get buffer(): ArrayBuffer;
+    get midi(): IMidiFile;
     get timemap(): MeasureTimemap;
     get version(): string;
     /**

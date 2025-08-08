@@ -20,14 +20,14 @@ export class MuseScoreConverter
     return this.extract(musicXml);
   }
 
-  get midiBuffer(): ArrayBuffer {
-    assertIsDefined(this._midiBuffer);
-    return this._midiBuffer;
+  get buffer(): ArrayBuffer {
+    assertIsDefined(this._buffer);
+    return this._buffer;
   }
 
-  get midiObject(): IMidiFile {
-    assertIsDefined(this._midiObject);
-    return this._midiObject;
+  get midi(): IMidiFile {
+    assertIsDefined(this._midi);
+    return this._midi;
   }
 
   get timemap(): MeasureTimemap {

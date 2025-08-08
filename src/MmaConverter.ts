@@ -16,8 +16,8 @@ export class MmaConverter implements IMidiConverter {
     name: string;
     version: string;
   };
-  protected _midiBuffer?: ArrayBuffer;
-  protected _midiObject?: IMidiFile;
+  protected _buffer?: ArrayBuffer;
+  protected _midi?: IMidiFile;
   protected _timemap?: MeasureTimemap;
   protected _uri;
 
@@ -44,19 +44,19 @@ export class MmaConverter implements IMidiConverter {
       method: 'POST',
       body: formData,
     });
-    this._midiBuffer = await response.arrayBuffer();
-    this._midiObject = await parseMidiBuffer(this._midiBuffer);
-    this._timemap = await MmaConverter._parseTimemap(this._midiObject);
+    this._buffer = await response.arrayBuffer();
+    this._midi = await parseMidiBuffer(structuredClone(this._buffer));
+    this._timemap = MmaConverter._parseTimemap(this._midi);
   }
 
-  get midiBuffer(): ArrayBuffer {
-    assertIsDefined(this._midiBuffer);
-    return this._midiBuffer;
+  get buffer(): ArrayBuffer {
+    assertIsDefined(this._buffer);
+    return this._buffer;
   }
 
-  get midiObject(): IMidiFile {
-    assertIsDefined(this._midiObject);
-    return this._midiObject;
+  get midi(): IMidiFile {
+    assertIsDefined(this._midi);
+    return this._midi;
   }
 
   get timemap(): MeasureTimemap {

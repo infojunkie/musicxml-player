@@ -10,13 +10,13 @@ import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 export declare class VerovioConverter implements IMidiConverter {
     protected _vrv?: VerovioToolkit;
     protected _timemap: MeasureTimemap;
-    protected _midiBuffer?: ArrayBuffer;
-    protected _midiObject?: IMidiFile;
+    protected _buffer?: ArrayBuffer;
+    protected _midi?: IMidiFile;
     protected _options: VerovioOptions;
     constructor(options?: VerovioOptions);
     initialize(musicXml: string): Promise<void>;
-    get midiBuffer(): ArrayBuffer;
-    get midiObject(): IMidiFile;
+    get buffer(): ArrayBuffer;
+    get midi(): IMidiFile;
     get timemap(): MeasureTimemap;
     get version(): string;
 }
