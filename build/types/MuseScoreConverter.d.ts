@@ -7,7 +7,8 @@ import { MuseScoreDownloader, MuseScoreBase } from './MuseScoreBase';
 export declare class MuseScoreConverter extends MuseScoreBase implements IMidiConverter {
     constructor(downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>);
     initialize(musicXml: string): Promise<void>;
-    get midi(): IMidiFile;
+    get midiBuffer(): ArrayBuffer;
+    get midiObject(): IMidiFile;
     get timemap(): MeasureTimemap;
     get version(): string;
 }

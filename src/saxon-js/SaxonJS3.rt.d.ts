@@ -163,7 +163,7 @@
     logLevel?: number,
     nonInteractive?: boolean
   };
-  export function transform(options: TransformationOptions, execution?: string): any;
+  export function transform(options: TransformationOptions, execution?: "sync" | "async"): any;
 
   export namespace XPath {
     /**

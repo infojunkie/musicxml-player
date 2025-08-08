@@ -19,20 +19,20 @@ const XSL_TIMEMAP =
  */
 export class FetchConverter implements IMidiConverter {
   protected _timemap?: MeasureTimemap;
-  protected _midi?: IMidiFile;
+  protected _midiBuffer?: ArrayBuffer;
+  protected _midiObject?: IMidiFile;
 
   constructor(
-    protected _midiOrUri: IMidiFile | string,
+    protected _midiOrUri: ArrayBuffer | string,
     protected _timemapOrUri?: MeasureTimemap | string,
   ) {}
 
   async initialize(musicXml: string): Promise<void> {
-    this._midi =
+    this._midiBuffer =
       typeof this._midiOrUri === 'string'
-        ? await parseMidiBuffer(
-            await (await fetish(this._midiOrUri)).arrayBuffer(),
-          )
+        ? await (await fetish(this._midiOrUri)).arrayBuffer()
         : this._midiOrUri;
+    this._midiObject = await parseMidiBuffer(this._midiBuffer);
     this._timemap =
       typeof this._timemapOrUri === 'undefined'
         ? await FetchConverter._parseTimemap(musicXml)
@@ -41,9 +41,14 @@ export class FetchConverter implements IMidiConverter {
           : this._timemapOrUri;
   }
 
-  get midi(): IMidiFile {
-    assertIsDefined(this._midi);
-    return this._midi;
+  get midiBuffer(): ArrayBuffer {
+    assertIsDefined(this._midiBuffer);
+    return this._midiBuffer;
+  }
+
+  get midiObject(): IMidiFile {
+    assertIsDefined(this._midiObject);
+    return this._midiObject;
   }
 
   get timemap(): MeasureTimemap {

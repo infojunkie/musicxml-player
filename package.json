@@ -51,6 +51,7 @@
     "midi-json-parser": "^8.1.14",
     "midi-player": "github:infojunkie/midi-player",
     "opensheetmusicdisplay": "^1.7.1",
+    "spessasynth_lib": "^3.27.8",
     "standardized-audio-context": "^25.3.35",
     "timing-object": "^3.1.61",
     "timingsrc": "^1.4.5",

@@ -1,9 +1,8 @@
-import { IMidiOutput, IMidiPlayer, PlayerState } from 'midi-player';
-import { IMidiFile } from 'midi-json-parser-worker';
+import { IMidiOutput, PlayerState } from 'midi-player';
+import { ITimingObject } from 'timing-object';
 import { MusicXmlParseResult } from './helpers';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
-import { ITimingObject } from 'timing-object';
 export type MeasureIndex = number;
 export type MillisecsTimestamp = number;
 /**
@@ -28,7 +27,7 @@ export interface PlayerOptions {
     converter: IMidiConverter;
     /**
      * (Optional) An instance of the MIDI output to send the note events.
-     * If ommitted, a local Web Audio synthesizer will be used.
+     * If omitted, a local Web Audio synthesizer will be used.
      */
     output?: IMidiOutput;
     /**
@@ -51,7 +50,7 @@ export interface PlayerOptions {
      */
     velocity?: number;
 }
-export declare class Player implements IMidiOutput {
+export declare class Player {
     protected _options: PlayerOptions;
     protected _sheet: HTMLElement;
     protected _parseResult: MusicXmlParseResult;
@@ -64,17 +63,15 @@ export declare class Player implements IMidiOutput {
      * @throws Error exception with various error messages.
      */
     static create(options: PlayerOptions): Promise<Player>;
-    protected _output: IMidiOutput;
-    protected _midiPlayer: IMidiPlayer;
+    protected _midiPlayer: any;
     protected _observer: ResizeObserver;
-    protected _midiFile: IMidiFile;
     protected _duration: number;
     protected _mute: boolean;
     protected _repeat: number;
     protected _velocity: number;
     protected _timingObject: ITimingObject;
     protected _timingObjectListener: EventListener;
-    protected constructor(_options: PlayerOptions, _sheet: HTMLElement, _parseResult: MusicXmlParseResult, _musicXml: string);
+    protected constructor(_options: PlayerOptions, _sheet: HTMLElement, _parseResult: MusicXmlParseResult, _musicXml: string, synth: any);
     /**
      * Destroy the instance by freeing all resources and disconnecting observers.
      */
@@ -89,11 +86,8 @@ export declare class Player implements IMidiOutput {
     moveTo(measureIndex: MeasureIndex, measureStart: MillisecsTimestamp, measureOffset: MillisecsTimestamp): void;
     /**
      * Start playback.
-     *
-     * @param velocity Playback rate
-     * @returns A promise that resolves when the player is paused or stopped.
      */
-    play(): Promise<void>;
+    play(): void;
     /**
      * Pause playback.
      */
@@ -111,10 +105,9 @@ export declare class Player implements IMidiOutput {
      */
     get musicXml(): string;
     /**
-     * The MIDI file.
-     * @returns A promise that resolves to the ArrayBuffer containing the MIDI file binary representation.
+     * The MIDI buffer.
      */
-    midi(): Promise<ArrayBuffer>;
+    get midi(): ArrayBuffer;
     /**
      * The player state.
      */
@@ -148,20 +141,6 @@ export declare class Player implements IMidiOutput {
      * Playback speed. A value of 1 means normal speed.
      */
     set velocity(value: number);
-    /**
-     * Implementation of IMidiOutput.send().
-     *
-     * @param data The MIDI event(s) to send
-     * @param timestamp Timestamp of events onset in ms.
-     *
-     * We implement IMidiOutput here to capture any interesting events
-     * such as MARKER events with Groove information.
-     */
-    send(data: number[] | Uint8Array, timestamp?: number): void;
-    /**
-     * Implementation of IMidiOutput.clear().
-     */
-    clear(): void;
     protected _play(): Promise<void>;
     protected _handleTimingObjectChange(_event: Event): void;
     protected static _unroll(musicXml: string): Promise<string>;

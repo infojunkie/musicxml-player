@@ -1,26 +1,24 @@
 import {
-  create as createMidiPlayer,
   IMidiOutput,
-  IMidiPlayer,
   PlayerState,
 } from 'midi-player';
-import { encode as encodeMidiFile } from 'json-midi-encoder';
-import { IMidiFile, IMidiSetTempoEvent } from 'midi-json-parser-worker';
+import { Synthetizer, Sequencer } from 'spessasynth_lib';
+import { ITimingObject, TimingObject } from 'timing-object';
 import {
   binarySearch,
-  parseMidiEvent,
   parseMusicXml,
   MusicXmlParseResult,
+  fetish,
 } from './helpers';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
-import { WebAudioFontOutput } from './WebAudioFontOutput';
-import { ITimingObject, TimingObject } from 'timing-object';
 import SaxonJS from './saxon-js/SaxonJS3.rt';
 import pkg from '../package.json';
 
 const XSL_UNROLL =
   'https://raw.githubusercontent.com/infojunkie/musicxml-midi/main/build/unroll.sef.json';
+
+const SOUNDFONT_DEFAULT = 'data/GeneralUserGS.sf3';
 
 export type MeasureIndex = number;
 export type MillisecsTimestamp = number;
@@ -47,7 +45,7 @@ export interface PlayerOptions {
   converter: IMidiConverter;
   /**
    * (Optional) An instance of the MIDI output to send the note events.
-   * If ommitted, a local Web Audio synthesizer will be used.
+   * If omitted, a local Web Audio synthesizer will be used.
    */
   output?: IMidiOutput;
   /**
@@ -73,7 +71,7 @@ export interface PlayerOptions {
 
 const RESIZE_THROTTLE = 100;
 
-export class Player implements IMidiOutput {
+export class Player {
   /**
    * Create a new instance of the player.
    *
@@ -87,14 +85,15 @@ export class Player implements IMidiOutput {
       typeof options.container === 'string'
         ? document.getElementById(options.container)
         : options.container;
-    if (!container)
+    if (!container) {
       throw new Error('[Player.load] Failed to find container element.');
+    }
     const sheet = document.createElement('div');
     sheet.className = 'player-sheet';
     container.appendChild(sheet);
 
+    // Parse the incoming MusicXML and unroll it if needed.
     try {
-      // Parse the incoming MusicXML and unroll it if needed.
       const parseResult = await parseMusicXml(options.musicXml, {
         title: '//work/work-title/text()',
         version: '//score-partwise/@version',
@@ -104,22 +103,25 @@ export class Player implements IMidiOutput {
         musicXml = await Player._unroll(musicXml);
       }
 
+      // Create the synth element.
+      const context = new AudioContext();
+      await context.audioWorklet.addModule('worklet_processor.min.js');
+      const soundfont = await (await fetish(SOUNDFONT_DEFAULT)).arrayBuffer();
+      const synth = new Synthetizer(context.destination, soundfont);
+
       // Initialize the various objects.
       // It's too bad that constructors cannot be made async because that would simplify the code.
       await options.converter.initialize(musicXml);
       await options.renderer.initialize(sheet, musicXml);
-      const player = new Player(options, sheet, parseResult, musicXml);
-      return player;
+      return new Player(options, sheet, parseResult, musicXml, synth);
     } catch (error) {
       console.error(`[Player.load] ${error}`);
       throw error;
     }
   }
 
-  protected _output: IMidiOutput;
-  protected _midiPlayer: IMidiPlayer;
+  protected _midiPlayer: any;
   protected _observer: ResizeObserver;
-  protected _midiFile: IMidiFile;
   protected _duration: number;
   protected _mute: boolean;
   protected _repeat: number;
@@ -132,64 +134,43 @@ export class Player implements IMidiOutput {
     protected _sheet: HTMLElement,
     protected _parseResult: MusicXmlParseResult,
     protected _musicXml: string,
+    synth: any
   ) {
     // Inform the renderer that we're here.
     this._options.renderer.player = this;
 
     // Manipulate the incoming MIDI file to move the MIDI End Of Track message to the end of the last measure.
-    this._midiFile = this._options.converter.midi;
-    try {
-      const track = this._midiFile.tracks[0];
-      const event = track.last();
-      if ('endOfTrack' in event) {
-        const entry = this._options.converter.timemap.last();
-        // 500000 = 60,000,000 microseconds per minute / 120 beats per minute
-        const microsecondsPerQuarter =
-          track
-            .filter((event): event is IMidiSetTempoEvent => 'setTempo' in event)
-            .last()?.setTempo.microsecondsPerQuarter ?? 500000;
-        event.delta +=
-          (entry.duration * this._midiFile.division * 1000) /
-          microsecondsPerQuarter;
-      } else {
-        console.warn(
-          `[Player.constructor] Error fixing MIDI End Of Track event: Last event is not End Of Track.`,
-        );
-      }
-    } catch (error) {
-      console.error(
-        `[Player.constructor] Error fixing MIDI End Of Track event: ${error}`,
-      );
-    }
-
-    // Set or create the MIDI output.
-    this._output =
-      this._options.output ?? new WebAudioFontOutput(this._midiFile);
+    // this._midiObject = this._options.converter.midiObject;
+    // try {
+    //   const track = this._midiObject.tracks[0];
+    //   const event = track.last();
+    //   if ('endOfTrack' in event) {
+    //     const entry = this._options.converter.timemap.last();
+    //     // 500000 = 60,000,000 microseconds per minute / 120 beats per minute
+    //     const microsecondsPerQuarter =
+    //       track
+    //         .filter((event): event is IMidiSetTempoEvent => 'setTempo' in event)
+    //         .last()?.setTempo.microsecondsPerQuarter ?? 500000;
+    //     event.delta +=
+    //       (entry.duration * this._midiObject.division * 1000) /
+    //       microsecondsPerQuarter;
+    //   } else {
+    //     console.warn(
+    //       `[Player.constructor] Error fixing MIDI End Of Track event: Last event is not End Of Track.`,
+    //     );
+    //   }
+    // } catch (error) {
+    //   console.error(
+    //     `[Player.constructor] Error fixing MIDI End Of Track event: ${error}`,
+    //   );
+    // }
 
     // Create the MIDI player.
-    // Wrap IMidiPlayer.stop() with a try...catch to call it freely.
-    this._midiPlayer = new Proxy(
-      createMidiPlayer({
-        json: this._midiFile,
-        midiOutput: this,
-        filterMidiMessage: () => true,
-      }),
-      {
-        get(target, prop) {
-          if (prop === 'stop') {
-            return () => {
-              try {
-                target.stop();
-              } catch {
-                // Do nothing.
-              }
-            };
-          } else {
-            return Reflect.get(target, prop);
-          }
-        },
-      },
-    );
+    const ab = structuredClone(this._options.converter.midiBuffer);
+    this._midiPlayer = new Sequencer([{ binary: ab }], synth);
+    if (this._options.output) {
+      this._midiPlayer.connectMidiOutput(this._options.output);
+    }
 
     // Initialize the playback options.
     this._repeat = this._options.repeat ?? 1;
@@ -252,12 +233,6 @@ export class Player implements IMidiOutput {
     measureStart: MillisecsTimestamp,
     measureOffset: MillisecsTimestamp,
   ) {
-    // If the player is stopped, set it to paused before continuing.
-    if (this._midiPlayer.state === PlayerState.Stopped) {
-      this._midiPlayer.play();
-      this._midiPlayer.pause();
-    }
-
     // Set the playback position.
     // Find the closest instance of the measure based on current playback position.
     const position = this.position - measureOffset;
@@ -270,7 +245,7 @@ export class Player implements IMidiOutput {
       })
       .last();
     if (entry) {
-      this._midiPlayer.position = entry.timestamp + measureOffset;
+      this._midiPlayer.currentTime = entry.timestamp + measureOffset;
     }
 
     // Set the cursor position.
@@ -279,23 +254,15 @@ export class Player implements IMidiOutput {
 
   /**
    * Start playback.
-   *
-   * @param velocity Playback rate
-   * @returns A promise that resolves when the player is paused or stopped.
    */
-  async play() {
-    if (this._midiPlayer.state === PlayerState.Playing) return;
-    if (this._output instanceof WebAudioFontOutput) {
-      await (this._output as WebAudioFontOutput).initialize();
-    }
-    await this._play();
+  play() {
+    this._play();
   }
 
   /**
    * Pause playback.
    */
   pause() {
-    if (this._midiPlayer.state !== PlayerState.Playing) return;
     this._midiPlayer.pause();
     this._timingObject.update({ velocity: 0 });
   }
@@ -328,11 +295,10 @@ export class Player implements IMidiOutput {
   }
 
   /**
-   * The MIDI file.
-   * @returns A promise that resolves to the ArrayBuffer containing the MIDI file binary representation.
+   * The MIDI buffer.
    */
-  async midi(): Promise<ArrayBuffer> {
-    return await encodeMidiFile(this._midiFile);
+  get midi(): ArrayBuffer {
+    return this._options.converter.midiBuffer;
   }
 
   /**
@@ -363,7 +329,7 @@ export class Player implements IMidiOutput {
   get position(): number {
     return Math.max(
       0,
-      Math.min(this._midiPlayer.position ?? 0, this._duration - 1),
+      Math.min(this._midiPlayer.currentTime ?? 0, this._duration - 1),
     );
   }
 
@@ -386,9 +352,6 @@ export class Player implements IMidiOutput {
    */
   set mute(value: boolean) {
     this._mute = value;
-    if (this._mute) {
-      this.clear();
-    }
   }
 
   /**
@@ -401,31 +364,6 @@ export class Player implements IMidiOutput {
       this._timingObject.update({ velocity: this._velocity });
       this._play();
     }
-  }
-
-  /**
-   * Implementation of IMidiOutput.send().
-   *
-   * @param data The MIDI event(s) to send
-   * @param timestamp Timestamp of events onset in ms.
-   *
-   * We implement IMidiOutput here to capture any interesting events
-   * such as MARKER events with Groove information.
-   */
-  send(data: number[] | Uint8Array, timestamp?: number) {
-    if (this._mute) return;
-    const event = parseMidiEvent(data);
-    // Web MIDI does not accept meta messages.
-    if ('channel' in event) {
-      this._output.send(data, timestamp);
-    }
-  }
-
-  /**
-   * Implementation of IMidiOutput.clear().
-   */
-  clear() {
-    this._output.clear?.();
   }
 
   protected async _play() {
@@ -470,11 +408,7 @@ export class Player implements IMidiOutput {
     requestAnimationFrame(synchronizeMidi);
 
     // Activate the MIDI player.
-    if (this._midiPlayer.state === PlayerState.Paused) {
-      await this._midiPlayer.resume(this._velocity, this._repeat);
-    } else {
-      await this._midiPlayer.play(this._velocity, this._repeat);
-    }
+    this._midiPlayer.play();
   }
 
   protected _handleTimingObjectChange(_event: Event) {

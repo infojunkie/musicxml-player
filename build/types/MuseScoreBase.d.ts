@@ -61,7 +61,8 @@ export type MuseScoreDownloader = (musicXml: string) => {
 export declare class MuseScoreBase {
     protected _downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>;
     protected _mscore?: ReturnType<MuseScoreDownloader>;
-    protected _midi?: IMidiFile;
+    protected _midiBuffer?: ArrayBuffer;
+    protected _midiObject?: IMidiFile;
     protected _timemap?: MeasureTimemap;
     protected _mpos?: object;
     constructor(_downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>);

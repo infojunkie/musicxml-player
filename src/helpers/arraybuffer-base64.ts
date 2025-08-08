@@ -3,6 +3,6 @@
  * https://stackoverflow.com/a/41106346/209184
  *
  */
-export function atoab(base64: string) {
+export function atoab(base64: string): ArrayBuffer {
   return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)).buffer;
 }
