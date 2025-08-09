@@ -1,7 +1,3 @@
-import {
-  IMidiOutput,
-  PlayerState,
-} from 'midi-player';
 import { Synthetizer, Sequencer } from 'spessasynth_lib';
 import { ITimingObject, TimingObject } from 'timing-object';
 import {
@@ -22,6 +18,12 @@ const SOUNDFONT_DEFAULT = 'data/GeneralUserGS.sf3';
 
 export type MeasureIndex = number;
 export type MillisecsTimestamp = number;
+
+export enum PlayerState {
+  Stopped,
+  Playing,
+  Paused
+}
 
 /**
  * A structure holding the Player creation options.
@@ -47,7 +49,7 @@ export interface PlayerOptions {
    * (Optional) An instance of the MIDI output to send the note events.
    * If omitted, a local Web Audio synthesizer will be used.
    */
-  output?: IMidiOutput;
+  output?: WebMidi.MIDIOutput;
   /**
    * (Optional) A flag to unroll the score before displaying it and playing it.
    */
@@ -120,12 +122,11 @@ export class Player {
     }
   }
 
-  protected _midiPlayer: any;
+  protected _sequencer: Sequencer;
   protected _observer: ResizeObserver;
   protected _duration: number;
+  protected _state: PlayerState;
   protected _mute: boolean;
-  protected _repeat: number;
-  protected _velocity: number;
   protected _timingObject: ITimingObject;
   protected _timingObjectListener: EventListener;
 
@@ -134,7 +135,7 @@ export class Player {
     protected _sheet: HTMLElement,
     protected _parseResult: MusicXmlParseResult,
     protected _musicXml: string,
-    synth: any
+    protected _synthesizer: Synthetizer
   ) {
     // Inform the renderer that we're here.
     this._options.renderer.player = this;
@@ -166,18 +167,24 @@ export class Player {
     // }
 
     // Create the MIDI player.
-    this._midiPlayer = new Sequencer([{ binary: this._options.converter.buffer }], synth);
+    this._duration = 0;
+    this._state = PlayerState.Stopped;
+    this._sequencer = new Sequencer([{ binary: this._options.converter.buffer }], this._synthesizer, {
+      autoPlay: false,
+      preservePlaybackState: true,
+    });
+    this._sequencer.addOnSongChangeEvent((midiData: MidiData) => {
+      this._duration = midiData.duration * 1000;
+    });
     if (this._options.output) {
-      this._midiPlayer.connectMidiOutput(this._options.output);
+      this._sequencer.connectMidiOutput(this._options.output);
     }
 
     // Initialize the playback options.
-    this._repeat = this._options.repeat ?? 1;
     this._mute = this._options.mute ?? false;
-    this._velocity = this._options.velocity ?? 1;
-    this._duration =
-      this._options.converter.timemap.last().timestamp +
-      this._options.converter.timemap.last().duration;
+    this._sequencer.playbackRate = this._options.velocity ?? 1;
+    this._sequencer.loop = (this._options.repeat ?? 0) !== 0;
+    this._sequencer.loopRemaining = this._options.repeat ?? 0;
 
     // Set up resize handling.
     // Throttle the resize event https://stackoverflow.com/a/5490021/209184
@@ -192,7 +199,7 @@ export class Player {
 
     // Create the TimingObject.
     this._timingObject = new TimingObject(
-      { velocity: this._velocity, position: 0 },
+      { velocity: this._sequencer.playbackRate, position: 0 },
       0,
       this.duration,
     );
@@ -213,7 +220,7 @@ export class Player {
       );
       this._sheet.remove();
       this._observer.disconnect();
-      this._midiPlayer.stop();
+      this._sequencer.stop();
       this._options.renderer.destroy();
     } catch (error) {
       console.error(`[Player.destroy] ${error}`);
@@ -244,7 +251,7 @@ export class Player {
       })
       .last();
     if (entry) {
-      this._midiPlayer.currentTime = entry.timestamp + measureOffset;
+      this._sequencer.currentTime = (entry.timestamp + measureOffset) / 1000;
     }
 
     // Set the cursor position.
@@ -255,24 +262,69 @@ export class Player {
    * Start playback.
    */
   play() {
-    this._play();
+    const synchronizeMidi = () => {
+      if (this.state !== PlayerState.Playing) return;
+
+      // Lookup the current measure number by binary-searching the timemap.
+      // TODO Optimize search by starting at current measure.
+      const timestamp = this.position;
+      const index = binarySearch(
+        this._options.converter.timemap,
+        {
+          measure: 0,
+          timestamp,
+          duration: 0,
+        },
+        (a, b) => {
+          const d = a.timestamp - b.timestamp;
+          if (Math.abs(d) < Number.EPSILON) return 0;
+          return d;
+        },
+      );
+
+      // Update the cursors and listeners.
+      const entry =
+        this._options.converter.timemap[
+          index >= 0 ? index : Math.max(0, -index - 2)
+        ];
+      this._options.renderer.moveTo(
+        entry.measure,
+        entry.timestamp,
+        Math.max(0, timestamp - entry.timestamp),
+        entry.duration,
+      );
+      //this._timingObject.update({ position: timestamp });
+
+      // Schedule next cursor movement.
+      requestAnimationFrame(synchronizeMidi);
+    };
+
+    // Schedule first cursor movement.
+    requestAnimationFrame(synchronizeMidi);
+
+    // Activate the MIDI player.
+    this._state = PlayerState.Playing;
+    this._sequencer.play();
   }
 
   /**
    * Pause playback.
    */
   pause() {
-    this._midiPlayer.pause();
-    this._timingObject.update({ velocity: 0 });
+    this._sequencer.pause();
+    this._state = PlayerState.Paused;
+    //this._timingObject.update({ velocity: 0 });
   }
 
   /**
    * Stop playback and rewind to start.
    */
   rewind() {
-    this._midiPlayer.stop();
+    if (this._state !== PlayerState.Stopped) {
+      this._sequencer.currentTime = 0;
+    }
     this._options.renderer.moveTo(0, 0, 0);
-    this._timingObject.update({ velocity: 0, position: 0 });
+    //this._timingObject.update({ velocity: 0, position: 0 });
   }
 
   /**
@@ -304,7 +356,7 @@ export class Player {
    * The player state.
    */
   get state(): PlayerState {
-    return this._midiPlayer.state;
+    return this._state;
   }
 
   /**
@@ -328,7 +380,7 @@ export class Player {
   get position(): number {
     return Math.max(
       0,
-      Math.min(this._midiPlayer.currentTime ?? 0, this._duration - 1),
+      Math.min(this._sequencer.currentTime * 1000, this._duration - 1),
     );
   }
 
@@ -343,7 +395,8 @@ export class Player {
    * Repeat count. A value of -1 means loop forever.
    */
   set repeat(value: number) {
-    this._repeat = value;
+    this._sequencer.loop = value !== 0;
+    this._sequencer.loopRemaining = value;
   }
 
   /**
@@ -357,57 +410,8 @@ export class Player {
    * Playback speed. A value of 1 means normal speed.
    */
   set velocity(value: number) {
-    this._velocity = value;
-    if (this._midiPlayer.state === PlayerState.Playing) {
-      this._midiPlayer.pause();
-      this._timingObject.update({ velocity: this._velocity });
-      this._play();
-    }
-  }
-
-  protected async _play() {
-    const synchronizeMidi = () => {
-      if (this._midiPlayer.state !== PlayerState.Playing) return;
-
-      // Lookup the current measure number by binary-searching the timemap.
-      // TODO Optimize search by starting at current measure.
-      const timestamp = this.position;
-      const index = binarySearch(
-        this._options.converter.timemap,
-        {
-          measure: 0,
-          timestamp,
-          duration: 0,
-        },
-        (a, b) => {
-          const d = a.timestamp - b.timestamp;
-          if (Math.abs(d) < Number.EPSILON) return 0;
-          return d;
-        },
-      );
-
-      // Update the cursors and listeners.
-      const entry =
-        this._options.converter.timemap[
-          index >= 0 ? index : Math.max(0, -index - 2)
-        ];
-      this._options.renderer.moveTo(
-        entry.measure,
-        entry.timestamp,
-        Math.max(0, timestamp - entry.timestamp),
-        entry.duration,
-      );
-      this._timingObject.update({ position: timestamp });
-
-      // Schedule next cursor movement.
-      requestAnimationFrame(synchronizeMidi);
-    };
-
-    // Schedule first cursor movement.
-    requestAnimationFrame(synchronizeMidi);
-
-    // Activate the MIDI player.
-    this._midiPlayer.play();
+    this._sequencer.playbackRate = value;
+//    this._timingObject.update({ velocity: value });
   }
 
   protected _handleTimingObjectChange(_event: Event) {
@@ -425,9 +429,9 @@ export class Player {
     //     this.pause();
     //   }
     // } else {
-    //   if (this._midiPlayer.state !== PlayerState.Stopped) {
-    //     this._midiPlayer.velocity = velocity;
-    //     this._midiPlayer.position = position;
+    //   if (this.state !== PlayerState.Stopped) {
+    //     this._sequencer.velocity = velocity;
+    //     this._sequencer.position = position;
     //   }
     // }
   }

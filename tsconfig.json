@@ -28,8 +28,7 @@
     "lib": ["es2020", "dom"],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "types": [
-    ],
+    "types": ["webmidi"],
 
     // Output settings.
     "sourceMap": true,

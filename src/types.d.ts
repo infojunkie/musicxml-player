@@ -2,3 +2,7 @@ declare module '*.json';
 declare module 'webaudiofont';
 declare module 'spessasynth_core';
 declare module 'spessasynth_lib';
+
+type Synthetizer = any;
+type Sequencer = any;
+type MidiData = any;

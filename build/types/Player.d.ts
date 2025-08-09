@@ -1,10 +1,15 @@
-import { IMidiOutput, PlayerState } from 'midi-player';
+/// <reference types="webmidi" />
 import { ITimingObject } from 'timing-object';
 import { MusicXmlParseResult } from './helpers';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
 export type MeasureIndex = number;
 export type MillisecsTimestamp = number;
+export declare enum PlayerState {
+    Stopped = 0,
+    Playing = 1,
+    Paused = 2
+}
 /**
  * A structure holding the Player creation options.
  */
@@ -29,7 +34,7 @@ export interface PlayerOptions {
      * (Optional) An instance of the MIDI output to send the note events.
      * If omitted, a local Web Audio synthesizer will be used.
      */
-    output?: IMidiOutput;
+    output?: WebMidi.MIDIOutput;
     /**
      * (Optional) A flag to unroll the score before displaying it and playing it.
      */
@@ -55,6 +60,7 @@ export declare class Player {
     protected _sheet: HTMLElement;
     protected _parseResult: MusicXmlParseResult;
     protected _musicXml: string;
+    protected _synthesizer: Synthetizer;
     /**
      * Create a new instance of the player.
      *
@@ -63,15 +69,14 @@ export declare class Player {
      * @throws Error exception with various error messages.
      */
     static create(options: PlayerOptions): Promise<Player>;
-    protected _midiPlayer: any;
+    protected _sequencer: Sequencer;
     protected _observer: ResizeObserver;
     protected _duration: number;
+    protected _state: PlayerState;
     protected _mute: boolean;
-    protected _repeat: number;
-    protected _velocity: number;
     protected _timingObject: ITimingObject;
     protected _timingObjectListener: EventListener;
-    protected constructor(_options: PlayerOptions, _sheet: HTMLElement, _parseResult: MusicXmlParseResult, _musicXml: string, synth: any);
+    protected constructor(_options: PlayerOptions, _sheet: HTMLElement, _parseResult: MusicXmlParseResult, _musicXml: string, _synthesizer: Synthetizer);
     /**
      * Destroy the instance by freeing all resources and disconnecting observers.
      */
@@ -141,7 +146,6 @@ export declare class Player {
      * Playback speed. A value of 1 means normal speed.
      */
     set velocity(value: number);
-    protected _play(): Promise<void>;
     protected _handleTimingObjectChange(_event: Event): void;
     protected static _unroll(musicXml: string): Promise<string>;
 }

@@ -10,6 +10,8 @@
   "devDependencies": {
     "@esm-bundle/chai": "^4.3.4-fix.0",
     "@esm-bundle/chai-as-promised": "^7.1.1",
+    "@types/verovio": "^3.13.4",
+    "@types/webmidi": "^2.1.0",
     "@web/test-runner": "^0.18.2",
     "@web/test-runner-puppeteer": "^0.16.0",
     "concurrently": "^8.0.1",
@@ -46,10 +48,8 @@
   },
   "homepage": "https://github.com/infojunkie/musicxml-player#readme",
   "dependencies": {
-    "@types/verovio": "^3.13.4",
     "json-midi-encoder": "^5.1.32",
     "midi-json-parser": "^8.1.14",
-    "midi-player": "github:infojunkie/midi-player",
     "opensheetmusicdisplay": "^1.7.1",
     "spessasynth_lib": "^3.27.8",
     "standardized-audio-context": "^25.3.35",
@@ -57,7 +57,6 @@
     "timingsrc": "^1.4.5",
     "unzipit": "^1.4.3",
     "verovio": "^5.0.0",
-    "webaudiofont": "^3.0.4",
     "worker-timers": "^8.0.0"
   }
 }
