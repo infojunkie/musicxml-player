@@ -23,7 +23,7 @@ const DEFAULT_SHEET = 'data/asa-branca.musicxml';
 const DEFAULT_GROOVE = 'Default';
 const DEFAULT_CONVERTER = 'vrv';
 const DEFAULT_VELOCITY = 1;
-const DEFAULT_REPEAT = 1;
+const DEFAULT_REPEAT = 0;
 const DEFAULT_OPTIONS = {
   unroll: false,
   horizontal: false,
@@ -478,7 +478,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.g_state = g_state;
 
   // Build the UI.
-  await populateGrooves();
+  populateGrooves();
 
   document.querySelectorAll('input[name="converter"]').forEach(input => {
     input.addEventListener('change', handleConverterChange);

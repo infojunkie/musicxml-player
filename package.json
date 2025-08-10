@@ -1,6 +1,6 @@
 {
   "name": "musicxml-player",
-  "version": "0.20.1",
+  "version": "1.0.0",
   "description": "A TypeScript component that loads and plays MusicXML files in the browser using Web Audio and Web MIDI.",
   "types": "./build/types/index.d.ts",
   "exports": {
@@ -52,11 +52,9 @@
     "midi-json-parser": "^8.1.14",
     "opensheetmusicdisplay": "^1.7.1",
     "spessasynth_lib": "^3.27.8",
-    "standardized-audio-context": "^25.3.35",
     "timing-object": "^3.1.61",
     "timingsrc": "^1.4.5",
     "unzipit": "^1.4.3",
-    "verovio": "^5.0.0",
-    "worker-timers": "^8.0.0"
+    "verovio": "^5.0.0"
   }
 }

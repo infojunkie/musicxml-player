@@ -20,7 +20,7 @@ export type MeasureIndex = number;
 export type MillisecsTimestamp = number;
 
 export enum PlayerState {
-  Stopped,
+  Stopped = 0,
   Playing,
   Paused
 }
@@ -251,7 +251,7 @@ export class Player {
       })
       .last();
     if (entry) {
-      this._sequencer.currentTime = (entry.timestamp + measureOffset) / 1000;
+      this._sequencer.currentTime = (entry.timestamp + measureOffset - 1) / 1000;
     }
 
     // Set the cursor position.
@@ -311,8 +311,8 @@ export class Player {
    * Pause playback.
    */
   pause() {
-    this._sequencer.pause();
     this._state = PlayerState.Paused;
+    this._sequencer.pause();
     //this._timingObject.update({ velocity: 0 });
   }
 
@@ -320,9 +320,9 @@ export class Player {
    * Stop playback and rewind to start.
    */
   rewind() {
-    if (this._state !== PlayerState.Stopped) {
-      this._sequencer.currentTime = 0;
-    }
+    this._state = PlayerState.Stopped;
+    this._sequencer.currentTime = 0;
+    this._sequencer.pause();
     this._options.renderer.moveTo(0, 0, 0);
     //this._timingObject.update({ velocity: 0, position: 0 });
   }
