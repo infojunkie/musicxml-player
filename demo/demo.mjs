@@ -147,7 +147,7 @@ async function createPlayer() {
       document.getElementById('version').textContent = JSON.stringify(Object.assign({}, player.version, {
         'ireal-musicxml': `${Version.name} ${Version.version}`
       }));
-      const filename = player.title.toLowerCase().replace(/[/\\?%*:|"'<>\s]/g, '-') ?? 'untitled';
+      const filename = player.title.toLowerCase().replace(/[/\\?%*:|"'<>\.,;\s]/g, '-') ?? 'untitled';
       const a1 = document.createElement('a');
       a1.setAttribute('href', URL.createObjectURL(new Blob([player.musicXml], { type: 'text/xml' })));
       a1.setAttribute('download', `${filename}.musicxml`);
