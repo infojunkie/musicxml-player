@@ -70,6 +70,7 @@ export declare class Player {
      */
     static create(options: PlayerOptions): Promise<Player>;
     protected _sequencer: Sequencer;
+    protected _midi: BasicMIDI;
     protected _observer: ResizeObserver;
     protected _duration: number;
     protected _state: PlayerState;
@@ -147,6 +148,14 @@ export declare class Player {
      */
     set velocity(value: number);
     protected _handleTimingObjectChange(_event: Event): void;
-    protected static _unroll(musicXml: string): Promise<string>;
+    protected static _unrollMusicXml(musicXml: string): Promise<string>;
+    /**
+     * Adjust the incoming MIDI file by inserting a no-op CC message at the end of the last measure
+     * based on the durations reported by the timemap. This forces the MIDI player to end on the
+     * measure boundary.
+     *
+     * @see https://github.com/spessasus/SpessaSynth/discussions/176
+     */
+    protected static _adjustMidiDuration(converter: IMidiConverter): BasicMIDI;
 }
 //# sourceMappingURL=Player.d.ts.map

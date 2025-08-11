@@ -5,3 +5,4 @@ declare module 'spessasynth_lib';
 type Synthetizer = any;
 type Sequencer = any;
 type MidiData = any;
+type BasicMIDI = any;

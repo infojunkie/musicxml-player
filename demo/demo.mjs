@@ -521,7 +521,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener('keydown', handlePlayPauseKey);
 
   // Initialize Web MIDI.
-  if (navigator.requestMIDIAccess) navigator.requestMIDIAccess().then(webmidi => {
+  if (navigator.requestMIDIAccess) navigator.requestMIDIAccess({
+    sysex: true
+  }).then(webmidi => {
     populateMidiOutputs(webmidi);
     webmidi.onstatechange = () => populateMidiOutputs(webmidi);
     g_state.webmidi = webmidi;

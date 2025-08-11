@@ -1,3 +1,4 @@
+import { MIDI } from 'spessasynth_core';
 import { Synthetizer, Sequencer } from 'spessasynth_lib';
 import { ITimingObject, TimingObject } from 'timing-object';
 import {
@@ -102,7 +103,7 @@ export class Player {
       });
       let musicXml = parseResult.musicXml;
       if (options.unroll) {
-        musicXml = await Player._unroll(musicXml);
+        musicXml = await Player._unrollMusicXml(musicXml);
       }
 
       // Create the synth element.
@@ -115,6 +116,8 @@ export class Player {
       // It's too bad that constructors cannot be made async because that would simplify the code.
       await options.converter.initialize(musicXml);
       await options.renderer.initialize(sheet, musicXml);
+
+      // Finally, create the player instance.
       return new Player(options, sheet, parseResult, musicXml, synth);
     } catch (error) {
       console.error(`[Player.load] ${error}`);
@@ -123,6 +126,7 @@ export class Player {
   }
 
   protected _sequencer: Sequencer;
+  protected _midi: BasicMIDI;
   protected _observer: ResizeObserver;
   protected _duration: number;
   protected _state: PlayerState;
@@ -135,47 +139,22 @@ export class Player {
     protected _sheet: HTMLElement,
     protected _parseResult: MusicXmlParseResult,
     protected _musicXml: string,
-    protected _synthesizer: Synthetizer
+    protected _synthesizer: Synthetizer,
   ) {
     // Inform the renderer that we're here.
     this._options.renderer.player = this;
 
-    // Manipulate the incoming MIDI file to move the MIDI End Of Track message to the end of the last measure.
-    // this._midi = this._options.converter.midi;
-    // try {
-    //   const track = this._midi.tracks[0];
-    //   const event = track.last();
-    //   if ('endOfTrack' in event) {
-    //     const entry = this._options.converter.timemap.last();
-    //     // 500000 = 60,000,000 microseconds per minute / 120 beats per minute
-    //     const microsecondsPerQuarter =
-    //       track
-    //         .filter((event): event is IMidiSetTempoEvent => 'setTempo' in event)
-    //         .last()?.setTempo.microsecondsPerQuarter ?? 500000;
-    //     event.delta +=
-    //       (entry.duration * this._midi.division * 1000) /
-    //       microsecondsPerQuarter;
-    //   } else {
-    //     console.warn(
-    //       `[Player.constructor] Error fixing MIDI End Of Track event: Last event is not End Of Track.`,
-    //     );
-    //   }
-    // } catch (error) {
-    //   console.error(
-    //     `[Player.constructor] Error fixing MIDI End Of Track event: ${error}`,
-    //   );
-    // }
-
     // Create the MIDI player.
     this._duration = 0;
     this._state = PlayerState.Stopped;
-    this._sequencer = new Sequencer([{ binary: this._options.converter.buffer }], this._synthesizer, {
+    this._midi = Player._adjustMidiDuration(this._options.converter);
+    this._sequencer = new Sequencer([this._midi], this._synthesizer, {
       autoPlay: false,
       preservePlaybackState: true,
     });
     this._sequencer.addOnSongChangeEvent((midiData: MidiData) => {
       this._duration = midiData.duration * 1000;
-    });
+    }, 'musicxml-player');
     if (this._options.output) {
       this._sequencer.connectMidiOutput(this._options.output);
     }
@@ -349,7 +328,7 @@ export class Player {
    * The MIDI buffer.
    */
   get midi(): ArrayBuffer {
-    return this._options.converter.buffer;
+    return this._midi.writeMIDI().buffer;
   }
 
   /**
@@ -436,7 +415,7 @@ export class Player {
     // }
   }
 
-  protected static async _unroll(musicXml: string): Promise<string> {
+  protected static async _unrollMusicXml(musicXml: string): Promise<string> {
     try {
       const unroll = await SaxonJS.transform(
         {
@@ -451,8 +430,29 @@ export class Player {
       );
       return unroll.principalResult;
     } catch (error) {
-      console.error(`[Player._unroll] ${error}`);
+      console.error(`[Player._unrollMusicXml] ${error}`);
     }
     return musicXml;
+  }
+
+  /**
+   * Adjust the incoming MIDI file by inserting a no-op CC message at the end of the last measure
+   * based on the durations reported by the timemap. This forces the MIDI player to end on the
+   * measure boundary.
+   *
+   * @see https://github.com/spessasus/SpessaSynth/discussions/176
+   */
+  protected static _adjustMidiDuration(converter: IMidiConverter): BasicMIDI {
+    const midi = new MIDI(converter.buffer);
+    if (Array.isArray(midi.tracks[0])) {
+      const duration = converter.timemap.reduce((duration, entry) => duration + entry.duration, 0);
+      midi.tracks[0].push({
+        ticks: Math.round(duration / (60000 / midi.tempoChanges[0].tempo / midi.timeDivision)),
+        messageStatusByte: 185,
+        messageData: new Uint16Array([50, 0]),
+      });
+      midi.flush();
+    }
+    return midi;
   }
 }
