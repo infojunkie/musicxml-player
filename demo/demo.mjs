@@ -124,6 +124,7 @@ async function createPlayer() {
     }
   }
   document.getElementById(`converter-${converter}`).setAttribute('checked', 'checked');
+  document.getElementById('grooves').disabled = converter !== 'mma';
 
   // Create new player.
   if (g_state.musicXml) {
