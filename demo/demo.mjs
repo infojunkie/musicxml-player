@@ -251,7 +251,7 @@ async function populateGrooves() {
   const grooves = document.getElementById('grooves');
   const groovesList = document.getElementById('grooves-list');
   try {
-    const lines = await (await fetish(`${getMmaEndpoint()}/grooves`)).text();
+    const lines = await (await fetish(window.location.href + 'mma/grooves')).text();
     ['Default', 'No groove override, just whatever is specified in the score.', 'None', 'No groove, just the chords.'].concat(lines.split('\n')).forEach((line, index, lines) => {
       if (index % 2 === 1) {
         const option = document.createElement('option');
