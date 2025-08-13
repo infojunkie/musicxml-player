@@ -36,6 +36,11 @@ export interface PlayerOptions {
      */
     output?: WebMidi.MIDIOutput;
     /**
+     * (Optional) Soundfond URL.
+     * If omitted, the default soundfont will be used.
+     */
+    soundfontUri?: string;
+    /**
      * (Optional) A flag to unroll the score before displaying it and playing it.
      */
     unroll?: boolean;
@@ -74,7 +79,6 @@ export declare class Player {
     protected _observer: ResizeObserver;
     protected _duration: number;
     protected _state: PlayerState;
-    protected _mute: boolean;
     protected _timingObject: ITimingObject;
     protected _timingObjectListener: EventListener;
     protected constructor(_options: PlayerOptions, _sheet: HTMLElement, _parseResult: MusicXmlParseResult, _musicXml: string, _synthesizer: Synthetizer);

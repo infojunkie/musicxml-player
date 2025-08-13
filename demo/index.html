@@ -86,16 +86,16 @@
 
     <div>
       Renderer
-      <input type="radio" id="renderer-osmd" name="renderer" value="osmd"/>
-      <label for="renderer-osmd">OpenSheetMusicDisplay</label>
       <input type="radio" id="renderer-vrv" name="renderer" value="vrv"/>
       <label for="renderer-vrv">Verovio</label>
+      <input type="radio" id="renderer-osmd" name="renderer" value="osmd"/>
+      <label for="renderer-osmd">OpenSheetMusicDisplay</label>
       <input type="radio" id="renderer-mscore" name="renderer" value="mscore"/>
       <label for="renderer-mscore">MuseScore (SVG)</label>
       <div class="renderer-options">
-        <input type="checkbox" class="renderer-option" id="option-unroll" value="unroll"/>
+        <input type="checkbox" class="option" id="option-unroll" value="unroll"/>
         <label for="option-unroll">Unroll score</label>
-        <input type="checkbox" class="renderer-option" id="option-horizontal" value="horizontal"/>
+        <input type="checkbox" class="option" id="option-horizontal" value="horizontal"/>
         <label for="option-horizontal">Horizontal layout</label>
       </div>
     </div>
@@ -104,10 +104,10 @@
       Converter
       <input type="radio" id="converter-midi" name="converter" value="midi"/>
       <label for="converter-midi">Custom MIDI</label>
-      <input type="radio" id="converter-mma" name="converter" value="mma"/>
-      <label for="converter-mma">MusicXML MMA</label>
       <input type="radio" id="converter-vrv" name="converter" value="vrv"/>
       <label for="converter-vrv">Verovio</label>
+      <input type="radio" id="converter-mma" name="converter" value="mma"/>
+      <label for="converter-mma">MMA (Musical MIDI Accompaniment)</label>
       <input type="radio" id="converter-mscore" name="converter" value="mscore"/>
       <label for="converter-mscore">MuseScore</label>
     </div>
@@ -116,26 +116,7 @@
       <label for="grooves">Groove</label>
       <input list="grooves-list" id="grooves"/>
       <datalist id="grooves-list"></datalist>
-      Only works with the MusicXML MMA converter.
-    </div>
-
-    <div>
-      <label for="outputs">MIDI output</label>
-      <select id="outputs"></select>
-      <input type="checkbox" class="player-option" id="option-mute" value="mute"/>
-      <label for="option-mute">Mute</label>
-      <div>
-        If you're not using the local synth, you need to connect this output to a MIDI synth like FluidSynth, TiMidity, <a href="https://spessasus.github.io/SpessaSynth/" target="_blank">SpessaSynth</a> or <a href="https://mmontag.github.io/dx7-synth-js/" target="_blank">DX7 Synth</a>.
-      </div>
-    </div>
-
-    <div>
-      <label for="audio-file">Audio track and offset</label>
-      <input type="file" id="audio-file" name="upload"/>
-      <input type="number" id="audio-offset" name="audio-offset" value="0" step="50" disabled/> ms.
-      <div>
-        <audio id="audio-track"></audio>
-      </div>
+      Only works with the MMA converter.
     </div>
 
     <div>
@@ -151,6 +132,26 @@
         <option value="-1">∞</option>
       </select>
     </div>
+
+    <div>
+      <label for="outputs">MIDI output</label>
+      <select id="outputs"></select>
+      <input type="checkbox" class="option" id="option-mute" value="mute"/>
+      <label for="option-mute">Mute</label>
+      <div>
+        If you're not using the local synth, you need to connect this output to a MIDI synth like FluidSynth, TiMidity, <a href="https://spessasus.github.io/SpessaSynth/" target="_blank">SpessaSynth</a> or <a href="https://mmontag.github.io/dx7-synth-js/" target="_blank">DX7 Synth</a>.
+      </div>
+    </div>
+
+    <!-- <div>
+      <label for="audio-file">Audio track (mp3, ogg)</label>
+      <input type="file" id="audio-file" name="upload" accept="audio/mpeg, audio/ogg" />
+      <label for="audio-offset">Audio offset</label>
+      <input type="number" id="audio-offset" name="audio-offset" value="0" step="50" disabled/> ms.
+      <div>
+        <audio id="audio-track"></audio>
+      </div>
+    </div> -->
 
     <div id="player">
       <button class="player" id="rewind">⏮</button>

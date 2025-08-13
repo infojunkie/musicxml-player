@@ -139,6 +139,7 @@ async function createPlayer() {
         mute: options.mute,
         repeat: Number(repeat),
         velocity: Number(velocity),
+        soundfontUri: 'data/GeneralUserGS.sf3',
       });
 
       // Create the TimingObject listener.
@@ -152,12 +153,12 @@ async function createPlayer() {
       const a1 = document.createElement('a');
       a1.setAttribute('href', URL.createObjectURL(new Blob([player.musicXml], { type: 'text/xml' })));
       a1.setAttribute('download', `${filename}.musicxml`);
-      a1.innerText = `${filename}.musicxml`;
+      a1.innerText = 'Download MusicXML';
       document.getElementById('download-musicxml').appendChild(a1);
       const a2 = document.createElement('a');
       a2.setAttribute('href', URL.createObjectURL(new Blob([player.midi], { type: 'audio/midi' })));
       a2.setAttribute('download', `${filename}.mid`);
-      a2.innerText = `${filename}.mid`;
+      a2.innerText = 'Download MIDI';
       document.getElementById('download-midi').appendChild(a2);
 
       // Save the state and player parameters.
@@ -479,7 +480,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.g_state = g_state;
 
   // Build the UI.
-  populateGrooves();
+  await populateGrooves();
 
   document.querySelectorAll('input[name="converter"]').forEach(input => {
     input.addEventListener('change', handleConverterChange);
@@ -508,12 +509,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('grooves').addEventListener('change', handleGrooveSelect);
   document.getElementById('outputs').addEventListener('change', handleMidiOutputSelect);
   document.getElementById('ireal').addEventListener('change', handleIRealChange);
-  document.getElementById('audio-file').addEventListener('change', handleAudioChange);
-  document.getElementById('audio-track').addEventListener('loadeddata', handleAudioLoaded);
-  document.getElementById('audio-offset').addEventListener('change', handleAudioDelayChange);
+  // document.getElementById('audio-file').addEventListener('change', handleAudioChange);
+  // document.getElementById('audio-track').addEventListener('loadeddata', handleAudioLoaded);
+  // document.getElementById('audio-offset').addEventListener('change', handleAudioDelayChange);
   document.getElementById('velocity').addEventListener('change', handleVelocityChange);
   document.getElementById('repeat').addEventListener('change', handleRepeatChange);
-  document.querySelectorAll('.renderer-option').forEach(element => {
+  document.querySelectorAll('.option').forEach(element => {
     if (!!g_state.options[element.id.replace('option-', '')]) {
       element.setAttribute('checked', 'checked');
     }

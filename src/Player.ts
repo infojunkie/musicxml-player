@@ -52,6 +52,11 @@ export interface PlayerOptions {
    */
   output?: WebMidi.MIDIOutput;
   /**
+   * (Optional) Soundfond URL.
+   * If omitted, the default soundfont will be used.
+   */
+  soundfontUri?: string;
+  /**
    * (Optional) A flag to unroll the score before displaying it and playing it.
    */
   unroll?: boolean;
@@ -109,7 +114,7 @@ export class Player {
       // Create the synth element.
       const context = new AudioContext();
       await context.audioWorklet.addModule('worklet_processor.min.js');
-      const soundfont = await (await fetish(SOUNDFONT_DEFAULT)).arrayBuffer();
+      const soundfont = await (await fetish(options.soundfontUri ?? SOUNDFONT_DEFAULT)).arrayBuffer();
       const synth = new Synthetizer(context.destination, soundfont);
 
       // Initialize the various objects.
@@ -130,7 +135,6 @@ export class Player {
   protected _observer: ResizeObserver;
   protected _duration: number;
   protected _state: PlayerState;
-  protected _mute: boolean;
   protected _timingObject: ITimingObject;
   protected _timingObjectListener: EventListener;
 
@@ -145,22 +149,19 @@ export class Player {
     this._options.renderer.player = this;
 
     // Create the MIDI player.
-    this._duration = 0;
     this._state = PlayerState.Stopped;
     this._midi = Player._adjustMidiDuration(this._options.converter);
+    this._duration = this._midi.duration * 1000;
     this._sequencer = new Sequencer([this._midi], this._synthesizer, {
       autoPlay: false,
       preservePlaybackState: true,
     });
-    this._sequencer.addOnSongChangeEvent((midiData: MidiData) => {
-      this._duration = midiData.duration * 1000;
-    }, 'musicxml-player');
     if (this._options.output) {
       this._sequencer.connectMidiOutput(this._options.output);
     }
 
     // Initialize the playback options.
-    this._mute = this._options.mute ?? false;
+    this.mute = this._options.mute ?? false;
     this._sequencer.playbackRate = this._options.velocity ?? 1;
     this._sequencer.loop = (this._options.repeat ?? 0) !== 0;
     this._sequencer.loopRemaining = this._options.repeat ?? 0;
@@ -182,8 +183,7 @@ export class Player {
       0,
       this.duration,
     );
-    this._timingObjectListener = (event) =>
-      this._handleTimingObjectChange(event);
+    this._timingObjectListener = (event) => this._handleTimingObjectChange(event);
     this._timingObject.addEventListener('change', this._timingObjectListener);
   }
 
@@ -272,7 +272,7 @@ export class Player {
         Math.max(0, timestamp - entry.timestamp),
         entry.duration,
       );
-      //this._timingObject.update({ position: timestamp });
+      this._timingObject.update({ position: timestamp });
 
       // Schedule next cursor movement.
       requestAnimationFrame(synchronizeMidi);
@@ -292,18 +292,16 @@ export class Player {
   pause() {
     this._state = PlayerState.Paused;
     this._sequencer.pause();
-    //this._timingObject.update({ velocity: 0 });
+    this._timingObject.update({ velocity: 0 });
   }
 
   /**
    * Stop playback and rewind to start.
    */
   rewind() {
-    this._state = PlayerState.Stopped;
     this._sequencer.currentTime = 0;
-    this._sequencer.pause();
     this._options.renderer.moveTo(0, 0, 0);
-    //this._timingObject.update({ velocity: 0, position: 0 });
+    this._timingObject.update({ position: 0 });
   }
 
   /**
@@ -314,6 +312,7 @@ export class Player {
       player: `${pkg.name} v${pkg.version}`,
       renderer: this._options.renderer.version,
       converter: this._options.converter.version,
+      sequencer: 'spessasynth_lib v3.27.8',
     };
   }
 
@@ -382,7 +381,9 @@ export class Player {
    * A flag to mute the player's MIDI output.
    */
   set mute(value: boolean) {
-    this._mute = value;
+    for (let i=0; i<this._synthesizer.channelsAmount; i++) {
+      this._synthesizer.muteChannel(i, value);
+    }
   }
 
   /**
@@ -390,7 +391,7 @@ export class Player {
    */
   set velocity(value: number) {
     this._sequencer.playbackRate = value;
-//    this._timingObject.update({ velocity: value });
+    this._timingObject.update({ velocity: value });
   }
 
   protected _handleTimingObjectChange(_event: Event) {
