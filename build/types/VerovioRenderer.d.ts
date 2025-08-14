@@ -16,8 +16,18 @@ export interface TimemapEntryFixed {
 export interface CursorOptions {
     scrollOffset: number;
 }
-interface VerovioToolkitFixed extends VerovioToolkit {
+export interface ElementsAtTimeFixed {
+    notes: string[];
+    rests: string[];
+    chords: string[];
+    page: number;
+    measure: string;
+}
+export interface VerovioToolkitFixed extends VerovioToolkit {
     destroy(): void;
+}
+export interface VerovioOptionsFixed extends VerovioOptions {
+    tuning?: string;
 }
 /**
  * Implementation of ISheetRenderer that uses Verovio.
@@ -62,5 +72,4 @@ export declare class VerovioRenderer implements ISheetRenderer {
     protected _move(): void;
     protected _redraw(): void;
 }
-export {};
 //# sourceMappingURL=VerovioRenderer.d.ts.map

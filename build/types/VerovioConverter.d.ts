@@ -1,7 +1,7 @@
 import type { IMidiFile } from 'midi-json-parser-worker';
 import { VerovioToolkit } from 'verovio/esm';
-import { VerovioOptions } from 'verovio';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
+import type { VerovioOptionsFixed } from './VerovioRenderer';
 /**
  * Implementation of IMidiConverter that uses the Verovio library to convert a MusicXML file to MIDI and timemap.
  * @see https://book.verovio.org/toolkit-reference/toolkit-methods.html#rendertomidi and
@@ -12,8 +12,8 @@ export declare class VerovioConverter implements IMidiConverter {
     protected _timemap: MeasureTimemap;
     protected _buffer?: ArrayBuffer;
     protected _midi?: IMidiFile;
-    protected _options: VerovioOptions;
-    constructor(options?: VerovioOptions);
+    protected _options: VerovioOptionsFixed;
+    constructor(options?: VerovioOptionsFixed);
     initialize(musicXml: string): Promise<void>;
     get buffer(): ArrayBuffer;
     get midi(): IMidiFile;

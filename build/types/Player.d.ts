@@ -19,7 +19,7 @@ export interface PlayerOptions {
      */
     container: HTMLDivElement | string;
     /**
-     * The input MusicXML score, as text string or compressed ArrayBuffer.
+     * The input MusicXML score, as text string or ArrayBuffer (for compressed MXL).
      */
     musicXml: ArrayBuffer | string;
     /**

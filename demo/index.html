@@ -110,6 +110,8 @@
       <label for="converter-mma">MMA (Musical MIDI Accompaniment)</label>
       <input type="radio" id="converter-mscore" name="converter" value="mscore"/>
       <label for="converter-mscore">MuseScore</label>
+      <div class="converter-options">
+      </div>
     </div>
 
     <div>
@@ -117,6 +119,12 @@
       <input list="grooves-list" id="grooves"/>
       <datalist id="grooves-list"></datalist>
       Only works with the MMA converter.
+    </div>
+
+    <div>
+      <label for="tuning">Tuning (.ascl)</label>
+      <input type="file" id="tuning" name="upload" accept=".ascl"/>
+      Only works with the Verovio converter.
     </div>
 
     <div>
@@ -144,8 +152,8 @@
     </div>
 
     <!-- <div>
-      <label for="audio-file">Audio track (mp3, ogg)</label>
-      <input type="file" id="audio-file" name="upload" accept="audio/mpeg, audio/ogg" />
+      <label for="audio-file">Audio track (.mp3, .ogg)</label>
+      <input type="file" id="audio-file" name="upload" accept="audio/mpeg, audio/ogg"/>
       <label for="audio-offset">Audio offset</label>
       <input type="number" id="audio-offset" name="audio-offset" value="0" step="50" disabled/> ms.
       <div>

@@ -39,6 +39,7 @@ const g_state = {
   player: null,
   params: null,
   musicXml: null,
+  tuning: '',
   options: DEFAULT_OPTIONS,
 }
 
@@ -125,6 +126,7 @@ async function createPlayer() {
   }
   document.getElementById(`converter-${converter}`).setAttribute('checked', 'checked');
   document.getElementById('grooves').disabled = converter !== 'mma';
+  document.getElementById('tuning').disabled = converter !== 'vrv';
 
   // Create new player.
   if (g_state.musicXml) {
@@ -217,7 +219,9 @@ async function createConverter(converter, sheet, groove) {
         return new FetchConverter(midi);
       }
     case 'vrv':
-      return new VerovioConverter();
+      return new VerovioConverter({
+        tuning: g_state.tuning
+      });
     case 'mma':
       const parameters = {};
       if (groove !== DEFAULT_GROOVE) {
@@ -413,7 +417,7 @@ function handleOptionChange(e) {
   }
 }
 
-function handleAudioChange(e) {
+function handleAudioUpload(e) {
   const file = e.target.files[0];
   document.getElementById('audio-track').setAttribute('src', URL.createObjectURL(file));
   document.getElementById('audio-offset').disabled = true;
@@ -450,6 +454,25 @@ function handleRepeatChange(e) {
     g_state.player.repeat = Number(e.target.value);
   }
   savePlayerOptions();
+}
+
+async function handleTuningText(filename, tuning) {
+  g_state.tuning = tuning;
+  createPlayer();
+}
+
+async function handleTuningUpload(e) {
+  const reader = new FileReader();
+  const file = e.target.files[0];
+  reader.onloadend = async (upload) => {
+    await handleTuningText(file.name, upload.target.result);
+  };
+  if (file.size < 100*1024) {
+    reader.readAsText(file);
+  }
+  else {
+    document.getElementById('error').textContent = 'Tuning file is too large.';
+  }
 }
 
 function savePlayerOptions() {
@@ -509,11 +532,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('grooves').addEventListener('change', handleGrooveSelect);
   document.getElementById('outputs').addEventListener('change', handleMidiOutputSelect);
   document.getElementById('ireal').addEventListener('change', handleIRealChange);
-  // document.getElementById('audio-file').addEventListener('change', handleAudioChange);
+  // document.getElementById('audio-file').addEventListener('change', handleAudioUpload);
   // document.getElementById('audio-track').addEventListener('loadeddata', handleAudioLoaded);
   // document.getElementById('audio-offset').addEventListener('change', handleAudioDelayChange);
   document.getElementById('velocity').addEventListener('change', handleVelocityChange);
   document.getElementById('repeat').addEventListener('change', handleRepeatChange);
+  document.getElementById('tuning').addEventListener('change', handleTuningUpload);
   document.querySelectorAll('.option').forEach(element => {
     if (!!g_state.options[element.id.replace('option-', '')]) {
       element.setAttribute('checked', 'checked');

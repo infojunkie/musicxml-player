@@ -21,7 +21,7 @@ export interface CursorOptions {
   scrollOffset: number;
 }
 
-interface ElementsAtTimeFixed {
+export interface ElementsAtTimeFixed {
   notes: string[];
   rests: string[];
   chords: string[];
@@ -29,8 +29,12 @@ interface ElementsAtTimeFixed {
   measure: string;
 }
 
-interface VerovioToolkitFixed extends VerovioToolkit {
+export interface VerovioToolkitFixed extends VerovioToolkit {
   destroy(): void;
+}
+
+export interface VerovioOptionsFixed extends VerovioOptions {
+  tuning?: string;
 }
 
 /**

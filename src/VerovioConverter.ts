@@ -2,9 +2,8 @@ import { parseArrayBuffer as parseMidiBuffer } from 'midi-json-parser';
 import type { IMidiFile } from 'midi-json-parser-worker';
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
-import { VerovioOptions } from 'verovio';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
-import type { TimemapEntryFixed } from './VerovioRenderer';
+import type { TimemapEntryFixed, VerovioOptionsFixed } from './VerovioRenderer';
 import { assertIsDefined, atoab } from './helpers';
 
 /**
@@ -17,9 +16,9 @@ export class VerovioConverter implements IMidiConverter {
   protected _timemap: MeasureTimemap = [];
   protected _buffer?: ArrayBuffer;
   protected _midi?: IMidiFile;
-  protected _options: VerovioOptions;
+  protected _options: VerovioOptionsFixed;
 
-  constructor(options?: VerovioOptions) {
+  constructor(options?: VerovioOptionsFixed) {
     this._options = {
       ...{
         expand: 'expansion-repeat',
