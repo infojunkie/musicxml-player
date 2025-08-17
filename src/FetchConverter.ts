@@ -63,6 +63,9 @@ export class FetchConverter implements IMidiConverter {
   /**
    * Parse a MusicXML score into a timemap.
    */
+  public static async parseTimemap(musicXml: string): Promise<MeasureTimemap> {
+    return this._parseTimemap(musicXml);
+  }
   protected static async _parseTimemap(
     musicXml: string,
   ): Promise<MeasureTimemap> {

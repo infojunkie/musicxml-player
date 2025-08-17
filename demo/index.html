@@ -58,9 +58,9 @@
         <option value="">-- Choose --</option>
         <option value="data/salma-ya-salama.mxl">Salma ya Salama (Compressed MusicXML)</option>
         <option value="data/asa-branca.musicxml">Asa Branca (Uncompressed MusicXML)</option>
-        <option value="data/tutorial-apres-un-reve.musicxml">Après un rêve (MuseScore Rendering)</option>
+        <option value="data/tutorial-apres-un-reve.musicxml">Après un rêve (MuseScore Static Rendering)</option>
         <option value="data/maqam-rast.musicxml">Maqam Rast (Microtonal MusicXML)</option>
-        <option value="data/blackwood-ex-29.musicxml">Easley Blackwood's 15-tET Harmonization Ex. 29 (Microtonal MusicXML)</option>
+        <option value="data/blackwood-ex-29.musicxml">Easley Blackwood's Ex. 29 (Microtonal MusicXML / Verovio Static Rendering)</option>
         <option value="data/baiao-miranda.musicxml">Baião Groove (Rhythm MusicXML)</option>
         <option value="data/jazz1460.txt">Playlist: Jazz 1460 (iReal Pro)</option>
       </select>
@@ -91,7 +91,9 @@
       <input type="radio" id="renderer-osmd" name="renderer" value="osmd"/>
       <label for="renderer-osmd">OpenSheetMusicDisplay</label>
       <input type="radio" id="renderer-mscore" name="renderer" value="mscore"/>
-      <label for="renderer-mscore">MuseScore (SVG)</label>
+      <label for="renderer-mscore">MuseScore (Static)</label>
+      <input type="radio" id="renderer-vrvs" name="renderer" value="vrvs"/>
+      <label for="renderer-vrvs">Verovio (Static)</label>
       <div class="renderer-options">
         <input type="checkbox" class="option" id="option-unroll" value="unroll"/>
         <label for="option-unroll">Unroll score</label>
@@ -109,9 +111,9 @@
       <input type="radio" id="converter-mma" name="converter" value="mma"/>
       <label for="converter-mma">MMA (Musical MIDI Accompaniment)</label>
       <input type="radio" id="converter-mscore" name="converter" value="mscore"/>
-      <label for="converter-mscore">MuseScore</label>
-      <div class="converter-options">
-      </div>
+      <label for="converter-mscore">MuseScore (Static)</label>
+      <input type="radio" id="converter-vrvs" name="converter" value="vrvs"/>
+      <label for="converter-vrvs">Verovio (Static)</label>
     </div>
 
     <div>

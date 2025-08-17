@@ -36,6 +36,6 @@ export class MuseScoreConverter
   }
 
   get version(): string {
-    return `MuseScore v${this._mscore?.devinfo.version ?? 'Unknown'}`;
+    return `mscore v${this._mscore?.devinfo.version ?? 'Unknown'}`;
   }
 }

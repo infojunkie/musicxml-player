@@ -1,0 +1,179 @@
+[
+	{
+		"measureOn": "n1n42lqn",
+		"on": [
+			"aoagzbg",
+			"coqmwtn",
+			"jcyd3yd",
+			"ltp2mr7" 
+		],
+		"qstamp": 0,
+		"tempo": 80,
+		"tstamp": 0 
+	},
+	{
+		"off": [
+			"aoagzbg",
+			"coqmwtn",
+			"ltp2mr7" 
+		],
+		"on": [
+			"enpny7k",
+			"hzlmhxg",
+			"m3yx7zh" 
+		],
+		"qstamp": 2,
+		"tstamp": 1500 
+	},
+	{
+		"measureOn": "ntzthqh",
+		"off": [
+			"enpny7k",
+			"hzlmhxg",
+			"jcyd3yd",
+			"m3yx7zh" 
+		],
+		"on": [
+			"z1lpxe74",
+			"c1i4852n",
+			"j17z566a",
+			"lq2u312" 
+		],
+		"qstamp": 4,
+		"tstamp": 3000 
+	},
+	{
+		"off": [
+			"z1lpxe74",
+			"c1i4852n",
+			"lq2u312" 
+		],
+		"on": [
+			"e1s5j1os",
+			"h1huyx2",
+			"nbk7xlh" 
+		],
+		"qstamp": 6,
+		"tstamp": 4500 
+	},
+	{
+		"measureOn": "o1ofqsgo",
+		"off": [
+			"e1s5j1os",
+			"h1huyx2",
+			"j17z566a",
+			"nbk7xlh" 
+		],
+		"on": [
+			"a3ercti",
+			"cfqlzbf",
+			"jgm9wp5",
+			"l69plib" 
+		],
+		"qstamp": 8,
+		"tstamp": 6000 
+	},
+	{
+		"off": [
+			"a3ercti",
+			"cfqlzbf",
+			"l69plib" 
+		],
+		"on": [
+			"e12h7xs6",
+			"h134mr9o",
+			"m1nmmf7n" 
+		],
+		"qstamp": 10,
+		"tstamp": 7500 
+	},
+	{
+		"measureOn": "n6gtzny",
+		"off": [
+			"e12h7xs6",
+			"h134mr9o",
+			"jgm9wp5",
+			"m1nmmf7n" 
+		],
+		"on": [
+			"z1sto0p3",
+			"c1kvdmrq",
+			"j1snbmfa",
+			"lj7uqrw" 
+		],
+		"qstamp": 12,
+		"tstamp": 9000 
+	},
+	{
+		"off": [
+			"z1sto0p3",
+			"c1kvdmrq",
+			"lj7uqrw" 
+		],
+		"on": [
+			"e1qsy06e",
+			"hvmatr8",
+			"m1xftdmb" 
+		],
+		"qstamp": 14,
+		"tstamp": 10500 
+	},
+	{
+		"measureOn": "n1vk6u6c",
+		"off": [
+			"e1qsy06e",
+			"hvmatr8",
+			"j1snbmfa",
+			"m1xftdmb" 
+		],
+		"on": [
+			"zz95id5",
+			"ci6o4f8",
+			"jxlsu29",
+			"m1lwtyhf" 
+		],
+		"qstamp": 16,
+		"tstamp": 12000 
+	},
+	{
+		"off": [
+			"zz95id5",
+			"ci6o4f8",
+			"m1lwtyhf" 
+		],
+		"on": [
+			"eurirjj",
+			"h5ho10n",
+			"o18s1vt2" 
+		],
+		"qstamp": 18,
+		"tstamp": 13500 
+	},
+	{
+		"measureOn": "q122sd0o",
+		"off": [
+			"eurirjj",
+			"h5ho10n",
+			"jxlsu29",
+			"o18s1vt2" 
+		],
+		"on": [
+			"c5crcv",
+			"e4bn493",
+			"h6tpjek",
+			"j9ver57" 
+		],
+		"qstamp": 20,
+		"tstamp": 15000 
+	},
+	{
+		"off": [
+			"c5crcv",
+			"e4bn493",
+			"h6tpjek",
+			"j9ver57" 
+		],
+		"qstamp": 24,
+		"tstamp": 18000 
+	} 
+] 

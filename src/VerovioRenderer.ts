@@ -2,51 +2,27 @@ import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
-import { VerovioOptions } from 'verovio';
 import { MeasureTimemap } from './IMidiConverter';
 import { assertIsDefined } from './helpers';
-
-export interface TimemapEntryFixed {
-  tstamp: number;
-  qstamp: number;
-  on?: string[];
-  off?: string[];
-  restsOn?: string[];
-  restsOff?: string[];
-  tempo?: number;
-  measureOn: string;
-}
-
-export interface CursorOptions {
-  scrollOffset: number;
-}
-
-export interface ElementsAtTimeFixed {
-  notes: string[];
-  rests: string[];
-  chords: string[];
-  page: number;
-  measure: string;
-}
-
-export interface VerovioToolkitFixed extends VerovioToolkit {
-  destroy(): void;
-}
-
-export interface VerovioOptionsFixed extends VerovioOptions {
-  tuning?: string;
-}
+import {
+  VerovioOptionsFixed,
+  ElementsAtTimeFixed,
+  CursorOptions,
+  VerovioToolkitFixed,
+  TimeMapEntryFixed
+} from './VerovioBase';
 
 /**
- * Implementation of ISheetRenderer that uses Verovio.
- * @see https://github.com/rism-digital/verovio
+ * Implementation of ISheetRenderer that uses Verovio to convert a MusicXML file to SVGs and timemap.
+ * @see https://book.verovio.org/toolkit-reference/toolkit-methods.html#rendertosvg
+ * @see https://book.verovio.org/toolkit-reference/toolkit-methods.html#rendertotimemap
  */
 export class VerovioRenderer implements ISheetRenderer {
   player?: Player;
   protected _vrv?: VerovioToolkitFixed;
   protected _container?: HTMLElement;
   protected _notes: string[] = [];
-  protected _vrvOptions: VerovioOptions;
+  protected _vrvOptions: VerovioOptionsFixed;
   protected _cursorOptions: CursorOptions;
   protected _timemap: MeasureTimemap = [];
   protected _measures: {
@@ -71,7 +47,7 @@ export class VerovioRenderer implements ISheetRenderer {
     duration: MillisecsTimestamp | undefined;
   };
 
-  constructor(vrvOptions?: VerovioOptions, cursorOptions?: CursorOptions) {
+  constructor(vrvOptions?: VerovioOptionsFixed, cursorOptions?: CursorOptions) {
     this._vrvOptions = {
       ...{
         breaks: 'encoded',
@@ -244,7 +220,7 @@ export class VerovioRenderer implements ISheetRenderer {
     if (!this._notes.length) return;
     assertIsDefined(this._container);
 
-    // FIXME Handle the case where the measure contains elements before the first note.
+    // FIXME Handle the case where the measure contains elements before the first note like a key signature.
     const system =
       this._measures.elements[this._measure.index].closest('g.system');
     const systemRect = system!.getBoundingClientRect();
@@ -293,13 +269,13 @@ export class VerovioRenderer implements ISheetRenderer {
       this._container.appendChild(page);
     }
 
-    // Setup event listeners on notes.
+    // Set up event listeners on notes.
     let firstNoteid: string | undefined;
     this._timemap = [];
     this._vrv
       .renderToTimemap({ includeMeasures: true, includeRests: true })
       .forEach((e) => {
-        const event = <TimemapEntryFixed>e;
+        const event = <TimeMapEntryFixed>e;
         if ('measureOn' in event) {
           this._timemap.push({
             measure: this._timemap.length,
@@ -308,16 +284,16 @@ export class VerovioRenderer implements ISheetRenderer {
           });
         }
 
-        // For the closure below, we need the variables to be local.
-        const localIndex = this._timemap.length - 1;
-        const localStart = this._timemap[localIndex].timestamp;
-        const localOffset = event.tstamp - localStart + 1;
-        [...(event.on || []), ...(event.restsOn || [])].forEach((noteid) => {
+        const measure = {
+          index: this._timemap.length - 1,
+          tstamp: this._timemap.last().timestamp,
+        };
+        [...(event.on ?? []), ...(event.restsOn ?? [])].forEach((noteid) => {
           if (!firstNoteid) {
             firstNoteid = noteid;
           }
           document.getElementById(noteid)?.addEventListener('click', () => {
-            this.player?.moveTo(localIndex, localStart, localOffset);
+            this.player?.moveTo(measure.index, measure.tstamp, event.tstamp - measure.tstamp);
           });
         });
       });
@@ -326,8 +302,9 @@ export class VerovioRenderer implements ISheetRenderer {
     this._measures.elements = [];
     this._measures.rects = [];
     const measures =
-      this._container!.querySelectorAll<SVGGElement>('svg g.measure');
+      this._container.querySelectorAll<SVGGElement>('svg g.measure');
     measures.forEach((measure, i) => {
+      assertIsDefined(this._container); // Why?
       this._measures.elements.push(measure);
       const staff = measure.querySelector('g.staff');
       const rect = staff!.getBoundingClientRect();
@@ -337,8 +314,8 @@ export class VerovioRenderer implements ISheetRenderer {
       if (i > 0 || !note) {
         this._measures.rects.push(
           DOMRect.fromRect({
-            x: rect.x + this._container!.scrollLeft,
-            y: rect.y + this._container!.scrollTop,
+            x: rect.x + this._container.scrollLeft,
+            y: rect.y + this._container.scrollTop,
             height: rect.height,
             width: rect.width,
           }),
@@ -348,8 +325,8 @@ export class VerovioRenderer implements ISheetRenderer {
         const noteRect = note.getBoundingClientRect();
         this._measures.rects.push(
           DOMRect.fromRect({
-            x: noteRect.x + this._container!.scrollLeft,
-            y: rect.y + this._container!.scrollTop,
+            x: noteRect.x + this._container.scrollLeft,
+            y: rect.y + this._container.scrollTop,
             height: rect.height,
             width: rect.width - (noteRect.x - rect.x),
           }),

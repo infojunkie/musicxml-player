@@ -56,7 +56,7 @@ export type MuseScoreDownloader = (musicXml: string) => {
 /**
  * Base class for MuseScore scores that parses the score metadata and creates a timemap.
  *
- * Generate the score media with MuseScore as follows: `./mscore /path/to/score.musicxml --score-media > /path/to/score.json`
+ * Generate the score media with MuseScore as follows: `mscore /path/to/score.musicxml --score-media > /path/to/score.json`
  */
 export declare class MuseScoreBase {
     protected _downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>;

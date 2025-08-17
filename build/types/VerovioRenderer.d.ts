@@ -1,44 +1,18 @@
 import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
-import { VerovioToolkit } from 'verovio/esm';
-import { VerovioOptions } from 'verovio';
 import { MeasureTimemap } from './IMidiConverter';
-export interface TimemapEntryFixed {
-    tstamp: number;
-    qstamp: number;
-    on?: string[];
-    off?: string[];
-    restsOn?: string[];
-    restsOff?: string[];
-    tempo?: number;
-    measureOn: string;
-}
-export interface CursorOptions {
-    scrollOffset: number;
-}
-export interface ElementsAtTimeFixed {
-    notes: string[];
-    rests: string[];
-    chords: string[];
-    page: number;
-    measure: string;
-}
-export interface VerovioToolkitFixed extends VerovioToolkit {
-    destroy(): void;
-}
-export interface VerovioOptionsFixed extends VerovioOptions {
-    tuning?: string;
-}
+import { VerovioOptionsFixed, CursorOptions, VerovioToolkitFixed } from './VerovioBase';
 /**
- * Implementation of ISheetRenderer that uses Verovio.
- * @see https://github.com/rism-digital/verovio
+ * Implementation of ISheetRenderer that uses Verovio to convert a MusicXML file to SVGs and timemap.
+ * @see https://book.verovio.org/toolkit-reference/toolkit-methods.html#rendertosvg
+ * @see https://book.verovio.org/toolkit-reference/toolkit-methods.html#rendertotimemap
  */
 export declare class VerovioRenderer implements ISheetRenderer {
     player?: Player;
     protected _vrv?: VerovioToolkitFixed;
     protected _container?: HTMLElement;
     protected _notes: string[];
-    protected _vrvOptions: VerovioOptions;
+    protected _vrvOptions: VerovioOptionsFixed;
     protected _cursorOptions: CursorOptions;
     protected _timemap: MeasureTimemap;
     protected _measures: {
@@ -62,7 +36,7 @@ export declare class VerovioRenderer implements ISheetRenderer {
         offset: MillisecsTimestamp;
         duration: MillisecsTimestamp | undefined;
     };
-    constructor(vrvOptions?: VerovioOptions, cursorOptions?: CursorOptions);
+    constructor(vrvOptions?: VerovioOptionsFixed, cursorOptions?: CursorOptions);
     destroy(): void;
     initialize(container: HTMLElement, musicXml: string): Promise<void>;
     moveTo(index: MeasureIndex, start: MillisecsTimestamp, offset: MillisecsTimestamp, duration?: MillisecsTimestamp): void;

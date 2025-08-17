@@ -4,7 +4,9 @@ import {
   MuseScoreConverter,
   MuseScoreRenderer,
   VerovioConverter,
+  VerovioStaticConverter,
   VerovioRenderer,
+  VerovioStaticRenderer,
   OpenSheetMusicDisplayRenderer,
   MmaConverter,
   FetchConverter,
@@ -85,11 +87,12 @@ async function createPlayer() {
     'vrv': true,
     'osmd': true,
     'mscore': '.mscore.json',
+    'vrvs': '.vrv.json',
   })) {
     const input = document.getElementById(`renderer-${k}`);
     try {
       if (typeof v === 'string') {
-        await fetish(base.replace(/\.\w+$/, v), { method: 'HEAD' })
+        await fetish(base.replace(/\.\w+$/, v), { method: 'HEAD' });
       }
       input.disabled = false;
     }
@@ -100,17 +103,18 @@ async function createPlayer() {
       }
     }
   }
-  document.getElementById(`renderer-${renderer}`).setAttribute('checked', 'checked');
+  document.getElementById(`renderer-${renderer}`).checked = true;
   for (const [k, v] of Object.entries({
     'vrv': true,
     'mma': async () => fetish(window.location.href + 'mma/', { method: 'HEAD' }),
     'midi': '.mid',
     'mscore': '.mscore.json',
+    'vrvs': '.vrv.json',
   })) {
     const input = document.getElementById(`converter-${k}`);
     try {
       if (typeof v === 'string') {
-        await fetish(base.replace(/\.\w+$/, v), { method: 'HEAD' })
+        await fetish(base.replace(/\.\w+$/, v), { method: 'HEAD' });
       }
       else if (typeof v === 'function') {
         await v();
@@ -124,7 +128,7 @@ async function createPlayer() {
       }
     }
   }
-  document.getElementById(`converter-${converter}`).setAttribute('checked', 'checked');
+  document.getElementById(`converter-${converter}`).checked = true;
   document.getElementById('grooves').disabled = converter !== 'mma';
   document.getElementById('tuning').disabled = converter !== 'vrv';
 
@@ -202,6 +206,11 @@ async function createRenderer(renderer, sheet, options) {
         element.disabled = true;
       });
       return new MuseScoreRenderer(base.replace(/\.\w+$/, '.mscore.json'));
+    case 'vrvs':
+      document.querySelectorAll('.renderer-option').forEach(element => {
+        element.disabled = true;
+      });
+      return new VerovioStaticRenderer([base.replace(/\.\w+$/, '.verovio.svg')], base.replace(/\.\w+$/, '.vrv.json'));
   }
 }
 
@@ -230,6 +239,8 @@ async function createConverter(converter, sheet, groove) {
       return new MmaConverter(window.location.href + 'mma/', parameters);
     case 'mscore':
       return new MuseScoreConverter(base.replace(/\.\w+$/, '.mscore.json'));
+    case 'vrvs':
+      return new VerovioStaticConverter(base.replace(/\.\w+$/, '.mid'), base.replace(/\.\w+$/, '.vrv.json'))
   }
 }
 
@@ -508,13 +519,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('input[name="converter"]').forEach(input => {
     input.addEventListener('change', handleConverterChange);
     if (input.value === (g_state.params.get('converter') ?? DEFAULT_CONVERTER)) {
-      input.setAttribute('checked', 'checked');
+      input.checked = true;
     }
   });
   document.querySelectorAll('input[name="renderer"]').forEach(input => {
     input.addEventListener('change', handleRendererChange);
     if (input.value === (g_state.params.get('renderer') ?? DEFAULT_RENDERER)) {
-      input.setAttribute('checked', 'checked');
+      input.checked = true;
     }
   });
   document.getElementById('play').addEventListener('click', async () => {
@@ -540,7 +551,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('tuning').addEventListener('change', handleTuningUpload);
   document.querySelectorAll('.option').forEach(element => {
     if (!!g_state.options[element.id.replace('option-', '')]) {
-      element.setAttribute('checked', 'checked');
+      element.checked = true;
     }
     element.addEventListener('change', handleOptionChange);
   });
