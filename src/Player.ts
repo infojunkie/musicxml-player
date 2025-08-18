@@ -1,6 +1,5 @@
 import { MIDI } from 'spessasynth_core';
 import { Synthetizer, Sequencer } from 'spessasynth_lib';
-import { ITimingObject, TimingObject } from 'timing-object';
 import {
   binarySearch,
   parseMusicXml,
@@ -135,8 +134,6 @@ export class Player {
   protected _observer: ResizeObserver;
   protected _duration: number;
   protected _state: PlayerState;
-  protected _timingObject: ITimingObject;
-  protected _timingObjectListener: EventListener;
 
   protected constructor(
     protected _options: PlayerOptions,
@@ -176,15 +173,6 @@ export class Player {
       }, RESIZE_THROTTLE);
     });
     this._observer.observe(this._sheet);
-
-    // Create the TimingObject.
-    this._timingObject = new TimingObject(
-      { velocity: this._sequencer.playbackRate, position: 0 },
-      0,
-      this.duration,
-    );
-    this._timingObjectListener = (event) => this._handleTimingObjectChange(event);
-    this._timingObject.addEventListener('change', this._timingObjectListener);
   }
 
   /**
@@ -193,10 +181,6 @@ export class Player {
   destroy(): void {
     // Never fail during destruction.
     try {
-      this._timingObject.removeEventListener(
-        'change',
-        this._timingObjectListener,
-      );
       this._sheet.remove();
       this._observer.disconnect();
       this._sequencer.stop();
@@ -272,7 +256,6 @@ export class Player {
         Math.max(0, timestamp - entry.timestamp),
         entry.duration,
       );
-      this._timingObject.update({ position: timestamp });
 
       // Schedule next cursor movement.
       requestAnimationFrame(synchronizeMidi);
@@ -292,7 +275,6 @@ export class Player {
   pause() {
     this._state = PlayerState.Paused;
     this._sequencer.pause();
-    this._timingObject.update({ velocity: 0 });
   }
 
   /**
@@ -301,7 +283,6 @@ export class Player {
   rewind() {
     this._sequencer.currentTime = 0;
     this._options.renderer.moveTo(0, 0, 0);
-    this._timingObject.update({ position: 0 });
   }
 
   /**
@@ -363,13 +344,6 @@ export class Player {
   }
 
   /**
-   * The TimingObject attached to the player.
-   */
-  get timingObject(): ITimingObject {
-    return this._timingObject;
-  }
-
-  /**
    * Repeat count. A value of -1 means loop forever.
    */
   set repeat(value: number) {
@@ -391,29 +365,6 @@ export class Player {
    */
   set velocity(value: number) {
     this._sequencer.playbackRate = value;
-    this._timingObject.update({ velocity: value });
-  }
-
-  protected _handleTimingObjectChange(_event: Event) {
-    // // Don't handle our internally-generated events.
-    // if (this._timingObjectUpdating) {
-    //   this._timingObjectUpdating = false;
-    //   return;
-    // }
-    // // Handle externally-generated events.
-    // const { velocity, position } = this.timingObject.query();
-    // if (velocity === 0) {
-    //   if (position === 0) {
-    //     this.rewind();
-    //   } else {
-    //     this.pause();
-    //   }
-    // } else {
-    //   if (this.state !== PlayerState.Stopped) {
-    //     this._sequencer.velocity = velocity;
-    //     this._sequencer.position = position;
-    //   }
-    // }
   }
 
   protected static async _unrollMusicXml(musicXml: string): Promise<string> {

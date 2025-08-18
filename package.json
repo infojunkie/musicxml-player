@@ -48,12 +48,9 @@
   },
   "homepage": "https://github.com/infojunkie/musicxml-player#readme",
   "dependencies": {
-    "json-midi-encoder": "^5.1.32",
     "midi-json-parser": "^8.1.14",
     "opensheetmusicdisplay": "^1.7.1",
     "spessasynth_lib": "^3.27.8",
-    "timing-object": "^3.1.61",
-    "timingsrc": "^1.4.5",
     "unzipit": "^1.4.3",
     "verovio": "^5.0.0"
   }

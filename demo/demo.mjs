@@ -17,7 +17,6 @@ import {
   Converter,
   Version
 } from 'https://cdn.jsdelivr.net/npm/ireal-musicxml@latest/+esm';
-import { setTimingsrc } from 'https://cdn.jsdelivr.net/npm/timingsrc@latest/+esm';
 
 const DEFAULT_RENDERER = 'vrv';
 const DEFAULT_OUTPUT = 'local';
@@ -47,7 +46,6 @@ const g_state = {
 
 async function createPlayer() {
   // Destroy previous player.
-  g_state.player?.timingObject.removeEventListener(handleTimingObjectChange);
   g_state.player?.destroy();
 
   // Set the player parameters.
@@ -147,9 +145,6 @@ async function createPlayer() {
         velocity: Number(velocity),
         soundfontUri: 'data/GeneralUserGS.sf3',
       });
-
-      // Create the TimingObject listener.
-      player.timingObject.addEventListener('change', handleTimingObjectChange);
 
       // Update the UI elements.
       document.getElementById('version').textContent = JSON.stringify(Object.assign({}, player.version, {
@@ -282,9 +277,6 @@ async function populateGrooves() {
   catch (error) {
     grooves.disabled = true;
   }
-}
-
-function handleTimingObjectChange(e) {
 }
 
 function handleGrooveSelect(e) {
@@ -429,29 +421,6 @@ function handleOptionChange(e) {
   else {
     createPlayer();
   }
-}
-
-function handleAudioUpload(e) {
-  const file = e.target.files[0];
-  document.getElementById('audio-track').setAttribute('src', URL.createObjectURL(file));
-  document.getElementById('audio-offset').disabled = true;
-}
-
-function handleAudioLoaded(e) {
-  document.getElementById('audio-offset').disabled = false;
-  setTimingsrc(
-    document.getElementById('audio-track'),
-    g_state.player?.timingObject,
-    ({ position, ...vector }) => ({ ...vector, position: position + Number(document.getElementById('audio-offset').value) / 1000 })
-  );
-}
-
-function handleAudioDelayChange(e) {
-  setTimingsrc(
-    document.getElementById('audio-track'),
-    g_state.player?.timingObject,
-    ({ position, ...vector }) => ({ ...vector, position: position + Number(document.getElementById('audio-offset').value) / 1000 })
-  );
 }
 
 function handleVelocityChange(e) {

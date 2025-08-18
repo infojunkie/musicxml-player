@@ -1,5 +1,4 @@
 /// <reference types="webmidi" />
-import { ITimingObject } from 'timing-object';
 import { MusicXmlParseResult } from './helpers';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
@@ -79,8 +78,6 @@ export declare class Player {
     protected _observer: ResizeObserver;
     protected _duration: number;
     protected _state: PlayerState;
-    protected _timingObject: ITimingObject;
-    protected _timingObjectListener: EventListener;
     protected constructor(_options: PlayerOptions, _sheet: HTMLElement, _parseResult: MusicXmlParseResult, _musicXml: string, _synthesizer: Synthetizer);
     /**
      * Destroy the instance by freeing all resources and disconnecting observers.
@@ -136,10 +133,6 @@ export declare class Player {
      */
     get position(): number;
     /**
-     * The TimingObject attached to the player.
-     */
-    get timingObject(): ITimingObject;
-    /**
      * Repeat count. A value of -1 means loop forever.
      */
     set repeat(value: number);
@@ -151,7 +144,6 @@ export declare class Player {
      * Playback speed. A value of 1 means normal speed.
      */
     set velocity(value: number);
-    protected _handleTimingObjectChange(_event: Event): void;
     protected static _unrollMusicXml(musicXml: string): Promise<string>;
     /**
      * Adjust the incoming MIDI file by inserting a no-op CC message at the end of the last measure
