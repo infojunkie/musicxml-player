@@ -338,7 +338,10 @@ function populateSheets(ireal) {
 async function handleSampleSelect(e) {
   if (!e.target.value) return;
   const sheet = e.target.value;
+  const option = document.querySelector(`#samples option[value="${sheet}"]`);
   try {
+    g_state.params.set('renderer', option.getAttribute('data-renderer'));
+    g_state.params.set('converter', option.getAttribute('data-converter'));
     if (sheet.endsWith('.musicxml') || sheet.endsWith('.mxl')) {
       const musicXml = await (await fetish(sheet)).arrayBuffer();
       g_state.musicXml = musicXml;

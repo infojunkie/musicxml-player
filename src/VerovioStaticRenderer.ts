@@ -14,7 +14,6 @@ import pkg from '../package.json';
 export class VerovioStaticRenderer extends VerovioBase implements ISheetRenderer {
   player?: Player;
   protected _cursor: Cursor;
-  protected _container?: HTMLElement;
   protected _timemap?: (TimeMapEntryFixed & {
     rectNotes: DOMRect[],
     notesOn: string[],
@@ -44,8 +43,6 @@ export class VerovioStaticRenderer extends VerovioBase implements ISheetRenderer
   }
 
   async initialize(container: HTMLElement, _musicXml: string) {
-    this._container = container;
-
     // Fetch the files.
     const enc = new TextDecoder('utf-8');
     const svgs = await Promise.all(this._svgOrUris.map(async (svgOrUri) =>

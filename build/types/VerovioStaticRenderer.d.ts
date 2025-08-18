@@ -13,7 +13,6 @@ export declare class VerovioStaticRenderer extends VerovioBase implements ISheet
     protected _timemapOrUri: TimeMapEntryFixed[] | string;
     player?: Player;
     protected _cursor: Cursor;
-    protected _container?: HTMLElement;
     protected _timemap?: (TimeMapEntryFixed & {
         rectNotes: DOMRect[];
         notesOn: string[];
