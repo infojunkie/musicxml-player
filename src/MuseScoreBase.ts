@@ -127,4 +127,8 @@ export class MuseScoreBase {
     this._timemap.last().duration =
       this._mscore.metadata.duration * 1000 - this._timemap.last().timestamp;
   }
+
+  get version(): string {
+    return `mscore v${this._mscore?.devinfo.version ?? 'Unknown'}`;
+  }
 }

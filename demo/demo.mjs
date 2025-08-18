@@ -210,7 +210,7 @@ async function createRenderer(renderer, sheet, options) {
       document.querySelectorAll('.renderer-option').forEach(element => {
         element.disabled = true;
       });
-      return new VerovioStaticRenderer([base.replace(/\.\w+$/, '.verovio.svg')], base.replace(/\.\w+$/, '.vrv.json'));
+      return new VerovioStaticRenderer([base.replace(/\.\w+$/, '.vrv.svg')], base.replace(/\.\w+$/, '.vrv.json'));
   }
 }
 

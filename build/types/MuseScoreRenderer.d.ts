@@ -27,7 +27,6 @@ export declare class MuseScoreRenderer extends MuseScoreBase implements ISheetRe
     initialize(container: HTMLElement, musicXml: string): Promise<void>;
     moveTo(index: MeasureIndex, start: MillisecsTimestamp, offset: MillisecsTimestamp, _duration?: MillisecsTimestamp): void;
     resize(): void;
-    get version(): string;
 }
 export {};
 //# sourceMappingURL=MuseScoreRenderer.d.ts.map

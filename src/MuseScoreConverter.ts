@@ -34,8 +34,4 @@ export class MuseScoreConverter
     assertIsDefined(this._timemap);
     return this._timemap;
   }
-
-  get version(): string {
-    return `mscore v${this._mscore?.devinfo.version ?? 'Unknown'}`;
-  }
 }

@@ -218,20 +218,19 @@ export class VerovioRenderer implements ISheetRenderer {
 
   protected _move() {
     if (!this._notes.length) return;
-    assertIsDefined(this._container);
 
     // FIXME Handle the case where the measure contains elements before the first note like a key signature.
-    const system =
-      this._measures.elements[this._measure.index].closest('g.system');
-    const systemRect = system!.getBoundingClientRect();
-    const containerRect = this._container?.getBoundingClientRect();
+    assertIsDefined(this._container);
+    const system = this._measures.elements[this._measure.index].closest('g.system')!;
+    const systemRect = system.getBoundingClientRect();
+    const containerRect = this._container.getBoundingClientRect();
     this._position = {
       x:
         -containerRect.left +
         (this._measure.duration
           ? Math.round(
               this._measures.rects[this._measure.index].left -
-                this._container!.scrollLeft +
+                this._container.scrollLeft +
                 Math.min(1.0, this._measure.offset / this._measure.duration) *
                   this._measures.rects[this._measure.index].width,
             )
@@ -283,17 +282,11 @@ export class VerovioRenderer implements ISheetRenderer {
             duration: 0, // Don't care about the duration for this renderer
           });
         }
-
-        const measure = {
-          index: this._timemap.length - 1,
-          tstamp: this._timemap.last().timestamp,
-        };
-        [...(event.on ?? []), ...(event.restsOn ?? [])].forEach((noteid) => {
-          if (!firstNoteid) {
-            firstNoteid = noteid;
-          }
-          document.getElementById(noteid)?.addEventListener('click', () => {
-            this.player?.moveTo(measure.index, measure.tstamp, event.tstamp - measure.tstamp);
+        const measure = this._timemap.last();
+        [...(event.on ?? []), ...(event.restsOn ?? [])].forEach((domid) => {
+          firstNoteid ??= domid;
+          document.getElementById(domid)?.addEventListener('click', () => {
+            this.player?.moveTo(measure.measure, measure.timestamp, event.tstamp - measure.timestamp);
           });
         });
       });
@@ -301,13 +294,11 @@ export class VerovioRenderer implements ISheetRenderer {
     // Cache measures bounding rectangles for smooth scrolling.
     this._measures.elements = [];
     this._measures.rects = [];
-    const measures =
-      this._container.querySelectorAll<SVGGElement>('svg g.measure');
-    measures.forEach((measure, i) => {
-      assertIsDefined(this._container); // Why?
+    this._container.querySelectorAll<SVGGElement>('svg g.measure').forEach((measure, i) => {
+      assertIsDefined(this._container);
       this._measures.elements.push(measure);
-      const staff = measure.querySelector('g.staff');
-      const rect = staff!.getBoundingClientRect();
+      const staff = measure.querySelector('g.staff')!;
+      const rect = staff.getBoundingClientRect();
       const note =
         measure.querySelector(`#${firstNoteid}`) ??
         measure.querySelector(`g.mRest`);

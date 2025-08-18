@@ -10,6 +10,5 @@ export declare class MuseScoreConverter extends MuseScoreBase implements IMidiCo
     get buffer(): ArrayBuffer;
     get midi(): IMidiFile;
     get timemap(): MeasureTimemap;
-    get version(): string;
 }
 //# sourceMappingURL=MuseScoreConverter.d.ts.map
