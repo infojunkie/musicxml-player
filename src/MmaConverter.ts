@@ -1,9 +1,4 @@
-import { parseArrayBuffer as parseMidiBuffer } from 'midi-json-parser';
-import type {
-  IMidiFile,
-  IMidiMarkerEvent,
-  IMidiSetTempoEvent,
-} from 'midi-json-parser-worker';
+import { parseMidi } from 'midi-file'
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import { assertIsDefined, fetish } from './helpers';
 
@@ -44,7 +39,7 @@ export class MmaConverter implements IMidiConverter {
       body: formData,
     });
     this._midi = await response.arrayBuffer();
-    this._timemap = MmaConverter._parseTimemap(await parseMidiBuffer(structuredClone(this._midi)));
+    this._timemap = MmaConverter._parseTimemap(this._midi);
   }
 
   get midi(): ArrayBuffer {
@@ -64,29 +59,30 @@ export class MmaConverter implements IMidiConverter {
   /**
    * Parse an IMidiFile into a timemap.
    */
-  protected static _parseTimemap(midi: IMidiFile): MeasureTimemap {
+  protected static _parseTimemap(buffer: ArrayBuffer): MeasureTimemap {
     const timemap: MeasureTimemap = [];
+    const midi = parseMidi(new Uint8Array(buffer));
     let microsecondsPerQuarter = 500000; // 60,000,000 microseconds per minute / 120 beats per minute
     let offset = 0;
     midi.tracks[0].forEach((event) => {
-      if ('setTempo' in event) {
-        microsecondsPerQuarter = (<IMidiSetTempoEvent>event).setTempo
-          .microsecondsPerQuarter;
+      if (event.type === 'setTempo') {
+        microsecondsPerQuarter = Number(event.microsecondsPerBeat);
       }
-      offset += event.delta;
-      if ('marker' in event) {
-        const marker = (<IMidiMarkerEvent>event).marker.split(':');
+      offset += Number(event.deltaTime);
+      if (event.type === 'marker') {
+        const marker = event.text.split(':');
         if (
           marker[0].localeCompare('Measure', undefined, {
             sensitivity: 'base',
           }) === 0
         ) {
+          const measure = Number(marker[1]);
+          const duration = Number(marker[2]);
+          const timestamp = Math.round(offset * (microsecondsPerQuarter / (midi.header.ticksPerBeat ?? 24))) / 1000;
           timemap.push({
-            measure: Number(marker[1]),
-            timestamp:
-              Math.round(offset * (microsecondsPerQuarter / midi.division)) /
-              1000,
-            duration: Number(marker[2]),
+            measure,
+            timestamp,
+            duration
           });
         }
       }
