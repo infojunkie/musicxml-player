@@ -1,4 +1,3 @@
-import type { IMidiFile } from 'midi-json-parser-worker';
 import type { MeasureTimemap } from './IMidiConverter';
 export type MuseScoreDownloader = (musicXml: string) => {
     pngs?: string[];
@@ -61,8 +60,7 @@ export type MuseScoreDownloader = (musicXml: string) => {
 export declare class MuseScoreBase {
     protected _downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>;
     protected _mscore?: ReturnType<MuseScoreDownloader>;
-    protected _buffer?: ArrayBuffer;
-    protected _midi?: IMidiFile;
+    protected _midi?: ArrayBuffer;
     protected _timemap?: MeasureTimemap;
     protected _mpos?: object;
     constructor(_downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>);

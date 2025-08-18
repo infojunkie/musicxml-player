@@ -1,7 +1,5 @@
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import { TimeMapEntryFixed, VerovioBase } from './VerovioBase';
-import { parseArrayBuffer as parseMidiBuffer } from 'midi-json-parser';
-import type { IMidiFile } from 'midi-json-parser-worker';
 import { assertIsDefined, fetish } from './helpers';
 import { FetchConverter } from './FetchConverter';
 import pkg from '../package.json';
@@ -13,8 +11,7 @@ import pkg from '../package.json';
  */
 export class VerovioStaticConverter extends VerovioBase implements IMidiConverter {
   protected _timemap?: MeasureTimemap;
-  protected _buffer?: ArrayBuffer;
-  protected _midi?: IMidiFile;
+  protected _midi?: ArrayBuffer;
 
   constructor(
     protected _midiOrUri: ArrayBuffer | string,
@@ -24,11 +21,10 @@ export class VerovioStaticConverter extends VerovioBase implements IMidiConverte
   }
 
   async initialize(musicXml: string) {
-    this._buffer =
+    this._midi =
       typeof this._midiOrUri === 'string'
         ? await (await fetish(this._midiOrUri)).arrayBuffer()
         : this._midiOrUri;
-    this._midi = await parseMidiBuffer(structuredClone(this._buffer));
     this._timemap =
       typeof this._timemapOrUri === 'undefined'
         ? await FetchConverter.parseTimemap(musicXml)
@@ -37,12 +33,7 @@ export class VerovioStaticConverter extends VerovioBase implements IMidiConverte
           : VerovioBase._parseTimemap(this._timemapOrUri);
   }
 
-  get buffer(): ArrayBuffer {
-    assertIsDefined(this._buffer);
-    return this._buffer;
-  }
-
-  get midi(): IMidiFile {
+  get midi(): ArrayBuffer {
     assertIsDefined(this._midi);
     return this._midi;
   }

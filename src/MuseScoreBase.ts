@@ -1,5 +1,3 @@
-import { parseArrayBuffer as parseMidiBuffer } from 'midi-json-parser';
-import type { IMidiFile } from 'midi-json-parser-worker';
 import type { MeasureTimemap } from './IMidiConverter';
 import { atoab, fetish } from './helpers';
 import SaxonJS from './saxon-js/SaxonJS3.rt';
@@ -65,8 +63,7 @@ export type MuseScoreDownloader = (musicXml: string) => {
  */
 export class MuseScoreBase {
   protected _mscore?: ReturnType<MuseScoreDownloader>;
-  protected _buffer?: ArrayBuffer;
-  protected _midi?: IMidiFile;
+  protected _midi?: ArrayBuffer;
   protected _timemap?: MeasureTimemap;
   protected _mpos?: object;
 
@@ -98,8 +95,7 @@ export class MuseScoreBase {
     }
 
     // Parse the MIDI.
-    this._buffer = atoab(this._mscore.midi);
-    this._midi = await parseMidiBuffer(structuredClone(this._buffer));
+    this._midi = atoab(this._mscore.midi);
 
     // Parse and create the timemap.
     this._timemap = [];

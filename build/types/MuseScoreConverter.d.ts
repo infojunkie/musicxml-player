@@ -1,4 +1,3 @@
-import type { IMidiFile } from 'midi-json-parser-worker';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import { MuseScoreDownloader, MuseScoreBase } from './MuseScoreBase';
 /**
@@ -7,8 +6,7 @@ import { MuseScoreDownloader, MuseScoreBase } from './MuseScoreBase';
 export declare class MuseScoreConverter extends MuseScoreBase implements IMidiConverter {
     constructor(downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>);
     initialize(musicXml: string): Promise<void>;
-    get buffer(): ArrayBuffer;
-    get midi(): IMidiFile;
+    get midi(): ArrayBuffer;
     get timemap(): MeasureTimemap;
 }
 //# sourceMappingURL=MuseScoreConverter.d.ts.map

@@ -1,4 +1,3 @@
-import type { IMidiFile } from 'midi-json-parser-worker';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import type { VerovioOptionsFixed, VerovioToolkitFixed } from './VerovioBase';
 import { VerovioBase } from './VerovioBase';
@@ -10,13 +9,11 @@ import { VerovioBase } from './VerovioBase';
 export declare class VerovioConverter extends VerovioBase implements IMidiConverter {
     protected _vrv?: VerovioToolkitFixed;
     protected _timemap: MeasureTimemap;
-    protected _buffer?: ArrayBuffer;
-    protected _midi?: IMidiFile;
+    protected _midi?: ArrayBuffer;
     protected _options: VerovioOptionsFixed;
     constructor(options?: VerovioOptionsFixed);
     initialize(musicXml: string): Promise<void>;
-    get buffer(): ArrayBuffer;
-    get midi(): IMidiFile;
+    get midi(): ArrayBuffer;
     get timemap(): MeasureTimemap;
     get version(): string;
 }

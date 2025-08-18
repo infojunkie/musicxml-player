@@ -1,4 +1,3 @@
-import type { IMidiFile } from 'midi-json-parser-worker';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 import { MuseScoreDownloader, MuseScoreBase } from './MuseScoreBase';
 import { assertIsDefined } from './helpers';
@@ -20,12 +19,7 @@ export class MuseScoreConverter
     return this.extract(musicXml);
   }
 
-  get buffer(): ArrayBuffer {
-    assertIsDefined(this._buffer);
-    return this._buffer;
-  }
-
-  get midi(): IMidiFile {
+  get midi(): ArrayBuffer {
     assertIsDefined(this._midi);
     return this._midi;
   }

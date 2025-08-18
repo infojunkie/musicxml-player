@@ -10,14 +10,12 @@ export declare class MmaConverter implements IMidiConverter {
         name: string;
         version: string;
     };
-    protected _buffer?: ArrayBuffer;
-    protected _midi?: IMidiFile;
+    protected _midi?: ArrayBuffer;
     protected _timemap?: MeasureTimemap;
     protected _uri: string;
     constructor(uri: string, _parameters?: Record<string, string> | undefined);
     initialize(musicXml: string): Promise<void>;
-    get buffer(): ArrayBuffer;
-    get midi(): IMidiFile;
+    get midi(): ArrayBuffer;
     get timemap(): MeasureTimemap;
     get version(): string;
     /**

@@ -1,5 +1,3 @@
-import { parseArrayBuffer as parseMidiBuffer } from 'midi-json-parser';
-import type { IMidiFile } from 'midi-json-parser-worker';
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
@@ -15,8 +13,7 @@ import { assertIsDefined, atoab } from './helpers';
 export class VerovioConverter extends VerovioBase implements IMidiConverter {
   protected _vrv?: VerovioToolkitFixed;
   protected _timemap: MeasureTimemap = [];
-  protected _buffer?: ArrayBuffer;
-  protected _midi?: IMidiFile;
+  protected _midi?: ArrayBuffer;
   protected _options: VerovioOptionsFixed;
 
   constructor(options?: VerovioOptionsFixed) {
@@ -45,16 +42,10 @@ export class VerovioConverter extends VerovioBase implements IMidiConverter {
     );
 
     // Render to MIDI.
-    this._buffer = atoab(this._vrv.renderToMIDI());
-    this._midi = await parseMidiBuffer(structuredClone(this._buffer));
+    this._midi = atoab(this._vrv.renderToMIDI());
   }
 
-  get buffer(): ArrayBuffer {
-    assertIsDefined(this._buffer);
-    return this._buffer;
-  }
-
-  get midi(): IMidiFile {
+  get midi(): ArrayBuffer {
     assertIsDefined(this._midi);
     return this._midi;
   }

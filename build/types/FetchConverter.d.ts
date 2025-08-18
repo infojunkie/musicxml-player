@@ -1,4 +1,3 @@
-import type { IMidiFile } from 'midi-json-parser-worker';
 import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
 /**
  * Implementation of IMidiConverter that simply fetches given MIDI file and timemap JSON file URIs.
@@ -13,12 +12,10 @@ export declare class FetchConverter implements IMidiConverter {
     protected _midiOrUri: ArrayBuffer | string;
     protected _timemapOrUri?: string | MeasureTimemap | undefined;
     protected _timemap?: MeasureTimemap;
-    protected _buffer?: ArrayBuffer;
-    protected _midi?: IMidiFile;
+    protected _midi?: ArrayBuffer;
     constructor(_midiOrUri: ArrayBuffer | string, _timemapOrUri?: string | MeasureTimemap | undefined);
     initialize(musicXml: string): Promise<void>;
-    get buffer(): ArrayBuffer;
-    get midi(): IMidiFile;
+    get midi(): ArrayBuffer;
     get timemap(): MeasureTimemap;
     get version(): string;
     /**

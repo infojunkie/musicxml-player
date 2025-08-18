@@ -444,7 +444,7 @@ export class Player {
    * @see https://github.com/spessasus/SpessaSynth/discussions/176
    */
   protected static _adjustMidiDuration(converter: IMidiConverter): BasicMIDI {
-    const midi = new MIDI(converter.buffer);
+    const midi = new MIDI(converter.midi);
     if (Array.isArray(midi.tracks[0])) {
       const duration = converter.timemap.reduce((duration, entry) => duration + entry.duration, 0);
       midi.tracks[0].push({
