@@ -331,6 +331,7 @@ async function handleSampleSelect(e) {
   if (!e.target.value) return;
   const sheet = e.target.value;
   const option = document.querySelector(`#samples option[value="${sheet}"]`);
+  document.getElementById('sheets').textContent = '';
   try {
     g_state.params.set('renderer', option.getAttribute('data-renderer'));
     g_state.params.set('converter', option.getAttribute('data-converter'));
