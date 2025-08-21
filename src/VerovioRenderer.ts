@@ -54,6 +54,7 @@ export class VerovioRenderer implements ISheetRenderer {
         adjustPageHeight: true,
         scale: 50,
         footer: 'none',
+        font: 'Bravura',
       },
       ...vrvOptions,
     };

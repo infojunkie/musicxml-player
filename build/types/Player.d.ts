@@ -144,6 +144,9 @@ export declare class Player {
      * Playback speed. A value of 1 means normal speed.
      */
     set velocity(value: number);
+    /**
+     * Unroll the score by expanding all repeats and jumps into a linear score.
+     */
     protected static _unrollMusicXml(musicXml: string): Promise<string>;
     /**
      * Adjust the incoming MIDI file by inserting a no-op CC message at the end of the last measure

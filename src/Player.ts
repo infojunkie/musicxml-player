@@ -124,7 +124,7 @@ export class Player {
       // Finally, create the player instance.
       return new Player(options, sheet, parseResult, musicXml, synth);
     } catch (error) {
-      console.error(`[Player.load] ${error}`);
+      console.error(`[Player.create] ${error}`);
       throw error;
     }
   }
@@ -367,6 +367,9 @@ export class Player {
     this._sequencer.playbackRate = value;
   }
 
+  /**
+   * Unroll the score by expanding all repeats and jumps into a linear score.
+   */
   protected static async _unrollMusicXml(musicXml: string): Promise<string> {
     try {
       const unroll = await SaxonJS.transform(
