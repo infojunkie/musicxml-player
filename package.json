@@ -49,6 +49,6 @@
     "opensheetmusicdisplay": "^1.7.1",
     "spessasynth_lib": "^3.27.8",
     "unzipit": "^1.4.3",
-    "verovio": "^5.0.0"
+    "verovio": "npm:@music-i18n/verovio@^1.0.0"
   }
 }
