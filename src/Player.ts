@@ -1,5 +1,5 @@
-import { MIDI } from 'spessasynth_core';
-import { Synthetizer, Sequencer } from 'spessasynth_lib';
+import { BasicMIDI } from 'spessasynth_core';
+import { WorkletSynthesizer as Synthetizer, Sequencer } from 'spessasynth_lib';
 import {
   binarySearch,
   parseMusicXml,
@@ -10,6 +10,7 @@ import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
 import SaxonJS from './saxon-js/SaxonJS3.rt';
 import pkg from '../package.json';
+import pkg_lock from '../package-lock.json';
 
 const XSL_UNROLL =
   'https://raw.githubusercontent.com/infojunkie/musicxml-midi/main/build/unroll.sef.json';
@@ -65,7 +66,7 @@ export interface PlayerOptions {
    */
   mute?: boolean;
   /**
-   * (Optional) Repeat count. A value of -1 means loop forever.
+   * (Optional) Repeat count. A value of Infinity means loop forever.
    * Can also be changed dynamically via Player.repeat attribute.
    */
   repeat?: number;
@@ -112,9 +113,11 @@ export class Player {
 
       // Create the synth element.
       const context = new AudioContext();
-      await context.audioWorklet.addModule('worklet_processor.min.js');
+      await context.audioWorklet.addModule('spessasynth_processor.min.js');
       const soundfont = await (await fetish(options.soundfontUri ?? SOUNDFONT_DEFAULT)).arrayBuffer();
-      const synth = new Synthetizer(context.destination, soundfont);
+      const synth = new Synthetizer(context);
+      synth.connect(context.destination);
+      await synth.soundBankManager.addSoundBank(soundfont, "main");
 
       // Initialize the various objects.
       // It's too bad that constructors cannot be made async because that would simplify the code.
@@ -149,19 +152,16 @@ export class Player {
     this._state = PlayerState.Stopped;
     this._midi = Player._adjustMidiDuration(this._options.converter);
     this._duration = this._midi.duration * 1000;
-    this._sequencer = new Sequencer([this._midi], this._synthesizer, {
-      autoPlay: false,
-      preservePlaybackState: true,
-    });
+    this._sequencer = new Sequencer(this._synthesizer);
     if (this._options.output) {
-      this._sequencer.connectMidiOutput(this._options.output);
+      this._sequencer.connectMIDIOutput(this._options.output);
     }
+    this._sequencer.loadNewSongList([this._midi]);
 
     // Initialize the playback options.
     this.mute = this._options.mute ?? false;
     this._sequencer.playbackRate = this._options.velocity ?? 1;
-    this._sequencer.loop = (this._options.repeat ?? 0) !== 0;
-    this._sequencer.loopRemaining = this._options.repeat ?? 0;
+    this._sequencer.loopCount = this._options.repeat ?? 1;
 
     // Set up resize handling.
     // Throttle the resize event https://stackoverflow.com/a/5490021/209184
@@ -181,10 +181,10 @@ export class Player {
   destroy(): void {
     // Never fail during destruction.
     try {
-      this._sheet.remove();
-      this._observer.disconnect();
-      this._sequencer.stop();
-      this._options.renderer.destroy();
+      this._sheet?.remove();
+      this._observer?.disconnect();
+      this._sequencer?.pause();
+      this._options?.renderer?.destroy();
     } catch (error) {
       console.error(`[Player.destroy] ${error}`);
     }
@@ -293,7 +293,7 @@ export class Player {
       player: `${pkg.name} v${pkg.version}`,
       renderer: this._options.renderer.version,
       converter: this._options.converter.version,
-      sequencer: 'spessasynth_lib v3.27.8',
+      sequencer: `spessasynth_lib v${pkg_lock.packages['node_modules/spessasynth_lib'].version}`,
     };
   }
 
@@ -308,7 +308,7 @@ export class Player {
    * The MIDI buffer.
    */
   get midi(): ArrayBuffer {
-    return this._midi.writeMIDI().buffer;
+    return this._midi.writeMIDI();
   }
 
   /**
@@ -344,11 +344,10 @@ export class Player {
   }
 
   /**
-   * Repeat count. A value of -1 means loop forever.
+   * Repeat count. A value of Infinity means loop forever.
    */
   set repeat(value: number) {
-    this._sequencer.loop = value !== 0;
-    this._sequencer.loopRemaining = value;
+    this._sequencer.loopCount = value;
   }
 
   /**
@@ -398,7 +397,7 @@ export class Player {
    * @see https://github.com/spessasus/SpessaSynth/discussions/176
    */
   protected static _adjustMidiDuration(converter: IMidiConverter): BasicMIDI {
-    const midi = new MIDI(converter.midi);
+    const midi = BasicMIDI.fromArrayBuffer(converter.midi);
     if (Array.isArray(midi.tracks[0])) {
       const duration = converter.timemap.reduce((duration, entry) => duration + entry.duration, 0);
       midi.tracks[0].push({

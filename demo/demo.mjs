@@ -141,14 +141,14 @@ async function createPlayer() {
         converter: await createConverter(converter, sheet, groove),
         unroll: options.unroll,
         mute: options.mute,
-        repeat: Number(repeat),
+        repeat: repeat === '-1' ? Infinity : Number(repeat),
         velocity: Number(velocity),
         soundfontUri: 'data/GeneralUserGS.sf3',
       });
 
       // Update the UI elements.
       document.getElementById('version').textContent = JSON.stringify(Object.assign({}, player.version, {
-        'ireal-musicxml': `${Version.name} ${Version.version}`
+        'ireal-musicxml': `${Version.name} v${Version.version}`
       }));
       const filename = player.title.toLowerCase().replace(/[/\\?%*:|"'<>\.,;\s]/g, '-') ?? 'untitled';
       const a1 = document.createElement('a');
@@ -516,9 +516,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('grooves').addEventListener('change', handleGrooveSelect);
   document.getElementById('outputs').addEventListener('change', handleMidiOutputSelect);
   document.getElementById('ireal').addEventListener('change', handleIRealChange);
-  // document.getElementById('audio-file').addEventListener('change', handleAudioUpload);
-  // document.getElementById('audio-track').addEventListener('loadeddata', handleAudioLoaded);
-  // document.getElementById('audio-offset').addEventListener('change', handleAudioDelayChange);
   document.getElementById('velocity').addEventListener('change', handleVelocityChange);
   document.getElementById('repeat').addEventListener('change', handleRepeatChange);
   document.getElementById('tuning').addEventListener('change', handleTuningUpload);

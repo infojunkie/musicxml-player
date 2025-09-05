@@ -1,4 +1,6 @@
 /// <reference types="webmidi" />
+import { BasicMIDI } from 'spessasynth_core';
+import { WorkletSynthesizer as Synthetizer, Sequencer } from 'spessasynth_lib';
 import { MusicXmlParseResult } from './helpers';
 import type { IMidiConverter } from './IMidiConverter';
 import type { ISheetRenderer } from './ISheetRenderer';
