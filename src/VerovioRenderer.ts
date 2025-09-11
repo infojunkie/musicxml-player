@@ -1,7 +1,7 @@
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
 import type { ISheetRenderer } from './ISheetRenderer';
-import type { MeasureIndex, MillisecsTimestamp } from './Player';
+import type { MeasureIndex, MillisecsTimestamp, PlayerOptions } from './Player';
 import { VerovioRendererHelper } from './VerovioRendererHelper';
 import { VerovioOptionsFixed, VerovioToolkitFixed } from './VerovioTypes';
 import { assertIsDefined } from './helpers';
@@ -34,7 +34,7 @@ export class VerovioRenderer extends VerovioRendererHelper implements ISheetRend
     this._vrv?.destroy();
   }
 
-  async initialize(container: HTMLElement, musicXml: string): Promise<void> {
+  async initialize(container: HTMLElement, musicXml: string, options: PlayerOptions): Promise<void> {
     // Create the Verovio toolkit.
     const VerovioModule = await createVerovioModule();
     this._vrv = <VerovioToolkitFixed>new VerovioToolkit(VerovioModule);
@@ -43,7 +43,7 @@ export class VerovioRenderer extends VerovioRendererHelper implements ISheetRend
     }
 
     // Render the score and compute the internal data structures.
-    this._redraw(container);
+    this._redraw(container, options);
 
     // Initialize the cursor.
     this._cursor.initialize(container);
@@ -57,19 +57,6 @@ export class VerovioRenderer extends VerovioRendererHelper implements ISheetRend
   ) {
     this._move(index, start, offset, duration);
 /*
-    // Cache the incoming measure params.
-    this._measure = {
-      index,
-      start,
-      offset,
-      duration,
-    };
-
-    // Find the Verovio notes at the current timestamp.
-    const timestamp = this._timemap[index].timestamp + offset;
-    const elements = <ElementsAtTimeFixed>(
-      this._vrv.getElementsAtTime(timestamp)
-    );
     const notes = [...(elements.notes || []), ...(elements.rests || [])];
     if (!notes.length) {
       // Empty notes: Find the full-measure rest.
@@ -135,7 +122,8 @@ export class VerovioRenderer extends VerovioRendererHelper implements ISheetRend
 
   onResize(): void {
     assertIsDefined(this._container);
-    this._redraw(this._container);
+    assertIsDefined(this._options);
+    this._redraw(this._container, this._options);
     this._move(
       this._currentLocation.index,
       this._currentLocation.start,
@@ -158,7 +146,7 @@ export class VerovioRenderer extends VerovioRendererHelper implements ISheetRend
     return `verovio v${this._vrv?.getVersion() ?? `Unknown`}`;
   }
 
-  protected _redraw(container: HTMLElement) {
+  protected _redraw(container: HTMLElement, options: PlayerOptions) {
     assertIsDefined(this._vrv);
 
     // Render the score.
@@ -182,118 +170,6 @@ export class VerovioRenderer extends VerovioRendererHelper implements ISheetRend
 
     // Delete existing pages and calculate from scratch.
     container.querySelectorAll('.sheet-page').forEach(e => e.remove());
-    this._calculate(container, timemap, svgs, false);
+    this._calculate(container, timemap, svgs, options);
   }
-
-  /*
-  protected _isHorizontalLayout(): boolean {
-    return this._vrvOptions.breaks === 'none';
-  }
-
-  protected _move() {
-    if (!this._notes.length) return;
-
-    // FIXME Handle the case where the measure contains elements before the first note like a key signature.
-    assertIsDefined(this._container);
-    const system = this._measures.elements[this._measure.index].closest('g.system')!;
-    const systemRect = system.getBoundingClientRect();
-    const containerRect = this._container.getBoundingClientRect();
-    this._position = {
-      x: - containerRect.left
-         + (this._measure.duration
-           ? Math.round(
-              this._measures.rects[this._measure.index].left
-              + Math.min(1.0, this._measure.offset / this._measure.duration) * this._measures.rects[this._measure.index].width,
-            )
-         : document.getElementById(this._notes[0])!.getBoundingClientRect().left),
-      y: systemRect.top - containerRect.top,
-      height: systemRect.height,
-    };
-    this._cursor.style.transform = `translate(${this._position.x}px,${this._position.y}px)`;
-    this._cursor.style.height = `${this._position.height}px`;
-  }
-
-  protected _redraw() {
-    assertIsDefined(this._container);
-    assertIsDefined(this._vrv);
-
-    this._vrv.setOptions({
-      ...this._vrvOptions,
-      ...{
-        pageHeight:
-          (this._container.parentElement!.clientHeight * 100) /
-          (this._vrvOptions.scale ?? 100),
-        pageWidth:
-          (this._container.parentElement!.clientWidth * 100) /
-          (this._vrvOptions.scale ?? 100),
-      },
-    });
-    this._vrv.redoLayout({ resetCache: false });
-    this._container.textContent = '';
-    this._container.appendChild(this._cursor);
-    for (let i = 0; i < this._vrv.getPageCount(); i++) {
-      const page = document.createElement('div');
-      page.setAttribute('id', `page-${i}`);
-      page.innerHTML = this._vrv.renderToSVG(i + 1);
-      this._container.appendChild(page);
-    }
-
-    // Set up event listeners on notes.
-    let firstNoteid: string | undefined;
-    this._timemap = [];
-    this._vrv
-      .renderToTimemap({ includeMeasures: true, includeRests: true })
-      .forEach((e) => {
-        const event = <TimeMapEntryFixed>e;
-        if ('measureOn' in event) {
-          this._timemap.push({
-            measure: this._timemap.length,
-            timestamp: event.tstamp,
-            duration: 0, // Don't care about the duration for this renderer
-          });
-        }
-        const measure = this._timemap.last();
-        [...(event.on ?? []), ...(event.restsOn ?? [])].forEach((domid) => {
-          firstNoteid ??= domid;
-          document.getElementById(domid)?.addEventListener('click', () => {
-            this.player?.moveTo(measure.measure, measure.timestamp, event.tstamp - measure.timestamp);
-          });
-        });
-      });
-
-    // Cache measures bounding rectangles for smooth scrolling.
-    this._measures.elements = [];
-    this._measures.rects = [];
-    this._container.querySelectorAll<SVGGElement>('svg g.measure').forEach((measure, i) => {
-      assertIsDefined(this._container);
-      this._measures.elements.push(measure);
-      const staff = measure.querySelector('g.staff')!;
-      const rect = staff.getBoundingClientRect();
-      const note =
-        measure.querySelector(`#${firstNoteid}`) ??
-        measure.querySelector(`g.mRest`);
-      if (i > 0 || !note) {
-        this._measures.rects.push(
-          DOMRect.fromRect({
-            x: rect.x + this._container.scrollLeft,
-            y: rect.y + this._container.scrollTop,
-            height: rect.height,
-            width: rect.width,
-          }),
-        );
-      } else {
-        // First measure: Start from first note instead of measure start.
-        const noteRect = note.getBoundingClientRect();
-        this._measures.rects.push(
-          DOMRect.fromRect({
-            x: noteRect.x + this._container.scrollLeft,
-            y: rect.y + this._container.scrollTop,
-            height: rect.height,
-            width: rect.width - (noteRect.x - rect.x),
-          }),
-        );
-      }
-    });
-  }
-  */
 }

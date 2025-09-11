@@ -33,12 +33,12 @@ export interface PlayerOptions {
     converter: IMIDIConverter;
     /**
      * An instance of the MIDI output to send the note events.
-     * Optional, default = local Web Audio synthesizer
+     * Optional, default: local Web Audio synthesizer
      */
     output?: WebMidi.MIDIOutput;
     /**
      * Soundfond URL.
-     * Optional, default = https://spessasus.github.io/SpessaSynth/soundfonts/GeneralUserGS.sf3
+     * Optional, default: SOUNDFONT_DEFAULT_URL
      */
     soundfontUri?: string;
     /**
@@ -48,32 +48,42 @@ export interface PlayerOptions {
     unroll?: boolean;
     /**
      * A flag to mute the player's MIDI output.
-     * Optional, default = false
+     * Optional, default: false
      * Can also be changed dynamically via Player.mute attribute.
      */
     mute?: boolean;
     /**
      * Repeat count. A value of Infinity means loop forever.
-     * Optional, default = 1
+     * Optional, default: 1
      * Can also be changed dynamically via Player.repeat attribute.
      */
     repeat?: number;
     /**
      * Playback speed. A value of 1 means normal speed.
-     * Optional, default = 1
+     * Optional, default: 1
      * Can also be changed dynamically via Player.velocity attribute.
      */
     velocity?: number;
     /**
-     * A flag to scale the display when the browser window is resized.
-     * Optional, default = false
+     * A flag to rescale the display when the browser window is resized.
+     * Optional, default: false
      */
-    scaleOnResize?: boolean;
+    scale?: boolean;
+    /**
+     * A flag to render the score as a single horizontal system.
+     * Optional, default: false
+     */
+    horizontal?: boolean;
     /**
      * In case of horizontal score rendering, the cursor offset from the system start.
-     * Optional, default = 100px
+     * Optional, default: 100px
      */
     horizontalCursorOffset?: number;
+    /**
+     * A flag to center the browser window around the cursor.
+     * Optional, default: true
+     */
+    followCursor?: boolean;
 }
 export declare class Player {
     protected _options: PlayerOptions;
@@ -89,7 +99,7 @@ export declare class Player {
      * @returns A new instance of the player, ready to play.
      * @throws Error exception with various error messages.
      */
-    static create(options: PlayerOptions): Promise<Player>;
+    static create(_options: PlayerOptions): Promise<Player>;
     protected _sequencer: Sequencer;
     protected _midi: BasicMIDI;
     protected _observer: ResizeObserver;

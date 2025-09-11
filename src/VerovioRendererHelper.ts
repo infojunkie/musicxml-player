@@ -1,11 +1,12 @@
 import { MeasureTimemapEntry } from './IMIDIConverter';
-import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
+import type { MeasureIndex, MillisecsTimestamp, Player, PlayerOptions } from './Player';
 import { Cursor } from './Cursor';
 import type { TimeMapEntryFixed } from './VerovioTypes';
 import { assertIsDefined } from './helpers';
 
 export class VerovioRendererHelper {
   player?: Player;
+  protected _options?: PlayerOptions;
   protected _container?: HTMLElement;
   protected _cursor: Cursor;
   protected _scale: boolean = true;
@@ -17,6 +18,8 @@ export class VerovioRendererHelper {
   })[];
   protected _measures: (MeasureTimemapEntry & {
     eventEntry: number,
+    measureId: string,
+    systemId: string,
     rectMeasure: DOMRect,
     rectSystem: DOMRect,
   })[] = [];
@@ -41,11 +44,11 @@ export class VerovioRendererHelper {
     container: HTMLElement,
     timemap: TimeMapEntryFixed[],
     svgs: string[],
-    scale: boolean = true
+    options: PlayerOptions
   ) {
     // Initialize the Verovio state.
     this._container = container;
-    this._scale = scale;
+    this._options = options;
     this._events = timemap.map((e: TimeMapEntryFixed) => { return {...e, measureEntry: 0, rectNotes: [], notesOn: []}; });
     this._measures = [];
     this._currentNotes = [];
@@ -60,7 +63,8 @@ export class VerovioRendererHelper {
       container.appendChild(page);
 
       // Scale the SVG to the container width.
-      if (scale) {
+      assertIsDefined(this._options);
+      if (this._options.scale) {
         const s = page.getElementsByTagName('svg')[0];
         const w = s.getAttribute('width')?.replace('px', '');
         const h = s.getAttribute('height')?.replace('px', '');
@@ -82,6 +86,8 @@ export class VerovioRendererHelper {
           timestamp: event.tstamp,
           duration: 0, // Don't care about the duration for this renderer
           eventEntry,
+          measureId: measure.id,
+          systemId: system.id,
           rectMeasure: measure.getBoundingClientRect(),
           rectSystem: system.getBoundingClientRect(),
         });
@@ -197,6 +203,14 @@ export class VerovioRendererHelper {
         element?.setAttribute('stroke', 'rgb(234, 107, 36)');
       });
       this._currentEventEntry = eventEntry;
+
+      // Focus the score.
+      assertIsDefined(this._container);
+      assertIsDefined(this._options);
+      if (this._options.followCursor) {
+        const system = this._container.querySelector('#' + this._measures[index].systemId);
+        system?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
 
     // Calculate cursor position.

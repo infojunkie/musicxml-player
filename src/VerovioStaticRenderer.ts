@@ -1,7 +1,7 @@
 import { ISheetRenderer } from './ISheetRenderer';
 import { TimeMapEntryFixed } from './VerovioTypes';
 import { VerovioRendererHelper } from './VerovioRendererHelper';
-import type { MeasureIndex, MillisecsTimestamp } from './Player';
+import type { MeasureIndex, MillisecsTimestamp, PlayerOptions } from './Player';
 import { fetish } from './helpers';
 import pkg from '../package.json';
 
@@ -22,7 +22,7 @@ export class VerovioStaticRenderer extends VerovioRendererHelper implements IShe
     this._cursor.destroy();
   }
 
-  async initialize(container: HTMLElement, _musicXml: string) {
+  async initialize(container: HTMLElement, _musicXml: string, options: PlayerOptions) {
     // Fetch the files.
     const enc = new TextDecoder('utf-8');
     const svgs = await Promise.all(this._svgOrUris.map(async (svgOrUri) =>
@@ -36,7 +36,7 @@ export class VerovioStaticRenderer extends VerovioRendererHelper implements IShe
         : this._eventsOrUri;
 
     // Compute the internal data structures.
-    this._calculate(container, timemap, svgs);
+    this._calculate(container, timemap, svgs, options);
 
     // Initialize the cursor.
     this._cursor.initialize(container);

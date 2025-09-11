@@ -1,9 +1,10 @@
 import { MeasureTimemapEntry } from './IMIDIConverter';
-import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
+import type { MeasureIndex, MillisecsTimestamp, Player, PlayerOptions } from './Player';
 import { Cursor } from './Cursor';
 import type { TimeMapEntryFixed } from './VerovioTypes';
 export declare class VerovioRendererHelper {
     player?: Player;
+    protected _options?: PlayerOptions;
     protected _container?: HTMLElement;
     protected _cursor: Cursor;
     protected _scale: boolean;
@@ -15,6 +16,8 @@ export declare class VerovioRendererHelper {
     })[];
     protected _measures: (MeasureTimemapEntry & {
         eventEntry: number;
+        measureId: string;
+        systemId: string;
         rectMeasure: DOMRect;
         rectSystem: DOMRect;
     })[];
@@ -31,7 +34,7 @@ export declare class VerovioRendererHelper {
     };
     protected _currentEventEntry: number;
     constructor();
-    protected _calculate(container: HTMLElement, timemap: TimeMapEntryFixed[], svgs: string[], scale?: boolean): void;
+    protected _calculate(container: HTMLElement, timemap: TimeMapEntryFixed[], svgs: string[], options: PlayerOptions): void;
     protected _recalculate(): void;
     protected _move(index: MeasureIndex, start: MillisecsTimestamp, offset: MillisecsTimestamp, duration?: MillisecsTimestamp): void;
 }

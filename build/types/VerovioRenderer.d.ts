@@ -1,5 +1,5 @@
 import type { ISheetRenderer } from './ISheetRenderer';
-import type { MeasureIndex, MillisecsTimestamp } from './Player';
+import type { MeasureIndex, MillisecsTimestamp, PlayerOptions } from './Player';
 import { VerovioRendererHelper } from './VerovioRendererHelper';
 import { VerovioOptionsFixed, VerovioToolkitFixed } from './VerovioTypes';
 /**
@@ -12,11 +12,11 @@ export declare class VerovioRenderer extends VerovioRendererHelper implements IS
     protected _vrvOptions: VerovioOptionsFixed;
     constructor(vrvOptions?: VerovioOptionsFixed);
     destroy(): void;
-    initialize(container: HTMLElement, musicXml: string): Promise<void>;
+    initialize(container: HTMLElement, musicXml: string, options: PlayerOptions): Promise<void>;
     moveTo(index: MeasureIndex, start: MillisecsTimestamp, offset: MillisecsTimestamp, duration?: MillisecsTimestamp): void;
     onResize(): void;
     onEvent(): void;
     get version(): string;
-    protected _redraw(container: HTMLElement): void;
+    protected _redraw(container: HTMLElement, options: PlayerOptions): void;
 }
 //# sourceMappingURL=VerovioRenderer.d.ts.map

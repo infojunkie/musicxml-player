@@ -1,4 +1,8 @@
-import type { MeasureIndex, MillisecsTimestamp } from './Player';
+import type {
+  MeasureIndex,
+  MillisecsTimestamp,
+  PlayerOptions
+} from './Player';
 
 export type MeasureTimemapEntry = {
   measure: MeasureIndex;
@@ -20,7 +24,7 @@ export type MeasureTimemap = MeasureTimemapEntry[];
  * Refer to the various implementations of this interface for details.
  */
 export interface IMIDIConverter {
-  initialize(musicXml: string): Promise<void>;
+  initialize(musicXml: string, options: PlayerOptions): Promise<void>;
   get midi(): ArrayBuffer;
   get timemap(): MeasureTimemap;
   get version(): string;

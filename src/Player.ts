@@ -52,12 +52,12 @@ export interface PlayerOptions {
   converter: IMIDIConverter;
   /**
    * An instance of the MIDI output to send the note events.
-   * Optional, default = local Web Audio synthesizer
+   * Optional, default: local Web Audio synthesizer
    */
   output?: WebMidi.MIDIOutput;
   /**
    * Soundfond URL.
-   * Optional, default = https://spessasus.github.io/SpessaSynth/soundfonts/GeneralUserGS.sf3
+   * Optional, default: SOUNDFONT_DEFAULT_URL
    */
   soundfontUri?: string;
   /**
@@ -67,32 +67,42 @@ export interface PlayerOptions {
   unroll?: boolean;
   /**
    * A flag to mute the player's MIDI output.
-   * Optional, default = false
+   * Optional, default: false
    * Can also be changed dynamically via Player.mute attribute.
    */
   mute?: boolean;
   /**
    * Repeat count. A value of Infinity means loop forever.
-   * Optional, default = 1
+   * Optional, default: 1
    * Can also be changed dynamically via Player.repeat attribute.
    */
   repeat?: number;
   /**
    * Playback speed. A value of 1 means normal speed.
-   * Optional, default = 1
+   * Optional, default: 1
    * Can also be changed dynamically via Player.velocity attribute.
    */
   velocity?: number;
   /**
-   * A flag to scale the display when the browser window is resized.
-   * Optional, default = false
+   * A flag to rescale the display when the browser window is resized.
+   * Optional, default: false
    */
-  scaleOnResize?: boolean;
+  scale?: boolean;
+  /**
+   * A flag to render the score as a single horizontal system.
+   * Optional, default: false
+   */
+  horizontal?: boolean;
   /**
    * In case of horizontal score rendering, the cursor offset from the system start.
-   * Optional, default = 100px
+   * Optional, default: 100px
    */
   horizontalCursorOffset?: number;
+  /**
+   * A flag to center the browser window around the cursor.
+   * Optional, default: true
+   */
+  followCursor?: boolean;
 }
 
 export class Player {
@@ -103,7 +113,24 @@ export class Player {
    * @returns A new instance of the player, ready to play.
    * @throws Error exception with various error messages.
    */
-  static async create(options: PlayerOptions): Promise<Player> {
+  static async create(_options: PlayerOptions): Promise<Player> {
+    // Fill in the default values.
+    // Add the default values.
+    const options = {
+      ...{
+        soundfontUri: SOUNDFONT_DEFAULT_URL,
+        unroll: false,
+        mute: false,
+        repeat: 1,
+        velocity: 1,
+        scale: false,
+        horizontal: false,
+        horizontalCursorOffset: 100,
+        followCursor: true,
+      },
+      ..._options,
+    };
+
     // Create the inner sheet element.
     const container =
       typeof options.container === 'string'
@@ -137,8 +164,8 @@ export class Player {
 
       // Initialize the various objects.
       // It's too bad that constructors cannot be made async because that would simplify the code.
-      await options.converter.initialize(musicXml);
-      await options.renderer.initialize(sheet, musicXml);
+      await options.converter.initialize(musicXml, options);
+      await options.renderer.initialize(sheet, musicXml, options);
 
       // Finally, create the player instance.
       return new Player(options, sheet, parseResult, musicXml, synth, context);
