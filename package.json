@@ -13,6 +13,7 @@
     "build"
   ],
   "devDependencies": {
+    "@chialab/esbuild-plugin-meta-url": "^0.19.0",
     "@esm-bundle/chai": "^4.3.4-fix.0",
     "@esm-bundle/chai-as-promised": "^7.1.1",
     "@types/verovio": "^3.13.4",

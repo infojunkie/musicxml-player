@@ -156,7 +156,7 @@ export class Player {
 
       // Create the synth element.
       const context = new AudioContext();
-      await context.audioWorklet.addModule(new URL('spessasynth_processor.js', import.meta.url));
+      await context.audioWorklet.addModule(new URL('helpers/spessasynth_processor.ts', import.meta.url));
       const soundfont = await (await fetish(options.soundfontUri ?? SOUNDFONT_DEFAULT_URL)).arrayBuffer();
       const synth = new Synthetizer(context);
       synth.connect(context.destination);

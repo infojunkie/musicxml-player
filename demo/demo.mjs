@@ -143,7 +143,7 @@ async function createPlayer() {
         mute: options.mute,
         repeat: repeat === '-1' ? Infinity : Number(repeat),
         velocity: Number(velocity),
-        scaleOnResize: renderer in ['mscore', 'vrvs']
+        scale: renderer in ['mscore', 'vrvs']
       });
 
       // Update the UI elements.
