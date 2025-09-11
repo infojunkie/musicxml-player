@@ -2,7 +2,7 @@ import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
 import type { IMIDIConverter, MeasureTimemap } from './IMIDIConverter';
 import type { VerovioOptionsFixed, VerovioToolkitFixed } from './VerovioTypes';
-import { VerovioConverterHelper } from './VerovioConverterHelper';
+import { VerovioConverterBase } from './VerovioConverterBase';
 import { assertIsDefined, atoab } from './helpers';
 
 /**
@@ -10,7 +10,7 @@ import { assertIsDefined, atoab } from './helpers';
  * @see https://book.verovio.org/toolkit-reference/toolkit-methods.html#rendertomidi and
  * @see https://book.verovio.org/toolkit-reference/toolkit-methods.html#rendertotimemap
  */
-export class VerovioConverter extends VerovioConverterHelper implements IMIDIConverter {
+export class VerovioConverter extends VerovioConverterBase implements IMIDIConverter {
   protected _vrv?: VerovioToolkitFixed;
   protected _timemap: MeasureTimemap = [];
   protected _midi?: ArrayBuffer;
@@ -37,7 +37,7 @@ export class VerovioConverter extends VerovioConverterHelper implements IMIDICon
     }
 
     // Build timemap.
-    this._timemap = VerovioConverterHelper._parseTimemap(
+    this._timemap = VerovioConverterBase._parseTimemap(
       this._vrv.renderToTimemap({ includeMeasures: true, includeRests: true })
     );
 

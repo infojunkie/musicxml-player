@@ -17,8 +17,6 @@ import pkg_lock from '../package-lock.json';
 const XSL_UNROLL =
   'https://raw.githubusercontent.com/infojunkie/musicxml-midi/main/build/unroll.sef.json';
 
-const SOUNDFONT_DEFAULT_URL = 'https://spessasus.github.io/SpessaSynth/soundfonts/GeneralUserGS.sf3';
-
 const DEBOUNCE_THROTTLE = 100;
 
 export type MeasureIndex = number;
@@ -54,10 +52,10 @@ export interface PlayerOptions {
    * An instance of the MIDI output to send the note events.
    * Optional, default: local Web Audio synthesizer
    */
-  output?: WebMidi.MIDIOutput;
+  output?: WebMidi.MIDIOutput | null;
   /**
    * Soundfond URL.
-   * Optional, default: SOUNDFONT_DEFAULT_URL
+   * Optional, default: https://spessasus.github.io/SpessaSynth/soundfonts/GeneralUserGS.sf3
    */
   soundfontUri?: string;
   /**
@@ -105,6 +103,19 @@ export interface PlayerOptions {
   followCursor?: boolean;
 }
 
+const DEFAULT_PLAYER_OPTIONS = {
+  soundfontUri: 'https://spessasus.github.io/SpessaSynth/soundfonts/GeneralUserGS.sf3',
+  output: null,
+  unroll: false,
+  mute: false,
+  repeat: 1,
+  velocity: 1,
+  scale: false,
+  horizontal: false,
+  horizontalCursorOffset: 100,
+  followCursor: true,
+}
+
 export class Player {
   /**
    * Create a new instance of the player.
@@ -114,20 +125,9 @@ export class Player {
    * @throws Error exception with various error messages.
    */
   static async create(_options: PlayerOptions): Promise<Player> {
-    // Fill in the default values.
-    // Add the default values.
-    const options = {
-      ...{
-        soundfontUri: SOUNDFONT_DEFAULT_URL,
-        unroll: false,
-        mute: false,
-        repeat: 1,
-        velocity: 1,
-        scale: false,
-        horizontal: false,
-        horizontalCursorOffset: 100,
-        followCursor: true,
-      },
+    // Fill in the default option values.
+    const options: Required<PlayerOptions> = {
+      ...DEFAULT_PLAYER_OPTIONS,
       ..._options,
     };
 
@@ -157,7 +157,7 @@ export class Player {
       // Create the synth element.
       const context = new AudioContext();
       await context.audioWorklet.addModule(new URL('helpers/spessasynth_processor.ts', import.meta.url));
-      const soundfont = await (await fetish(options.soundfontUri ?? SOUNDFONT_DEFAULT_URL)).arrayBuffer();
+      const soundfont = await (await fetish(options.soundfontUri)).arrayBuffer();
       const synth = new Synthetizer(context);
       synth.connect(context.destination);
       await synth.soundBankManager.addSoundBank(soundfont, "main");
@@ -183,7 +183,7 @@ export class Player {
   protected _abortController: AbortController;
 
   protected constructor(
-    protected _options: PlayerOptions,
+    protected _options: Required<PlayerOptions>,
     protected _sheet: HTMLElement,
     protected _parseResult: MusicXmlParseResult,
     protected _musicXml: string,
@@ -204,9 +204,9 @@ export class Player {
     this._sequencer.loadNewSongList([this._midi]);
 
     // Initialize the playback options.
-    this.mute = this._options.mute ?? false;
-    this._sequencer.playbackRate = this._options.velocity ?? 1;
-    this._sequencer.loopCount = this._options.repeat ?? 1;
+    this.mute = this._options.mute;
+    this._sequencer.playbackRate = this._options.velocity;
+    this._sequencer.loopCount = this._options.repeat;
 
     // Handling DOM events.
     this._observer = new ResizeObserver(debounce(() => {

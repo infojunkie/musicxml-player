@@ -1,1 +1,0 @@
-{"version":3,"file":"VerovioConverterHelper.d.ts","sourceRoot":"","sources":["../../src/VerovioConverterHelper.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,gBAAgB,CAAC;AACnD,OAAO,EAAE,cAAc,EAAE,MAAM,kBAAkB,CAAC;AAElD,qBAAa,sBAAsB;IACjC;;OAEG;IACH,SAAS,CAAC,MAAM,CAAC,aAAa,CAC5B,OAAO,EAAE,iBAAiB,EAAE,GAC3B,cAAc;CAyBlB"}

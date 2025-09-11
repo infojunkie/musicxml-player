@@ -1,7 +1,7 @@
 import { TimeMapEntryFixed } from './VerovioTypes';
 import { MeasureTimemap } from './IMIDIConverter';
 
-export class VerovioConverterHelper {
+export class VerovioConverterBase {
   /**
    * Parse a Verovio timemap into our timemap.
    */

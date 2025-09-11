@@ -8,5 +8,6 @@ export declare class MuseScoreConverter extends MuseScoreBase implements IMIDICo
     initialize(musicXml: string): Promise<void>;
     get midi(): ArrayBuffer;
     get timemap(): MeasureTimemap;
+    get version(): string;
 }
 //# sourceMappingURL=MuseScoreConverter.d.ts.map

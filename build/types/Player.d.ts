@@ -35,10 +35,10 @@ export interface PlayerOptions {
      * An instance of the MIDI output to send the note events.
      * Optional, default: local Web Audio synthesizer
      */
-    output?: WebMidi.MIDIOutput;
+    output?: WebMidi.MIDIOutput | null;
     /**
      * Soundfond URL.
-     * Optional, default: SOUNDFONT_DEFAULT_URL
+     * Optional, default: https://spessasus.github.io/SpessaSynth/soundfonts/GeneralUserGS.sf3
      */
     soundfontUri?: string;
     /**
@@ -86,7 +86,7 @@ export interface PlayerOptions {
     followCursor?: boolean;
 }
 export declare class Player {
-    protected _options: PlayerOptions;
+    protected _options: Required<PlayerOptions>;
     protected _sheet: HTMLElement;
     protected _parseResult: MusicXmlParseResult;
     protected _musicXml: string;
@@ -106,7 +106,7 @@ export declare class Player {
     protected _duration: number;
     protected _state: PlayerState;
     protected _abortController: AbortController;
-    protected constructor(_options: PlayerOptions, _sheet: HTMLElement, _parseResult: MusicXmlParseResult, _musicXml: string, _synthesizer: Synthetizer, _context: AudioContext);
+    protected constructor(_options: Required<PlayerOptions>, _sheet: HTMLElement, _parseResult: MusicXmlParseResult, _musicXml: string, _synthesizer: Synthetizer, _context: AudioContext);
     /**
      * Destroy the instance by freeing all resources and disconnecting observers.
      */

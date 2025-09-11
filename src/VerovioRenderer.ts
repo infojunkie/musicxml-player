@@ -2,7 +2,7 @@ import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
 import type { ISheetRenderer } from './ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, PlayerOptions } from './Player';
-import { VerovioRendererHelper } from './VerovioRendererHelper';
+import { VerovioRendererBase } from './VerovioRendererBase';
 import { VerovioOptionsFixed, VerovioToolkitFixed } from './VerovioTypes';
 import { assertIsDefined } from './helpers';
 
@@ -11,7 +11,7 @@ import { assertIsDefined } from './helpers';
  * @see https://book.verovio.org/toolkit-reference/toolkit-methods.html#rendertosvg
  * @see https://book.verovio.org/toolkit-reference/toolkit-methods.html#rendertotimemap
  */
-export class VerovioRenderer extends VerovioRendererHelper implements ISheetRenderer {
+export class VerovioRenderer extends VerovioRendererBase implements ISheetRenderer {
   protected _vrv?: VerovioToolkitFixed;
   protected _vrvOptions: VerovioOptionsFixed;
 

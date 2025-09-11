@@ -4,7 +4,7 @@ import { Cursor } from './Cursor';
 import type { TimeMapEntryFixed } from './VerovioTypes';
 import { assertIsDefined } from './helpers';
 
-export class VerovioRendererHelper {
+export class VerovioRendererBase {
   player?: Player;
   protected _options?: PlayerOptions;
   protected _container?: HTMLElement;

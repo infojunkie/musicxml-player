@@ -3,6 +3,7 @@ import { MuseScoreDownloader, MuseScoreBase } from './MuseScoreBase';
 import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 import { assertIsDefined, binarySearch } from './helpers';
 import SaxonJS from './saxon-js/SaxonJS3.rt';
+import pkg from '../package.json';
 
 // Constant to convert incoming coordinates in DPI into pixels.
 // @see https://github.com/musescore/MuseScore/blob/v4.4.2/src/engraving/dom/mscore.h#DPI
@@ -184,4 +185,8 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
 
   onResize(): void {}
   onEvent(): void {}
+
+  get version(): string {
+    return `${pkg.name}/FetchConverter v${pkg.version}`;
+  }
 }

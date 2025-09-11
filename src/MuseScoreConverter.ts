@@ -1,6 +1,7 @@
 import type { IMIDIConverter, MeasureTimemap } from './IMIDIConverter';
 import { MuseScoreDownloader, MuseScoreBase } from './MuseScoreBase';
 import { assertIsDefined } from './helpers';
+import pkg from '../package.json';
 
 /**
  * Implementation of IMIDIConverter that uses MuseScore to generate the MIDI and timemap structures.
@@ -27,5 +28,9 @@ export class MuseScoreConverter
   get timemap(): MeasureTimemap {
     assertIsDefined(this._timemap);
     return this._timemap;
+  }
+
+  get version(): string {
+    return `${pkg.name}/FetchConverter v${pkg.version}`;
   }
 }

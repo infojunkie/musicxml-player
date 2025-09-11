@@ -1,6 +1,6 @@
 import { ISheetRenderer } from './ISheetRenderer';
 import { TimeMapEntryFixed } from './VerovioTypes';
-import { VerovioRendererHelper } from './VerovioRendererHelper';
+import { VerovioRendererBase } from './VerovioRendererBase';
 import type { MeasureIndex, MillisecsTimestamp, PlayerOptions } from './Player';
 import { fetish } from './helpers';
 import pkg from '../package.json';
@@ -10,7 +10,7 @@ import pkg from '../package.json';
  * - SVG files as obtained by `verovio --xml-id-checksum -t svg /path/to/score.musicxml`
  * - Timemap JSON file as obtained by `verovio --xml-id-checksum -t timemap --timemap-options '{ "includeMeasures": true, "includeRests": true }' /path/to/score.musicxml`
  */
-export class VerovioStaticRenderer extends VerovioRendererHelper implements ISheetRenderer {
+export class VerovioStaticRenderer extends VerovioRendererBase implements ISheetRenderer {
   constructor(
     protected _svgOrUris: Array<ArrayBuffer | string>,
     protected _eventsOrUri: TimeMapEntryFixed[] | string,
@@ -73,6 +73,6 @@ export class VerovioStaticRenderer extends VerovioRendererHelper implements IShe
   }
 
   get version(): string {
-    return `${pkg.name} v${pkg.version}`;
+    return `${pkg.name}/VerovioStaticRenderer v${pkg.version}`;
   }
 }

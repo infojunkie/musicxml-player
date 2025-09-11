@@ -2,7 +2,7 @@ import { MeasureTimemapEntry } from './IMIDIConverter';
 import type { MeasureIndex, MillisecsTimestamp, Player, PlayerOptions } from './Player';
 import { Cursor } from './Cursor';
 import type { TimeMapEntryFixed } from './VerovioTypes';
-export declare class VerovioRendererHelper {
+export declare class VerovioRendererBase {
     player?: Player;
     protected _options?: PlayerOptions;
     protected _container?: HTMLElement;
@@ -38,4 +38,4 @@ export declare class VerovioRendererHelper {
     protected _recalculate(): void;
     protected _move(index: MeasureIndex, start: MillisecsTimestamp, offset: MillisecsTimestamp, duration?: MillisecsTimestamp): void;
 }
-//# sourceMappingURL=VerovioRendererHelper.d.ts.map
+//# sourceMappingURL=VerovioRendererBase.d.ts.map
