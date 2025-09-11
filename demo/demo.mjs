@@ -143,7 +143,6 @@ async function createPlayer() {
         mute: options.mute,
         repeat: repeat === '-1' ? Infinity : Number(repeat),
         velocity: Number(velocity),
-        soundfontUri: 'data/GeneralUserGS.sf3',
       });
 
       // Update the UI elements.
@@ -193,8 +192,6 @@ async function createRenderer(renderer, sheet, options) {
         fingeringScale: 0.6,
         justificationBracketGroup: 5,
         scale: 60,
-      }, {
-        scrollOffset: 100,
       });
     case 'mscore':
       document.querySelectorAll('.renderer-option').forEach(element => {

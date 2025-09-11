@@ -1,53 +1,22 @@
-import type { ISheetRenderer } from './ISheetRenderer';
-import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
-import { MeasureTimemap } from './IMidiConverter';
+import type { ISheetRenderer } from './ISheetRenderer';
+import type { MeasureIndex, MillisecsTimestamp } from './Player';
+import { VerovioRendererHelper } from './VerovioRendererHelper';
+import { VerovioOptionsFixed, VerovioToolkitFixed } from './VerovioTypes';
 import { assertIsDefined } from './helpers';
-import {
-  VerovioOptionsFixed,
-  ElementsAtTimeFixed,
-  CursorOptions,
-  VerovioToolkitFixed,
-  TimeMapEntryFixed
-} from './VerovioBase';
 
 /**
  * Implementation of ISheetRenderer that uses Verovio to convert a MusicXML file to SVGs and timemap.
  * @see https://book.verovio.org/toolkit-reference/toolkit-methods.html#rendertosvg
  * @see https://book.verovio.org/toolkit-reference/toolkit-methods.html#rendertotimemap
  */
-export class VerovioRenderer implements ISheetRenderer {
-  player?: Player;
+export class VerovioRenderer extends VerovioRendererHelper implements ISheetRenderer {
   protected _vrv?: VerovioToolkitFixed;
-  protected _container?: HTMLElement;
-  protected _notes: string[] = [];
   protected _vrvOptions: VerovioOptionsFixed;
-  protected _cursorOptions: CursorOptions;
-  protected _timemap: MeasureTimemap = [];
-  protected _measures: {
-    rects: DOMRect[];
-    elements: SVGGElement[];
-  };
-  protected _cursor: HTMLDivElement;
-  protected _position: {
-    x: number;
-    y: number;
-    height: number;
-  };
-  protected _scroll: {
-    offset: number;
-    left: number;
-    top: number;
-  };
-  protected _measure: {
-    index: MeasureIndex;
-    start: MillisecsTimestamp;
-    offset: MillisecsTimestamp;
-    duration: MillisecsTimestamp | undefined;
-  };
 
-  constructor(vrvOptions?: VerovioOptionsFixed, cursorOptions?: CursorOptions) {
+  constructor(vrvOptions?: VerovioOptionsFixed) {
+    super();
     this._vrvOptions = {
       ...{
         breaks: 'encoded',
@@ -58,44 +27,14 @@ export class VerovioRenderer implements ISheetRenderer {
       },
       ...vrvOptions,
     };
-    this._cursorOptions = {
-      ...{
-        scrollOffset: 50,
-      },
-      ...cursorOptions,
-    };
-    this._measures = {
-      rects: [],
-      elements: [],
-    };
-    this._scroll = {
-      offset: 0,
-      left: 0,
-      top: 0,
-    };
-    this._position = {
-      x: 0,
-      y: 0,
-      height: 0,
-    };
-    this._measure = {
-      index: 0,
-      start: 0,
-      offset: 0,
-      duration: 0,
-    };
-    this._cursor = document.createElement('div');
-    this._cursor.className = 'player-cursor';
   }
 
   destroy() {
-    this._cursor.remove();
+    this._cursor.destroy();
     this._vrv?.destroy();
   }
 
   async initialize(container: HTMLElement, musicXml: string): Promise<void> {
-    this._container = container;
-
     // Create the Verovio toolkit.
     const VerovioModule = await createVerovioModule();
     this._vrv = <VerovioToolkitFixed>new VerovioToolkit(VerovioModule);
@@ -103,14 +42,11 @@ export class VerovioRenderer implements ISheetRenderer {
       throw new Error(`[VerovioRenderer.initialize] Failed to load MusicXML.`);
     }
 
-    // Handle scrolling.
-    this._container.addEventListener('scroll', () => {
-      this._move();
-    });
+    // Render the score and compute the internal data structures.
+    this._redraw(container);
 
-    // First rendering.
-    this._redraw();
-    this.moveTo(0, 0, 0);
+    // Initialize the cursor.
+    this._cursor.initialize(container);
   }
 
   moveTo(
@@ -119,8 +55,8 @@ export class VerovioRenderer implements ISheetRenderer {
     offset: MillisecsTimestamp,
     duration?: MillisecsTimestamp,
   ) {
-    assertIsDefined(this._vrv);
-
+    this._move(index, start, offset, duration);
+/*
     // Cache the incoming measure params.
     this._measure = {
       index,
@@ -194,18 +130,27 @@ export class VerovioRenderer implements ISheetRenderer {
 
     // Move the cursor.
     this._move();
+  */
   }
 
-  resize(): void {
-    this._redraw();
+  onResize(): void {
+    assertIsDefined(this._container);
+    this._redraw(this._container);
+    this._move(
+      this._currentLocation.index,
+      this._currentLocation.start,
+      this._currentLocation.offset,
+      this._currentLocation.duration
+    );
+  }
 
-    // Force the notes highlighting and cursor position to be recalculated.
-    this._notes = [];
-    this.moveTo(
-      this._measure.index,
-      this._measure.start,
-      this._measure.offset,
-      this._measure.duration,
+  onEvent(): void {
+    this._recalculate();
+    this._move(
+      this._currentLocation.index,
+      this._currentLocation.start,
+      this._currentLocation.offset,
+      this._currentLocation.duration
     );
   }
 
@@ -213,6 +158,34 @@ export class VerovioRenderer implements ISheetRenderer {
     return `verovio v${this._vrv?.getVersion() ?? `Unknown`}`;
   }
 
+  protected _redraw(container: HTMLElement) {
+    assertIsDefined(this._vrv);
+
+    // Render the score.
+    const svgs: string[] = [];
+    this._vrv.setOptions({
+      ...this._vrvOptions,
+      ...{
+        pageHeight:
+          (container.parentElement!.clientHeight * 100) /
+          (this._vrvOptions.scale ?? 100),
+        pageWidth:
+          (container.parentElement!.clientWidth * 100) /
+          (this._vrvOptions.scale ?? 100),
+      },
+    });
+    this._vrv.redoLayout({ resetCache: false });
+    for (let i = 0; i < this._vrv.getPageCount(); i++) {
+      svgs.push(this._vrv.renderToSVG(i + 1));
+    }
+    const timemap = this._vrv.renderToTimemap({ includeMeasures: true, includeRests: true });
+
+    // Delete existing pages and calculate from scratch.
+    container.querySelectorAll('.sheet-page').forEach(e => e.remove());
+    this._calculate(container, timemap, svgs, false);
+  }
+
+  /*
   protected _isHorizontalLayout(): boolean {
     return this._vrvOptions.breaks === 'none';
   }
@@ -226,17 +199,13 @@ export class VerovioRenderer implements ISheetRenderer {
     const systemRect = system.getBoundingClientRect();
     const containerRect = this._container.getBoundingClientRect();
     this._position = {
-      x:
-        -containerRect.left +
-        (this._measure.duration
-          ? Math.round(
-              this._measures.rects[this._measure.index].left -
-                this._container.scrollLeft +
-                Math.min(1.0, this._measure.offset / this._measure.duration) *
-                  this._measures.rects[this._measure.index].width,
+      x: - containerRect.left
+         + (this._measure.duration
+           ? Math.round(
+              this._measures.rects[this._measure.index].left
+              + Math.min(1.0, this._measure.offset / this._measure.duration) * this._measures.rects[this._measure.index].width,
             )
-          : document.getElementById(this._notes[0])!.getBoundingClientRect()
-              .left),
+         : document.getElementById(this._notes[0])!.getBoundingClientRect().left),
       y: systemRect.top - containerRect.top,
       height: systemRect.height,
     };
@@ -326,4 +295,5 @@ export class VerovioRenderer implements ISheetRenderer {
       }
     });
   }
+  */
 }

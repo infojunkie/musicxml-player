@@ -108,11 +108,13 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     );
   }
 
-  resize(): void {
+  onResize(): void {
     if (this._osmd) {
       this._redraw();
     }
   }
+
+  onEvent(): void {}
 
   get version(): string {
     assertIsDefined(this._osmd);

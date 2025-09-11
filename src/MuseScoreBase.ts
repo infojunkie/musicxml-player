@@ -1,4 +1,4 @@
-import type { MeasureTimemap } from './IMidiConverter';
+import type { MeasureTimemap } from './IMIDIConverter';
 import { atoab, fetish } from './helpers';
 import SaxonJS from './saxon-js/SaxonJS3.rt';
 

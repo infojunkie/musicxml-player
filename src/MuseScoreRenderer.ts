@@ -182,5 +182,6 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
     this._cursor.style.height = `${height}px`;
   }
 
-  resize(): void {}
+  onResize(): void {}
+  onEvent(): void {}
 }

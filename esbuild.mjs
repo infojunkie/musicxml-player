@@ -1,6 +1,7 @@
 import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill';
 import { build } from 'esbuild';
 import process from 'process';
+import fs from 'fs';
 
 // https://stackoverflow.com/a/69409483/209184
 const argv = key => {
@@ -36,4 +37,14 @@ build({
   minify: true,
   sourcemap: true,
   ...targets[format]
-});
+}).then(() => {
+  fs.copyFileSync('src/helpers/spessasynth_processor.js', 'build/spessasynth_processor.js');
+})
+// build({
+//   entryPoints: ['src/helpers/spessasynth_processor.ts'],
+//   bundle: true,
+//   minify: true,
+//   sourcemap: true,
+//   format: 'esm',
+//   outfile: 'build/spessasynth_processor.js',
+// });

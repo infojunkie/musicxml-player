@@ -12,7 +12,8 @@ export interface ISheetRenderer {
     destroy(): void;
     initialize(container: HTMLElement, musicXml: string): Promise<void>;
     moveTo(index: MeasureIndex, start: MillisecsTimestamp, offset: MillisecsTimestamp, duration?: MillisecsTimestamp): void;
-    resize(): void;
+    onResize(): void;
+    onEvent(type: keyof GlobalEventHandlersEventMap, event: Event): void;
     get version(): string;
 }
 //# sourceMappingURL=ISheetRenderer.d.ts.map

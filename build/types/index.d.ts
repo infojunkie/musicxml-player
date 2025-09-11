@@ -1,7 +1,7 @@
 import './player.css';
 export * from './Player';
 export * from './ISheetRenderer';
-export * from './IMidiConverter';
+export * from './IMIDIConverter';
 export * from './FetchConverter';
 export * from './MmaConverter';
 export * from './OpenSheetMusicDisplayRenderer';

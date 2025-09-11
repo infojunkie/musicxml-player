@@ -1,4 +1,4 @@
-import type { MeasureTimemap } from './IMidiConverter';
+import type { MeasureTimemap } from './IMIDIConverter';
 export type MuseScoreDownloader = (musicXml: string) => {
     pngs?: string[];
     svgs: string[];

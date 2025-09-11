@@ -1,37 +1,7 @@
-import { VerovioOptions, TimeMapEntry } from 'verovio';
-import { VerovioToolkit } from 'verovio/esm';
-import type { MeasureTimemap } from './IMidiConverter';
+import { TimeMapEntryFixed } from './VerovioTypes';
+import { MeasureTimemap } from './IMIDIConverter';
 
-export interface TimeMapEntryFixed extends TimeMapEntry {
-  restsOn?: string[];
-  restsOff?: string[];
-  measureOn?: string;
-}
-
-export interface ElementsAtTimeFixed {
-  notes: string[];
-  rests: string[];
-  chords: string[];
-  page: number;
-  measure: string;
-}
-
-export interface VerovioToolkitFixed extends VerovioToolkit {
-  destroy(): void;
-}
-
-export interface VerovioOptionsFixed extends VerovioOptions {
-  tuning?: string;
-}
-
-export interface CursorOptions {
-  scrollOffset: number;
-}
-
-/**
- * Base class for Verovio.
- */
-export class VerovioBase {
+export class VerovioConverterHelper {
   /**
    * Parse a Verovio timemap into our timemap.
    */

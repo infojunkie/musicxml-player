@@ -1,13 +1,13 @@
-import type { IMidiConverter, MeasureTimemap } from './IMidiConverter';
+import type { IMIDIConverter, MeasureTimemap } from './IMIDIConverter';
 import { MuseScoreDownloader, MuseScoreBase } from './MuseScoreBase';
 import { assertIsDefined } from './helpers';
 
 /**
- * Implementation of IMidiConverter that uses MuseScore to generate the MIDI and timemap structures.
+ * Implementation of IMIDIConverter that uses MuseScore to generate the MIDI and timemap structures.
  */
 export class MuseScoreConverter
   extends MuseScoreBase
-  implements IMidiConverter
+  implements IMIDIConverter
 {
   constructor(
     downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>,

@@ -1,10 +1,12 @@
 import type { MeasureIndex, MillisecsTimestamp } from './Player';
+
 export type MeasureTimemapEntry = {
-    measure: MeasureIndex;
-    timestamp: MillisecsTimestamp;
-    duration: MillisecsTimestamp;
+  measure: MeasureIndex;
+  timestamp: MillisecsTimestamp;
+  duration: MillisecsTimestamp;
 };
 export type MeasureTimemap = MeasureTimemapEntry[];
+
 /**
  * Interface to a MusicXML-to-MIDI converter.
  *
@@ -17,10 +19,9 @@ export type MeasureTimemap = MeasureTimemapEntry[];
  *
  * Refer to the various implementations of this interface for details.
  */
-export interface IMidiConverter {
-    initialize(musicXml: string): Promise<void>;
-    get midi(): ArrayBuffer;
-    get timemap(): MeasureTimemap;
-    get version(): string;
+export interface IMIDIConverter {
+  initialize(musicXml: string): Promise<void>;
+  get midi(): ArrayBuffer;
+  get timemap(): MeasureTimemap;
+  get version(): string;
 }
-//# sourceMappingURL=IMidiConverter.d.ts.map

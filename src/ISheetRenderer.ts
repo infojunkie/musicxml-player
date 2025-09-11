@@ -18,6 +18,10 @@ export interface ISheetRenderer {
     offset: MillisecsTimestamp,
     duration?: MillisecsTimestamp,
   ): void;
-  resize(): void;
+  onResize(): void;
+  onEvent(
+    type: keyof GlobalEventHandlersEventMap,
+    event: Event
+  ): void;
   get version(): string;
 }
