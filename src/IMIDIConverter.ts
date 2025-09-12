@@ -24,7 +24,7 @@ export type MeasureTimemap = MeasureTimemapEntry[];
  * Refer to the various implementations of this interface for details.
  */
 export interface IMIDIConverter {
-  initialize(musicXml: string, options: PlayerOptions): Promise<void>;
+  initialize(musicXml: string, options: Required<PlayerOptions>): Promise<void>;
   get midi(): ArrayBuffer;
   get timemap(): MeasureTimemap;
   get version(): string;

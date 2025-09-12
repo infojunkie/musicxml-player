@@ -12,7 +12,7 @@ export declare class VerovioRenderer extends VerovioRendererBase implements IShe
     protected _vrvOptions: VerovioOptionsFixed;
     constructor(vrvOptions?: VerovioOptionsFixed);
     destroy(): void;
-    initialize(container: HTMLElement, musicXml: string, options: PlayerOptions): Promise<void>;
+    initialize(container: HTMLElement, musicXml: string, options: Required<PlayerOptions>): Promise<void>;
     moveTo(index: MeasureIndex, start: MillisecsTimestamp, offset: MillisecsTimestamp, duration?: MillisecsTimestamp): void;
     onResize(): void;
     onEvent(): void;

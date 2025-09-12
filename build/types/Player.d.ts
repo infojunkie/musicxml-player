@@ -65,20 +65,10 @@ export interface PlayerOptions {
      */
     velocity?: number;
     /**
-     * A flag to rescale the display when the browser window is resized.
-     * Optional, default: false
-     */
-    scale?: boolean;
-    /**
      * A flag to render the score as a single horizontal system.
      * Optional, default: false
      */
     horizontal?: boolean;
-    /**
-     * In case of horizontal score rendering, the cursor offset from the system start.
-     * Optional, default: 100px
-     */
-    horizontalCursorOffset?: number;
     /**
      * A flag to center the browser window around the cursor.
      * Optional, default: true

@@ -16,7 +16,7 @@ import type {
 export interface ISheetRenderer {
   player?: Player;
   destroy(): void;
-  initialize(container: HTMLElement, musicXml: string, options: PlayerOptions): Promise<void>;
+  initialize(container: HTMLElement, musicXml: string, options: Required<PlayerOptions>): Promise<void>;
   moveTo(
     index: MeasureIndex,
     start: MillisecsTimestamp,

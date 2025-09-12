@@ -13,20 +13,11 @@ import { assertIsDefined } from './helpers';
  */
 export class VerovioRenderer extends VerovioRendererBase implements ISheetRenderer {
   protected _vrv?: VerovioToolkitFixed;
-  protected _vrvOptions: VerovioOptionsFixed;
+  protected _vrvOptions: VerovioOptionsFixed = {};
 
   constructor(vrvOptions?: VerovioOptionsFixed) {
     super();
-    this._vrvOptions = {
-      ...{
-        breaks: 'encoded',
-        adjustPageHeight: true,
-        scale: 50,
-        footer: 'none',
-        font: 'Bravura',
-      },
-      ...vrvOptions,
-    };
+    this._vrvOptions = { ...vrvOptions };
   }
 
   destroy() {
@@ -34,7 +25,21 @@ export class VerovioRenderer extends VerovioRendererBase implements ISheetRender
     this._vrv?.destroy();
   }
 
-  async initialize(container: HTMLElement, musicXml: string, options: PlayerOptions): Promise<void> {
+  async initialize(container: HTMLElement, musicXml: string, options: Required<PlayerOptions>): Promise<void> {
+    // Adjust options based on PlayerOptions.
+    this._vrvOptions = {
+      ...{
+        adjustPageHeight: true,
+        scale: 50,
+        footer: 'none',
+        font: 'Bravura',
+        breaks: options.horizontal ? 'none' : 'smart',
+        spacingNonLinear: options.horizontal ? 1.0 : 0.6,
+        spacingLinear: options.horizontal ? 0.04 : 0.25,
+      },
+      ...this._vrvOptions
+    }
+
     // Create the Verovio toolkit.
     const VerovioModule = await createVerovioModule();
     this._vrv = <VerovioToolkitFixed>new VerovioToolkit(VerovioModule);
@@ -56,68 +61,6 @@ export class VerovioRenderer extends VerovioRendererBase implements ISheetRender
     duration?: MillisecsTimestamp,
   ) {
     this._move(index, start, offset, duration);
-/*
-    const notes = [...(elements.notes || []), ...(elements.rests || [])];
-    if (!notes.length) {
-      // Empty notes: Find the full-measure rest.
-      const mRest = this._measures.elements[index].querySelector('g.mRest');
-      if (mRest) notes.push(mRest.id);
-    }
-
-    // Highlight the notes, only if they changed.
-    if (
-      notes.length !== this._notes.length ||
-      !this._notes.every((noteid, index) => notes[index] === noteid)
-    ) {
-      this._notes.forEach((noteid) => {
-        if (!notes.includes(noteid)) {
-          const note = document.getElementById(noteid);
-          // TODO Restore original attributes.
-          note?.setAttribute('fill', '#000');
-          note?.setAttribute('stroke', '#000');
-        }
-      });
-      this._notes = notes;
-      this._notes.forEach((noteid) => {
-        const note = document.getElementById(noteid);
-        if (!note) return;
-
-        // TODO Store original attributes and make highlight attributes configurable.
-        note.setAttribute('fill', 'rgb(234, 107, 36)');
-        note.setAttribute('stroke', 'rgb(234, 107, 36)');
-
-        // Scroll to the highlighted notes.
-        if (this._isHorizontalLayout()) {
-          if (!duration) {
-            note.scrollIntoView({
-              behavior: 'smooth',
-              inline: 'center',
-              block: 'nearest',
-            });
-          }
-        } else {
-          const system = note.closest('g.system');
-          system?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      });
-    }
-
-    // Scroll smoothly if using horizontal mode.
-    if (this._isHorizontalLayout() && duration) {
-      const scrollOffset = Math.round(
-        this._measures.rects[index].left -
-          this._cursorOptions.scrollOffset +
-          Math.min(1.0, offset / duration) * this._measures.rects[index].width,
-      );
-      if (scrollOffset !== this._scroll.offset) {
-        this._container?.scrollTo({ behavior: 'auto', left: scrollOffset });
-        this._scroll.offset = scrollOffset;
-      }
-    }
-
-    // Move the cursor.
-    this._move();
-  */
   }
 
   onResize(): void {
@@ -133,7 +76,7 @@ export class VerovioRenderer extends VerovioRendererBase implements ISheetRender
   }
 
   onEvent(): void {
-    this._recalculate();
+    this._refresh();
     this._move(
       this._currentLocation.index,
       this._currentLocation.start,
@@ -170,6 +113,6 @@ export class VerovioRenderer extends VerovioRendererBase implements ISheetRender
 
     // Delete existing pages and calculate from scratch.
     container.querySelectorAll('.sheet-page').forEach(e => e.remove());
-    this._calculate(container, timemap, svgs, options);
+    this._recalculate(container, timemap, svgs, options);
   }
 }

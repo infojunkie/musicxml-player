@@ -7,7 +7,6 @@ export declare class VerovioRendererBase {
     protected _options?: PlayerOptions;
     protected _container?: HTMLElement;
     protected _cursor: Cursor;
-    protected _scale: boolean;
     protected _svgs: string[];
     protected _events?: (TimeMapEntryFixed & {
         measureEntry: number;
@@ -33,9 +32,10 @@ export declare class VerovioRendererBase {
         duration?: MillisecsTimestamp | undefined;
     };
     protected _currentEventEntry: number;
+    protected _currentScrollOffset: number;
     constructor();
-    protected _calculate(container: HTMLElement, timemap: TimeMapEntryFixed[], svgs: string[], options: PlayerOptions): void;
-    protected _recalculate(): void;
+    protected _recalculate(container: HTMLElement, timemap: TimeMapEntryFixed[], svgs: string[], options: PlayerOptions): void;
+    protected _refresh(): void;
     protected _move(index: MeasureIndex, start: MillisecsTimestamp, offset: MillisecsTimestamp, duration?: MillisecsTimestamp): void;
 }
 //# sourceMappingURL=VerovioRendererBase.d.ts.map

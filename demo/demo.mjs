@@ -28,6 +28,7 @@ const DEFAULT_REPEAT = 0;
 const DEFAULT_OPTIONS = {
   unroll: false,
   horizontal: false,
+  follow: true,
   mute: false,
 };
 
@@ -143,7 +144,8 @@ async function createPlayer() {
         mute: options.mute,
         repeat: repeat === '-1' ? Infinity : Number(repeat),
         velocity: Number(velocity),
-        scale: renderer in ['mscore', 'vrvs']
+        horizontal: options.horizontal,
+        followCursor: options.follow,
       });
 
       // Update the UI elements.
@@ -182,14 +184,10 @@ async function createRenderer(renderer, sheet, options) {
   switch (renderer) {
     case 'osmd':
       return new OpenSheetMusicDisplayRenderer({
-        renderSingleHorizontalStaffline: options.horizontal,
         newSystemFromXML: true,
       });
     case 'vrv':
       return new VerovioRenderer({
-        breaks: options.horizontal ? 'none' : 'smart',
-        spacingNonLinear: options.horizontal ? 1.0 : undefined,
-        spacingLinear: options.horizontal ? 0.04 : undefined,
         fingeringScale: 0.6,
         justificationBracketGroup: 5,
         scale: 60,
@@ -413,6 +411,7 @@ function handleOptionChange(e) {
     unroll: !!document.getElementById('option-unroll').checked,
     horizontal: !!document.getElementById('option-horizontal').checked,
     mute: !!document.getElementById('option-mute').checked,
+    follow: !!document.getElementById('option-follow').checked,
   };
   if (e.target.id === 'option-mute') {
     if (g_state.player) {

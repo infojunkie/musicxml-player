@@ -1,6 +1,6 @@
 import { assertIsDefined } from './helpers';
 import type { ISheetRenderer } from './ISheetRenderer';
-import type { MeasureIndex, MillisecsTimestamp, Player } from './Player';
+import type { MeasureIndex, MillisecsTimestamp, Player, PlayerOptions } from './Player';
 import {
   Fraction,
   IOSMDOptions,
@@ -24,13 +24,24 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
   protected _osmd: OpenSheetMusicDisplay | undefined;
   protected _currentMeasureIndex: MeasureIndex = 0;
   protected _currentVoiceEntryIndex: number = 0;
-  protected _options: IOSMDOptions;
+  protected _osmdOptions: IOSMDOptions;
 
   constructor(
-    options?: IOSMDOptions,
-    protected _rules?: EngravingRulesOptions,
+    osmdOptions?: IOSMDOptions,
+    protected _engravingOptions?: EngravingRulesOptions,
   ) {
-    this._options = {
+    this._osmdOptions = { ...osmdOptions };
+  }
+
+  destroy(): void {
+    if (!this._osmd) return;
+    this._osmd.clear();
+    this._osmd = undefined;
+  }
+
+  async initialize(container: HTMLElement, musicXml: string, options: Required<PlayerOptions>): Promise<void> {
+    // Adjust options based on PlayerOptions.
+    this._osmdOptions = {
       ...{
         backend: 'svg',
         drawFromMeasureNumber: 1,
@@ -41,23 +52,17 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
         followCursor: true,
         disableCursor: false,
         autoResize: false,
+        renderSingleHorizontalStaffline: options.horizontal
       },
-      ...options,
-    };
-  }
+      ...this._osmdOptions
+    }
 
-  destroy(): void {
-    if (!this._osmd) return;
-    this._osmd.clear();
-    this._osmd = undefined;
-  }
-
-  async initialize(container: HTMLElement, musicXml: string): Promise<void> {
-    this._osmd = new OpenSheetMusicDisplay(container, this._options);
-    if (this._rules) {
+    // Create the OSMD toolkit.
+    this._osmd = new OpenSheetMusicDisplay(container, this._osmdOptions);
+    if (this._engravingOptions) {
       let k: keyof EngravingRules;
-      for (k in this._rules) {
-        (this._osmd.EngravingRules as any)[k] = this._rules[k];
+      for (k in this._engravingOptions) {
+        (this._osmd.EngravingRules as any)[k] = this._engravingOptions[k];
       }
     }
     // FIXME: Avoid hard-coding these engraving rules.

@@ -9,7 +9,6 @@ export class VerovioRendererBase {
   protected _options?: PlayerOptions;
   protected _container?: HTMLElement;
   protected _cursor: Cursor;
-  protected _scale: boolean = true;
   protected _svgs: string[] = [];
   protected _events?: (TimeMapEntryFixed & {
     measureEntry: number,
@@ -35,12 +34,14 @@ export class VerovioRendererBase {
     duration?: MillisecsTimestamp | undefined,
   } = { index: 0, start: 0, offset: 0 } // Current cursor location
   protected _currentEventEntry: number = Infinity; // Currently highlighted event entry
+  protected _currentScrollOffset: number = 0;
+
 
   constructor() {
     this._cursor = new Cursor();
   }
 
-  protected _calculate(
+  protected _recalculate(
     container: HTMLElement,
     timemap: TimeMapEntryFixed[],
     svgs: string[],
@@ -64,7 +65,7 @@ export class VerovioRendererBase {
 
       // Scale the SVG to the container width.
       assertIsDefined(this._options);
-      if (this._options.scale) {
+      if (!options.horizontal) {
         const s = page.getElementsByTagName('svg')[0];
         const w = s.getAttribute('width')?.replace('px', '');
         const h = s.getAttribute('height')?.replace('px', '');
@@ -126,7 +127,7 @@ export class VerovioRendererBase {
     });
   }
 
-  protected _recalculate() {
+  protected _refresh() {
     assertIsDefined(this._events);
     this._events.forEach((event, eventEntry) => {
       event.rectNotes = [];
@@ -204,19 +205,36 @@ export class VerovioRendererBase {
       });
       this._currentEventEntry = eventEntry;
 
-      // Focus the score.
+      // Focus the score around the cursor.
       assertIsDefined(this._container);
       assertIsDefined(this._options);
       if (this._options.followCursor) {
-        const system = this._container.querySelector('#' + this._measures[index].systemId);
-        system?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (this._options.horizontal) {
+          if (!duration) {
+            const element = document.getElementById(notesOn.length ? notesOn[0] : this._measures[index].measureId);
+            element?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          }
+        }
+        else {
+          const system = document.getElementById(this._measures[index].systemId);
+          system?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }
+
+    // Scroll smoothly if using horizontal mode.
+    const rectMeasure = this._measures[index].rectMeasure;
+    const rectSystem = this._measures[index].rectSystem;
+    const rectNote = this._events[eventEntry].rectNotes[0]; // guaranteed to have at least one
+    if (this._options?.horizontal && duration) {
+      const scrollOffset = Math.round(rectMeasure.left - 100 + Math.min(1.0, offset / duration) * rectMeasure.width);
+      if (scrollOffset !== this._currentScrollOffset) {
+        this._container?.scrollTo({ behavior: 'auto', left: scrollOffset });
+        this._currentScrollOffset = scrollOffset;
       }
     }
 
     // Calculate cursor position.
-    const rectMeasure = this._measures[index].rectMeasure;
-    const rectSystem = this._measures[index].rectSystem;
-    const rectNote = this._events[eventEntry].rectNotes[0]; // guaranteed to have at least one
     this._cursor.moveTo(
       duration
         ? rectMeasure.left + Math.round(Math.min(1.0, offset / duration) * rectMeasure.width)

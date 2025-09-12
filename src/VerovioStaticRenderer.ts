@@ -36,7 +36,7 @@ export class VerovioStaticRenderer extends VerovioRendererBase implements ISheet
         : this._eventsOrUri;
 
     // Compute the internal data structures.
-    this._calculate(container, timemap, svgs, options);
+    this._recalculate(container, timemap, svgs, options);
 
     // Initialize the cursor.
     this._cursor.initialize(container);
@@ -53,7 +53,7 @@ export class VerovioStaticRenderer extends VerovioRendererBase implements ISheet
   }
 
   onResize(): void {
-    this._recalculate();
+    this._refresh();
     this.moveTo(
       this._currentLocation.index,
       this._currentLocation.start,
@@ -63,7 +63,7 @@ export class VerovioStaticRenderer extends VerovioRendererBase implements ISheet
   }
 
   onEvent(): void {
-    this._recalculate();
+    this._refresh();
     this.moveTo(
       this._currentLocation.index,
       this._currentLocation.start,
