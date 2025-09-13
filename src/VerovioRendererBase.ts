@@ -9,6 +9,7 @@ export class VerovioRendererBase {
   protected _options?: PlayerOptions;
   protected _container?: HTMLElement;
   protected _cursor: Cursor;
+  protected _scrollOffset?: number;
   protected _svgs: string[] = [];
   protected _events?: (TimeMapEntryFixed & {
     measureEntry: number,
@@ -34,8 +35,6 @@ export class VerovioRendererBase {
     duration?: MillisecsTimestamp | undefined,
   } = { index: 0, start: 0, offset: 0 } // Current cursor location
   protected _currentEventEntry: number = Infinity; // Currently highlighted event entry
-  protected _currentScrollOffset: number = 0;
-
 
   constructor() {
     this._cursor = new Cursor();
@@ -109,22 +108,12 @@ export class VerovioRendererBase {
         note.addEventListener('click', () => {
           this.player?.moveTo(measure.measure, measure.timestamp, event.tstamp - measure.timestamp);
         });
-        event.rectNotes.push(note.getBoundingClientRect());
         event.notesOn.push(domid);
       });
-
-      // Ensure at least one rectNote exists.
-      if (!event.rectNotes.length) {
-        event.rectNotes.push(measure.rectMeasure);
-      }
-
-      // Special case: If this is the first note, set the measure's bounding rect to start here
-      // in order to avoid objects such as time signature and key signature.
-      if (eventEntry === 0) {
-        measure.rectMeasure.width -= event.rectNotes[0].left - measure.rectMeasure.left;
-        measure.rectMeasure.x = event.rectNotes[0].x;
-      }
     });
+
+    // Now recompute the dimensions.
+    this._refresh();
   }
 
   protected _refresh() {
@@ -157,6 +146,7 @@ export class VerovioRendererBase {
       if (eventEntry === 0) {
         measure.rectMeasure.width -= event.rectNotes[0].left - measure.rectMeasure.left;
         measure.rectMeasure.x = event.rectNotes[0].x;
+        this._scrollOffset = event.rectNotes[0].left;
       }
     });
   }
@@ -227,11 +217,11 @@ export class VerovioRendererBase {
     const rectSystem = this._measures[index].rectSystem;
     const rectNote = this._events[eventEntry].rectNotes[0]; // guaranteed to have at least one
     if (this._options?.horizontal && duration) {
-      const scrollOffset = Math.round(rectMeasure.left - 100 + Math.min(1.0, offset / duration) * rectMeasure.width);
-      if (scrollOffset !== this._currentScrollOffset) {
-        this._container?.scrollTo({ behavior: 'auto', left: scrollOffset });
-        this._currentScrollOffset = scrollOffset;
-      }
+      assertIsDefined(this._scrollOffset);
+      this._container?.scrollTo({
+        behavior: 'auto',
+        left: Math.floor(rectMeasure.left - this._scrollOffset + Math.min(1.0, offset / duration) * rectMeasure.width)
+      });
     }
 
     // Calculate cursor position.

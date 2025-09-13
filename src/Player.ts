@@ -205,9 +205,6 @@ export class Player {
     window.addEventListener('scroll', debounce((event) => {
       this._options.renderer.onEvent('scroll', event);
     }, 0), { signal: this._abortController.signal });
-    this._sheet.addEventListener('scroll', debounce((event) => {
-      this._options.renderer.onEvent('scroll', event);
-    }, 0), { signal: this._abortController.signal });
   }
 
   /**

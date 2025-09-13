@@ -1,5 +1,5 @@
 import type { ISheetRenderer } from './ISheetRenderer';
-import type { MeasureIndex, MillisecsTimestamp, PlayerOptions } from './Player';
+import { type MeasureIndex, type MillisecsTimestamp, type PlayerOptions } from './Player';
 import { VerovioRendererBase } from './VerovioRendererBase';
 import { VerovioOptionsFixed, VerovioToolkitFixed } from './VerovioTypes';
 /**
@@ -15,7 +15,7 @@ export declare class VerovioRenderer extends VerovioRendererBase implements IShe
     initialize(container: HTMLElement, musicXml: string, options: Required<PlayerOptions>): Promise<void>;
     moveTo(index: MeasureIndex, start: MillisecsTimestamp, offset: MillisecsTimestamp, duration?: MillisecsTimestamp): void;
     onResize(): void;
-    onEvent(): void;
+    onEvent(type: string): void;
     get version(): string;
     protected _redraw(container: HTMLElement, options: PlayerOptions): void;
 }

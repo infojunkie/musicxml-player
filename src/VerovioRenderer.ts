@@ -1,7 +1,7 @@
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
 import type { ISheetRenderer } from './ISheetRenderer';
-import type { MeasureIndex, MillisecsTimestamp, PlayerOptions } from './Player';
+import { PlayerState, type MeasureIndex, type MillisecsTimestamp, type PlayerOptions } from './Player';
 import { VerovioRendererBase } from './VerovioRendererBase';
 import { VerovioOptionsFixed, VerovioToolkitFixed } from './VerovioTypes';
 import { assertIsDefined } from './helpers';
@@ -75,7 +75,7 @@ export class VerovioRenderer extends VerovioRendererBase implements ISheetRender
     );
   }
 
-  onEvent(): void {
+  onEvent(type: string): void {
     this._refresh();
     this._move(
       this._currentLocation.index,
