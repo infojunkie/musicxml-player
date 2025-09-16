@@ -187,6 +187,6 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
   onEvent(): void {}
 
   get version(): string {
-    return `${pkg.name}/FetchConverter v${pkg.version}`;
+    return `${pkg.name}/MuseScoreRenderer v${pkg.version}`;
   }
 }

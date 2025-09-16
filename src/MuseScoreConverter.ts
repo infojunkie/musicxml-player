@@ -31,6 +31,6 @@ export class MuseScoreConverter
   }
 
   get version(): string {
-    return `${pkg.name}/FetchConverter v${pkg.version}`;
+    return `${pkg.name}/MuseScoreConverter v${pkg.version}`;
   }
 }
