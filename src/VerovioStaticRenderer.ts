@@ -1,7 +1,7 @@
 import { ISheetRenderer } from './ISheetRenderer';
 import { TimeMapEntryFixed } from './VerovioTypes';
 import { VerovioRendererBase } from './VerovioRendererBase';
-import type { MeasureIndex, MillisecsTimestamp, PlayerOptions } from './Player';
+import { PlayerState, type MeasureIndex, type MillisecsTimestamp, type PlayerOptions } from './Player';
 import { fetish } from './helpers';
 import pkg from '../package.json';
 

@@ -7,7 +7,7 @@ export declare class VerovioRendererBase {
     protected _options?: PlayerOptions;
     protected _container?: HTMLElement;
     protected _cursor: Cursor;
-    protected _scrollOffset?: number;
+    protected _cursorOffset?: number;
     protected _svgs: string[];
     protected _events?: (TimeMapEntryFixed & {
         measureEntry: number;
@@ -33,6 +33,7 @@ export declare class VerovioRendererBase {
         duration?: MillisecsTimestamp | undefined;
     };
     protected _currentEventEntry: number;
+    protected _currentScrollOffset?: number;
     constructor();
     protected _recalculate(container: HTMLElement, timemap: TimeMapEntryFixed[], svgs: string[], options: PlayerOptions): void;
     protected _refresh(): void;

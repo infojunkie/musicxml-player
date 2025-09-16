@@ -9,7 +9,7 @@ export class VerovioRendererBase {
   protected _options?: PlayerOptions;
   protected _container?: HTMLElement;
   protected _cursor: Cursor;
-  protected _scrollOffset?: number;
+  protected _cursorOffset?: number;
   protected _svgs: string[] = [];
   protected _events?: (TimeMapEntryFixed & {
     measureEntry: number,
@@ -35,6 +35,7 @@ export class VerovioRendererBase {
     duration?: MillisecsTimestamp | undefined,
   } = { index: 0, start: 0, offset: 0 } // Current cursor location
   protected _currentEventEntry: number = Infinity; // Currently highlighted event entry
+  protected _currentScrollOffset?: number;
 
   constructor() {
     this._cursor = new Cursor();
@@ -146,9 +147,12 @@ export class VerovioRendererBase {
       if (eventEntry === 0) {
         measure.rectMeasure.width -= event.rectNotes[0].left - measure.rectMeasure.left;
         measure.rectMeasure.x = event.rectNotes[0].x;
-        this._scrollOffset = event.rectNotes[0].left;
+        this._cursorOffset = event.rectNotes[0].left;
       }
     });
+
+    assertIsDefined(this._container);
+    this._currentScrollOffset = this._container.scrollLeft;
   }
 
   protected _move(
@@ -157,6 +161,10 @@ export class VerovioRendererBase {
     offset: MillisecsTimestamp,
     duration?: MillisecsTimestamp
   ) {
+    assertIsDefined(this._events);
+    assertIsDefined(this._container);
+    assertIsDefined(this._options);
+
     // Remember this location.
     this._currentLocation = {
       index,
@@ -167,7 +175,6 @@ export class VerovioRendererBase {
 
     // Find event entry that corresponds to current position.
     // Start searching at the incoming measure and find the subsequent event entry with matching timestamp.
-    assertIsDefined(this._events);
     const timestamp = this._measures[index].timestamp + offset;
     let eventEntry = this._measures[index].eventEntry;
     while (eventEntry < this._events.length - 1 && this._events[eventEntry + 1].tstamp <= timestamp) {
@@ -196,8 +203,6 @@ export class VerovioRendererBase {
       this._currentEventEntry = eventEntry;
 
       // Focus the score around the cursor.
-      assertIsDefined(this._container);
-      assertIsDefined(this._options);
       if (this._options.followCursor) {
         if (this._options.horizontal) {
           if (!duration) {
@@ -216,19 +221,20 @@ export class VerovioRendererBase {
     const rectMeasure = this._measures[index].rectMeasure;
     const rectSystem = this._measures[index].rectSystem;
     const rectNote = this._events[eventEntry].rectNotes[0]; // guaranteed to have at least one
-    if (this._options?.horizontal && duration) {
-      assertIsDefined(this._scrollOffset);
-      this._container?.scrollTo({
+    if (this._options.horizontal && duration) {
+      assertIsDefined(this._cursorOffset);
+      this._container.scrollTo({
         behavior: 'auto',
-        left: Math.floor(rectMeasure.left - this._scrollOffset + Math.min(1.0, offset / duration) * rectMeasure.width)
+        left: Math.floor(rectMeasure.left - this._cursorOffset + Math.min(1.0, offset / duration) * rectMeasure.width)
       });
     }
 
     // Calculate cursor position.
+    assertIsDefined(this._currentScrollOffset);
     this._cursor.moveTo(
-      duration
+      this._currentScrollOffset + (duration
         ? rectMeasure.left + Math.round(Math.min(1.0, offset / duration) * rectMeasure.width)
-        : rectNote.left,
+        : rectNote.left),
       rectSystem.top,
       rectSystem.height
     );

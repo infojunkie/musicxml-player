@@ -1,4 +1,5 @@
 import type { IMIDIConverter, MeasureTimemap } from './IMIDIConverter';
+import { PlayerOptions } from './Player';
 /**
  * Implementation of IMIDIConverter that simply fetches given MIDI file and timemap JSON file URIs.
  *
@@ -14,13 +15,9 @@ export declare class FetchConverter implements IMIDIConverter {
     protected _timemap?: MeasureTimemap;
     protected _midi?: ArrayBuffer;
     constructor(_midiOrUri: ArrayBuffer | string, _timemapOrUri?: string | MeasureTimemap | undefined);
-    initialize(musicXml: string): Promise<void>;
+    initialize(musicXml: string, options: Required<PlayerOptions>): Promise<void>;
     get midi(): ArrayBuffer;
     get timemap(): MeasureTimemap;
     get version(): string;
-    /**
-     * Parse a MusicXML score into a timemap.
-     */
-    static parseTimemap(musicXml: string): Promise<MeasureTimemap>;
 }
 //# sourceMappingURL=FetchConverter.d.ts.map

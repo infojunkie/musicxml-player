@@ -31,3 +31,8 @@ pnpmfile.js
 
 # nyc
 .nyc_output
+
+# Project-specific
+*.sf2
+*.sf3
+*.sef.json

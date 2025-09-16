@@ -78,7 +78,7 @@ async function _parseUncompressed(
   ) ?? {
     value: '(unknown)',
   };
-  console.debug(`[parseMusicXml] MusicXML version ${version.value}`);
+  console.info(`[parseMusicXml] MusicXML ${version.value}`);
   const parseResult: MusicXmlParseResult = {
     musicXml,
     queries: {},

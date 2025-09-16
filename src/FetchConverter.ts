@@ -1,10 +1,7 @@
 import type { IMIDIConverter, MeasureTimemap } from './IMIDIConverter';
-import { assertIsDefined, fetish } from './helpers';
-import SaxonJS from './saxon-js/SaxonJS3.rt';
+import { assertIsDefined, fetish, parseMusicXmlTimemap } from './helpers';
 import pkg from '../package.json';
-
-const XSL_TIMEMAP =
-  'https://raw.githubusercontent.com/infojunkie/musicxml-midi/main/build/timemap.sef.json';
+import { PlayerOptions } from './Player';
 
 /**
  * Implementation of IMIDIConverter that simply fetches given MIDI file and timemap JSON file URIs.
@@ -24,14 +21,14 @@ export class FetchConverter implements IMIDIConverter {
     protected _timemapOrUri?: MeasureTimemap | string,
   ) {}
 
-  async initialize(musicXml: string): Promise<void> {
+  async initialize(musicXml: string, options: Required<PlayerOptions>): Promise<void> {
     this._midi =
       typeof this._midiOrUri === 'string'
         ? await (await fetish(this._midiOrUri)).arrayBuffer()
         : this._midiOrUri;
     this._timemap =
       typeof this._timemapOrUri === 'undefined'
-        ? await FetchConverter.parseTimemap(musicXml)
+        ? await parseMusicXmlTimemap(musicXml, options.timemapXslUri)
         : typeof this._timemapOrUri === 'string'
           ? <MeasureTimemap>await (await fetish(this._timemapOrUri)).json()
           : this._timemapOrUri;
@@ -49,30 +46,5 @@ export class FetchConverter implements IMIDIConverter {
 
   get version(): string {
     return `${pkg.name}/FetchConverter v${pkg.version}`;
-  }
-
-  /**
-   * Parse a MusicXML score into a timemap.
-   */
-  public static async parseTimemap(
-    musicXml: string,
-  ): Promise<MeasureTimemap> {
-    try {
-      const timemap = await SaxonJS.transform(
-        {
-          stylesheetLocation: XSL_TIMEMAP,
-          sourceText: musicXml,
-          destination: 'serialized',
-          stylesheetParams: {
-            useSef: true,
-          },
-        },
-        'async',
-      );
-      return JSON.parse(timemap.principalResult);
-    } catch (error) {
-      console.warn(`[FetchConverter.parseTimemap] ${error}`);
-    }
-    return [];
   }
 }

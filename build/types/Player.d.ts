@@ -37,13 +37,19 @@ export interface PlayerOptions {
      */
     output?: WebMidi.MIDIOutput | null;
     /**
-     * Soundfond URL.
+     * URL of soundfont for local Web Audio synthesizer.
      * Optional, default: https://spessasus.github.io/SpessaSynth/soundfonts/GeneralUserGS.sf3
      */
     soundfontUri?: string;
     /**
+     * URL of MusicXML => Timemap XSL transformation.
+     * Optional, default: https://raw.githubusercontent.com/infojunkie/musicxml-midi/main/build/timemap.sef.json
+     * Note that the code expects to find the file unroll.xsl / unroll.sef.json at the same path.
+     */
+    timemapXslUri?: string;
+    /**
      * A flag to unroll the score before displaying it and playing it.
-     * Optional, default = false
+     * Optional, default: false
      */
     unroll?: boolean;
     /**
@@ -143,7 +149,6 @@ export declare class Player {
     get title(): string;
     /**
      * The duration of the score/MIDI file (ms).
-     * Precomputed in the constructor.
      */
     get duration(): number;
     /**

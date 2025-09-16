@@ -1,9 +1,9 @@
 import type { IMIDIConverter, MeasureTimemap } from './IMIDIConverter';
 import type { TimeMapEntryFixed } from './VerovioTypes';
 import { VerovioConverterBase } from './VerovioConverterBase';
-import { assertIsDefined, fetish } from './helpers';
-import { FetchConverter } from './FetchConverter';
+import { assertIsDefined, fetish, parseMusicXmlTimemap } from './helpers';
 import pkg from '../package.json';
+import { PlayerOptions } from './Player';
 
 /**
  * Implementation of IMIDIConverter that uses statically-rendered Verovio assets:
@@ -21,14 +21,14 @@ export class VerovioStaticConverter extends VerovioConverterBase implements IMID
     super();
   }
 
-  async initialize(musicXml: string) {
+  async initialize(musicXml: string, options: Required<PlayerOptions>) {
     this._midi =
       typeof this._midiOrUri === 'string'
         ? await (await fetish(this._midiOrUri)).arrayBuffer()
         : this._midiOrUri;
     this._timemap =
       typeof this._timemapOrUri === 'undefined'
-        ? await FetchConverter.parseTimemap(musicXml)
+        ? await parseMusicXmlTimemap(musicXml, options.timemapXslUri)
         : typeof this._timemapOrUri === 'string'
           ? VerovioConverterBase._parseTimemap(await (await fetish(this._timemapOrUri)).json())
           : VerovioConverterBase._parseTimemap(this._timemapOrUri);

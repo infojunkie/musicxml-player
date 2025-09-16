@@ -1,7 +1,7 @@
 import { ISheetRenderer } from './ISheetRenderer';
 import { TimeMapEntryFixed } from './VerovioTypes';
 import { VerovioRendererBase } from './VerovioRendererBase';
-import type { MeasureIndex, MillisecsTimestamp, PlayerOptions } from './Player';
+import { type MeasureIndex, type MillisecsTimestamp, type PlayerOptions } from './Player';
 /**
  * Implementation of ISheetRenderer that uses statically-rendered Verovio assets:
  * - SVG files as obtained by `verovio --xml-id-checksum -t svg /path/to/score.musicxml`

@@ -54,13 +54,19 @@ export interface PlayerOptions {
    */
   output?: WebMidi.MIDIOutput | null;
   /**
-   * Soundfond URL.
+   * URL of soundfont for local Web Audio synthesizer.
    * Optional, default: https://spessasus.github.io/SpessaSynth/soundfonts/GeneralUserGS.sf3
    */
   soundfontUri?: string;
   /**
+   * URL of MusicXML => Timemap XSL transformation.
+   * Optional, default: https://raw.githubusercontent.com/infojunkie/musicxml-midi/main/build/timemap.sef.json
+   * Note that the code expects to find the file unroll.xsl / unroll.sef.json at the same path.
+   */
+  timemapXslUri?: string;
+  /**
    * A flag to unroll the score before displaying it and playing it.
-   * Optional, default = false
+   * Optional, default: false
    */
   unroll?: boolean;
   /**
@@ -95,6 +101,7 @@ export interface PlayerOptions {
 
 const DEFAULT_PLAYER_OPTIONS = {
   soundfontUri: 'https://spessasus.github.io/SpessaSynth/soundfonts/GeneralUserGS.sf3',
+  timemapXslUri: 'https://raw.githubusercontent.com/infojunkie/musicxml-midi/main/build/timemap.sef.json',
   output: null,
   unroll: false,
   mute: false,
@@ -189,7 +196,7 @@ export class Player {
     if (this._options.output) {
       this._sequencer.connectMIDIOutput(this._options.output);
     }
-    this._sequencer.loadNewSongList([this._midi]);
+    this._sequencer.loadNewSongList([{ binary: this._midi.writeMIDI() }]);
 
     // Initialize the playback options.
     this.mute = this._options.mute;
@@ -360,7 +367,6 @@ export class Player {
 
   /**
    * The duration of the score/MIDI file (ms).
-   * Precomputed in the constructor.
    */
   get duration(): number {
     return this._duration;
