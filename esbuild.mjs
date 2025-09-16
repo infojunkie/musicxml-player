@@ -32,9 +32,9 @@ const targets = {
 const format = argv('format') ?? 'esm';
 build({
   entryPoints: ['src/index.ts'],
-  plugins: [nodeModulesPolyfillPlugin(), metaUrlPlugin({
+  plugins: [nodeModulesPolyfillPlugin(), /*metaUrlPlugin({
     emit: format === 'esm'
-  })],
+  })*/],
   bundle: true,
   minify: true,
   sourcemap: true,
