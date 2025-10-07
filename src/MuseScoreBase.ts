@@ -1,6 +1,6 @@
-import type { MeasureTimemap } from './IMIDIConverter';
+import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
+import type { MeasureTimemap } from './interfaces/IMIDIConverter';
 import { atoab, fetish } from './helpers';
-import SaxonJS from './saxon-js/SaxonJS3.rt';
 
 export type MuseScoreDownloader = (musicXml: string) => {
   pngs?: string[];
@@ -72,6 +72,7 @@ export class MuseScoreBase {
       | string
       | MuseScoreDownloader
       | ReturnType<MuseScoreDownloader>,
+    protected _xsltProcessor: IXSLTProcessor,
   ) {}
 
   protected async _extract(musicXml: string): Promise<void> {
@@ -99,25 +100,26 @@ export class MuseScoreBase {
 
     // Parse and create the timemap.
     this._timemap = [];
-    this._mpos = await SaxonJS.getResource({
+    // INFO this function is not an async function
+    this._mpos = await this._xsltProcessor.getResource({
       type: 'xml',
       encoding: 'utf8',
       text: window.atob(this._mscore.mposXML),
     });
-    (<any[]>SaxonJS.XPath.evaluate('//events/event', this._mpos)).forEach(
-      (measure, i) => {
-        const timestamp = parseInt(measure.getAttribute('position'));
-        if (i > 0) {
-          this._timemap![i - 1].duration =
-            timestamp - this._timemap![i - 1].timestamp;
-        }
-        this._timemap!.push({
-          measure: i,
-          timestamp,
-          duration: 0,
-        });
-      },
-    );
+    (<any[]>(
+      this._xsltProcessor.XPath.evaluate('//events/event', this._mpos)
+    )).forEach((measure, i) => {
+      const timestamp = parseInt(measure.getAttribute('position'));
+      if (i > 0) {
+        this._timemap![i - 1].duration =
+          timestamp - this._timemap![i - 1].timestamp;
+      }
+      this._timemap!.push({
+        measure: i,
+        timestamp,
+        duration: 0,
+      });
+    });
 
     // Compute last measure duration by getting total duration minus last measure onset.
     this._timemap.last().duration =

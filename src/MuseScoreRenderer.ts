@@ -1,4 +1,4 @@
-import type { ISheetRenderer } from './ISheetRenderer';
+import type { ISheetRenderer } from './interfaces/ISheetRenderer';
 import { MuseScoreDownloader, MuseScoreBase } from './MuseScoreBase';
 import type {
   MeasureIndex,
@@ -8,7 +8,7 @@ import type {
 } from './Player';
 import { Cursor } from './Cursor';
 import { assertIsDefined, binarySearch } from './helpers';
-import SaxonJS from './saxon-js/SaxonJS3.rt';
+import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 import pkg from '../package.json';
 
 // Constant to convert incoming coordinates in DPI into pixels.
@@ -43,8 +43,9 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
 
   constructor(
     downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>,
+    xsltProcessor: IXSLTProcessor,
   ) {
-    super(downloader);
+    super(downloader, xsltProcessor);
     this._cursor = new Cursor();
   }
 
@@ -67,7 +68,7 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
     // - Measures space positions
     // - Segments (musical events) space and time positions
     this._measures = (<any[]>(
-      SaxonJS.XPath.evaluate('//elements/element', this._mpos)
+      this._xsltProcessor.XPath.evaluate('//elements/element', this._mpos)
     )).map((element) => {
       return {
         x: parseInt(element.getAttribute('x')) / DOTS_PER_PIXEL,
@@ -77,13 +78,14 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
         page: parseInt(element.getAttribute('page')),
       };
     });
-    const spos = await SaxonJS.getResource({
+    // INFO this function is not an async function
+    const spos = await this._xsltProcessor.getResource({
       type: 'xml',
       encoding: 'utf8',
       text: window.atob(this._mscore.sposXML),
     });
     this._segments = (<any[]>(
-      SaxonJS.XPath.evaluate('//elements/element', spos)
+      this._xsltProcessor.XPath.evaluate('//elements/element', spos)
     )).map((element) => {
       return {
         x: parseInt(element.getAttribute('x')) / DOTS_PER_PIXEL,
@@ -96,7 +98,7 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
         measure: 0,
       };
     });
-    (<any[]>SaxonJS.XPath.evaluate('//events/event', spos)).forEach(
+    (<any[]>this._xsltProcessor.XPath.evaluate('//events/event', spos)).forEach(
       (segment, i) => {
         const timestamp = parseInt(segment.getAttribute('position'));
         if (i > 0) {

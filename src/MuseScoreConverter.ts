@@ -1,7 +1,8 @@
-import type { IMIDIConverter, MeasureTimemap } from './IMIDIConverter';
+import pkg from '../package.json';
+import type { IMIDIConverter, MeasureTimemap } from './interfaces/IMIDIConverter';
+import { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 import { MuseScoreDownloader, MuseScoreBase } from './MuseScoreBase';
 import { assertIsDefined } from './helpers';
-import pkg from '../package.json';
 
 /**
  * Implementation of IMIDIConverter that uses MuseScore to generate the MIDI and timemap structures.
@@ -12,8 +13,9 @@ export class MuseScoreConverter
 {
   constructor(
     downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>,
+    xsltProcessor: IXSLTProcessor,
   ) {
-    super(downloader);
+    super(downloader, xsltProcessor);
   }
 
   async initialize(musicXml: string): Promise<void> {

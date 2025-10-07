@@ -1,5 +1,6 @@
 import type { IMIDIConverter, MeasureTimemap } from './IMIDIConverter';
 import { PlayerOptions } from './Player';
+import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 /**
  * Implementation of IMIDIConverter that simply fetches given MIDI file and timemap JSON file URIs.
  *
@@ -14,7 +15,8 @@ export declare class FetchConverter implements IMIDIConverter {
     protected _timemapOrUri?: string | MeasureTimemap | undefined;
     protected _timemap?: MeasureTimemap;
     protected _midi?: ArrayBuffer;
-    constructor(_midiOrUri: ArrayBuffer | string, _timemapOrUri?: string | MeasureTimemap | undefined);
+    protected _xsltProcessor: IXSLTProcessor;
+    constructor(_midiOrUri: ArrayBuffer | string, _timemapOrUri?: string | MeasureTimemap | undefined, xsltProcessor?: IXSLTProcessor);
     initialize(musicXml: string, options: Required<PlayerOptions>): Promise<void>;
     get midi(): ArrayBuffer;
     get timemap(): MeasureTimemap;

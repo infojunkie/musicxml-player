@@ -1,4 +1,10 @@
+import pkg from '../package.json';
+import pkg_lock from '../package-lock.json';
+import type { IMIDIConverter } from './interfaces/IMIDIConverter';
+import type { ISheetRenderer } from './interfaces/ISheetRenderer';
+import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 import { BasicMIDI } from 'spessasynth_core';
+import { SaxonJSAdapter } from './adapters/SaxonJSAdapter';
 import { WorkletSynthesizer as Synthetizer, Sequencer } from 'spessasynth_lib';
 import { midiMessageTypes } from 'spessasynth_core';
 import {
@@ -9,10 +15,6 @@ import {
   fetish,
   debounce,
 } from './helpers';
-import type { IMIDIConverter } from './IMIDIConverter';
-import type { ISheetRenderer } from './ISheetRenderer';
-import pkg from '../package.json';
-import pkg_lock from '../package-lock.json';
 
 const DEBOUNCE_THROTTLE = 100;
 
@@ -99,6 +101,11 @@ export interface PlayerOptions {
    * Optional, default: true
    */
   followCursor?: boolean;
+  /**
+   * XSLT processor instance for XML processing.
+   * Optional, default: new SaxonJSAdapter()
+   */
+  xsltProcessor?: IXSLTProcessor;
 }
 
 const DEFAULT_PLAYER_OPTIONS = {
@@ -115,6 +122,7 @@ const DEFAULT_PLAYER_OPTIONS = {
   velocity: 1,
   horizontal: false,
   followCursor: true,
+  xsltProcessor: new SaxonJSAdapter(),
 };
 
 export class Player {
@@ -146,13 +154,21 @@ export class Player {
 
     // Parse the incoming MusicXML and unroll it if needed.
     try {
-      const parseResult = await parseMusicXml(options.musicXml, {
-        title: '//work/work-title/text()',
-        version: '//score-partwise/@version',
-      });
+      const parseResult = await parseMusicXml(
+        options.musicXml,
+        {
+          title: '//work/work-title/text()',
+          version: '//score-partwise/@version',
+        },
+        options.xsltProcessor,
+      );
       let musicXml = parseResult.musicXml;
       if (options.unroll) {
-        musicXml = await unrollMusicXml(musicXml, options.unrollXslUri);
+        musicXml = await unrollMusicXml(
+          musicXml,
+          options.unrollXslUri,
+          options.xsltProcessor,
+        );
       }
 
       // Create the synth element.

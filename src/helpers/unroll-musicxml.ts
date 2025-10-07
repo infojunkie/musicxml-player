@@ -1,4 +1,4 @@
-import SaxonJS from '../saxon-js/SaxonJS3.rt';
+import type { IXSLTProcessor } from '../interfaces/IXSLTProcessor';
 
 /**
  * Unroll the MusicXML score by expanding all repeats and jumps into a linear score.
@@ -6,9 +6,10 @@ import SaxonJS from '../saxon-js/SaxonJS3.rt';
 export async function unrollMusicXml(
   musicXml: string,
   unrollXslUri: string,
+  xsltProcessor: IXSLTProcessor,
 ): Promise<string> {
   try {
-    const unroll = await SaxonJS.transform(
+    const unroll = await xsltProcessor.transform(
       {
         stylesheetLocation: unrollXslUri,
         sourceText: musicXml,

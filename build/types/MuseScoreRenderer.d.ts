@@ -2,6 +2,7 @@ import type { ISheetRenderer } from './ISheetRenderer';
 import { MuseScoreDownloader, MuseScoreBase } from './MuseScoreBase';
 import type { MeasureIndex, MillisecsTimestamp, Player, PlayerOptions } from './Player';
 import { Cursor } from './Cursor';
+import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 type MuseScorePosition = {
     x: number;
     y: number;
@@ -24,7 +25,7 @@ export declare class MuseScoreRenderer extends MuseScoreBase implements ISheetRe
         duration: MillisecsTimestamp;
         measure: MeasureIndex;
     })[];
-    constructor(downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>);
+    constructor(downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>, xsltProcessor: IXSLTProcessor);
     destroy(): void;
     initialize(container: HTMLElement, musicXml: string, options: Required<PlayerOptions>): Promise<void>;
     moveTo(index: MeasureIndex, start: MillisecsTimestamp, offset: MillisecsTimestamp): void;

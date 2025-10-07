@@ -37,3 +37,6 @@ pnpmfile.js
 *.sf3
 !GeneralUserGS.sf3
 *.sef.json
+
+# Editor-specific files
+.projections.json

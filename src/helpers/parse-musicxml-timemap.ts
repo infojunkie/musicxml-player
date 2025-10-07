@@ -1,4 +1,4 @@
-import SaxonJS from '../saxon-js/SaxonJS3.rt';
+import type { IXSLTProcessor } from '../interfaces/IXSLTProcessor';
 import { MeasureTimemap } from '../IMIDIConverter';
 
 /**
@@ -7,9 +7,10 @@ import { MeasureTimemap } from '../IMIDIConverter';
 export async function parseMusicXmlTimemap(
   musicXml: string,
   timemapXslUri: string,
+  xsltProcessor: IXSLTProcessor,
 ): Promise<MeasureTimemap> {
   try {
-    const timemap = await SaxonJS.transform(
+    const timemap = await xsltProcessor.transform(
       {
         stylesheetLocation: timemapXslUri,
         sourceText: musicXml,

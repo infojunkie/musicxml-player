@@ -7,6 +7,8 @@ import type {
 } from './Player';
 import { Cursor } from './Cursor';
 import type { TimeMapEntryFixed } from './VerovioTypes';
+import { Cursor } from './Cursor';
+import { MeasureTimemapEntry } from './interfaces/IMIDIConverter';
 import { assertIsDefined } from './helpers';
 
 export class VerovioRendererBase {

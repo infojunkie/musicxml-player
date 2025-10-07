@@ -2,6 +2,7 @@ import type { IMIDIConverter, MeasureTimemap } from './IMIDIConverter';
 import type { TimeMapEntryFixed } from './VerovioTypes';
 import { VerovioConverterBase } from './VerovioConverterBase';
 import { PlayerOptions } from './Player';
+import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 /**
  * Implementation of IMIDIConverter that uses statically-rendered Verovio assets:
  * - MIDI file as obtained by `verovio --xml-id-checksum -t midi /path/to/score.musicxml`
@@ -12,7 +13,8 @@ export declare class VerovioStaticConverter extends VerovioConverterBase impleme
     protected _timemapOrUri?: string | TimeMapEntryFixed[] | undefined;
     protected _timemap?: MeasureTimemap;
     protected _midi?: ArrayBuffer;
-    constructor(_midiOrUri: ArrayBuffer | string, _timemapOrUri?: string | TimeMapEntryFixed[] | undefined);
+    protected _xsltProcessor: IXSLTProcessor;
+    constructor(_midiOrUri: ArrayBuffer | string, _timemapOrUri?: string | TimeMapEntryFixed[] | undefined, xsltProcessor?: IXSLTProcessor);
     initialize(musicXml: string, options: Required<PlayerOptions>): Promise<void>;
     get midi(): ArrayBuffer;
     get timemap(): MeasureTimemap;

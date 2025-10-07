@@ -1,4 +1,5 @@
 import type { MeasureTimemap } from './IMIDIConverter';
+import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 export type MuseScoreDownloader = (musicXml: string) => {
     pngs?: string[];
     svgs: string[];
@@ -59,11 +60,12 @@ export type MuseScoreDownloader = (musicXml: string) => {
  */
 export declare class MuseScoreBase {
     protected _downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>;
+    protected _xsltProcessor: IXSLTProcessor;
     protected _mscore?: ReturnType<MuseScoreDownloader>;
     protected _midi?: ArrayBuffer;
     protected _timemap?: MeasureTimemap;
     protected _mpos?: object;
-    constructor(_downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>);
+    constructor(_downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>, _xsltProcessor: IXSLTProcessor);
     protected _extract(musicXml: string): Promise<void>;
 }
 //# sourceMappingURL=MuseScoreBase.d.ts.map

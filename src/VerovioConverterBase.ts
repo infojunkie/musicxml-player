@@ -1,5 +1,5 @@
+import { MeasureTimemap } from './interfaces/IMIDIConverter';
 import { TimeMapEntryFixed } from './VerovioTypes';
-import { MeasureTimemap } from './IMIDIConverter';
 
 export class VerovioConverterBase {
   /**

@@ -1,9 +1,9 @@
 import createVerovioModule from 'verovio/wasm';
-import { VerovioToolkit } from 'verovio/esm';
-import type { ISheetRenderer } from './ISheetRenderer';
+import type { ISheetRenderer } from './interfaces/ISheetRenderer';
 import type { MeasureIndex, MillisecsTimestamp, PlayerOptions } from './Player';
-import { VerovioRendererBase } from './VerovioRendererBase';
 import { VerovioOptionsFixed, VerovioToolkitFixed } from './VerovioTypes';
+import { VerovioRendererBase } from './VerovioRendererBase';
+import { VerovioToolkit } from 'verovio/esm';
 import { assertIsDefined } from './helpers';
 
 /**
