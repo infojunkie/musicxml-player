@@ -1,7 +1,5 @@
 import type { IMIDIConverter, MeasureTimemap } from './interfaces/IMIDIConverter';
-import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 import { PlayerOptions } from './Player';
-import { SaxonJSAdapter } from './adapters/SaxonJSAdapter';
 import { assertIsDefined, fetish, parseMusicXmlTimemap } from './helpers';
 
 /**
@@ -16,15 +14,12 @@ export class MmaConverter implements IMIDIConverter {
   protected _midi?: ArrayBuffer;
   protected _timemap?: MeasureTimemap;
   protected _uri;
-  protected _xsltProcessor: IXSLTProcessor;
 
   constructor(
     uri: string,
     protected _parameters?: Record<string, string>,
-    xsltProcessor?: IXSLTProcessor,
   ) {
     this._uri = uri.endsWith('/') ? uri.slice(0, -1) : uri;
-    this._xsltProcessor = xsltProcessor || new SaxonJSAdapter();
   }
 
   async initialize(
@@ -50,7 +45,7 @@ export class MmaConverter implements IMIDIConverter {
     this._timemap = await parseMusicXmlTimemap(
       musicXml,
       options.timemapXslUri,
-      this._xsltProcessor,
+      options.xsltProcessor,
     );
   }
 

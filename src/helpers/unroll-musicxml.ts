@@ -10,17 +10,11 @@ export async function unrollMusicXml(
 ): Promise<string> {
   try {
     const unroll = await xsltProcessor.transform(
-      {
-        stylesheetLocation: unrollXslUri,
-        sourceText: musicXml,
-        destination: 'serialized',
-        stylesheetParams: {
-          renumberMeasures: true,
-        },
-      },
-      'async',
+      unrollXslUri,
+      musicXml,
+      { renumberMeasures: true },
     );
-    return unroll.principalResult;
+    return unroll;
   } catch (error) {
     console.error(`[unrollMusicXml] ${error}`);
   }

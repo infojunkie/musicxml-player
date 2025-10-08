@@ -1,5 +1,6 @@
 /* @vitest-environment jsdom */
 import { parseMusicXml } from './parse-musicxml';
+import { SaxonJSProcessor } from '../SaxonJSProcessor';
 
 describe('parseMusicXml', () => {
   it('correctly parses uncompressed MusicXML', async () => {
@@ -44,6 +45,7 @@ describe('parseMusicXml', () => {
       </part>
     </score-partwise>
     `.trim(),
+        new SaxonJSProcessor,
       ),
     ).resolves.toBeDefined();
   });
@@ -54,6 +56,8 @@ describe('parseMusicXml', () => {
         `
 THIS IS NOT MUSICXML
     `.trim(),
+
+        new SaxonJSProcessor,
       ),
     ).rejects.toBeDefined();
   });
@@ -83,6 +87,7 @@ THIS IS NOT MUSICXML
         </body>
         </html>
       `.trim(),
+        new SaxonJSProcessor,
       ),
     ).rejects.toBeDefined();
   });

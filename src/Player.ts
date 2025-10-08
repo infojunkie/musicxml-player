@@ -4,7 +4,7 @@ import type { IMIDIConverter } from './interfaces/IMIDIConverter';
 import type { ISheetRenderer } from './interfaces/ISheetRenderer';
 import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 import { BasicMIDI } from 'spessasynth_core';
-import { SaxonJSAdapter } from './adapters/SaxonJSAdapter';
+import { SaxonJSProcessor } from './SaxonJSProcessor';
 import { WorkletSynthesizer as Synthetizer, Sequencer } from 'spessasynth_lib';
 import { midiMessageTypes } from 'spessasynth_core';
 import {
@@ -153,6 +153,9 @@ export class Player {
     container.appendChild(sheet);
 
     // Parse the incoming MusicXML and unroll it if needed.
+    // INFO  xsltProcessor is orchestred from here
+    // parseMusicXml and unrollMusicXml expect an instance of IXSLTProcessor
+    // converter and renderer expect an instance of IXSLTProcessor
     try {
       const parseResult = await parseMusicXml(
         options.musicXml,
@@ -186,7 +189,9 @@ export class Player {
 
       // Initialize the various objects.
       // It's too bad that constructors cannot be made async because that would simplify the code.
+      // INFO Keep looking into this
       await options.converter.initialize(musicXml, options);
+      // INFO This renders the music xml into the given HTMLElement
       await options.renderer.initialize(sheet, musicXml, options);
 
       // Finally, create the player instance.

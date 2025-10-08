@@ -6,38 +6,21 @@ export interface IXSLTProcessor {
   /**
    * Parse XML text into a document object
    */
-  getResource(options: {
-    type: 'xml';
-    encoding: string;
+  parse(options: {
     text: string;
   }): Promise<any>;
 
   /**
    * Evaluate XPath expression on a document
    */
-  XPath: {
-    evaluate(xpath: string, document: any): any;
-  };
+  query(xpath: string, document: any): any;
 
   /**
    * Transform XML using XSLT
    */
   transform(
-    options: {
-      stylesheetLocation: string;
-      sourceText: string;
-      destination:
-        | 'serialized'
-        | 'replaceBody'
-        | 'appendToBody'
-        | 'prependToBody'
-        | 'raw'
-        | 'document'
-        | 'application'
-        | 'file'
-        | 'stdout';
-      stylesheetParams?: Record<string, any>;
-    },
-    mode: 'sync' | 'async',
-  ): Promise<{ principalResult: string }>;
+    stylesheet: string, // is this the same as stylesheetLocation ?
+    source: string,
+    params: Record<string, any>,
+  ): Promise<string>;
 }

@@ -1,9 +1,7 @@
 import pkg from '../package.json';
 import type { IMIDIConverter, MeasureTimemap } from './interfaces/IMIDIConverter';
-import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 import type { TimeMapEntryFixed } from './VerovioTypes';
 import { PlayerOptions } from './Player';
-import { SaxonJSAdapter } from './adapters/SaxonJSAdapter';
 import { VerovioConverterBase } from './VerovioConverterBase';
 import { assertIsDefined, fetish, parseMusicXmlTimemap } from './helpers';
 
@@ -18,17 +16,15 @@ export class VerovioStaticConverter
 {
   protected _timemap?: MeasureTimemap;
   protected _midi?: ArrayBuffer;
-  protected _xsltProcessor: IXSLTProcessor;
 
   constructor(
     protected _midiOrUri: ArrayBuffer | string,
     protected _timemapOrUri?: TimeMapEntryFixed[] | string,
-    xsltProcessor?: IXSLTProcessor,
   ) {
     super();
-    this._xsltProcessor = xsltProcessor || new SaxonJSAdapter();
   }
 
+  // INFO _xsltProcessor is required in parseMusicXmlTimemap
   async initialize(musicXml: string, options: Required<PlayerOptions>) {
     this._midi =
       typeof this._midiOrUri === 'string'
@@ -37,10 +33,10 @@ export class VerovioStaticConverter
     this._timemap =
       typeof this._timemapOrUri === 'undefined'
         ? await parseMusicXmlTimemap(
-            musicXml,
-            options.timemapXslUri,
-            this._xsltProcessor,
-          )
+          musicXml,
+          options.timemapXslUri,
+          options.xsltProcessor,
+        )
         : typeof this._timemapOrUri === 'string'
           ? VerovioConverterBase._parseTimemap(
               await (await fetish(this._timemapOrUri)).json(),

@@ -66,14 +66,19 @@ export class MuseScoreBase {
   protected _midi?: ArrayBuffer;
   protected _timemap?: MeasureTimemap;
   protected _mpos?: object;
+  // FIXME shoudl this parent class know about this property?
+  // Inject IXSLTProcessor via the MuseScoreBase constructor and assign this._xsltProcessor there. 
+  // Then remove the duplicated assignments from MuseScoreConverter.initialize and MuseScoreRenderer.initialize. 
+  // This centralizes ownership where it’s used, guarantees it’s set before _extract, and simplifies subclasses.
+  protected _xsltProcessor!: IXSLTProcessor;
 
   constructor(
     protected _downloader:
       | string
       | MuseScoreDownloader
       | ReturnType<MuseScoreDownloader>,
-    protected _xsltProcessor: IXSLTProcessor,
-  ) {}
+  ) {
+  }
 
   protected async _extract(musicXml: string): Promise<void> {
     // Retrieve MuseScore metadata.
@@ -100,26 +105,25 @@ export class MuseScoreBase {
 
     // Parse and create the timemap.
     this._timemap = [];
+    // INFO _xsltProcessor is required by this parse function
     // INFO this function is not an async function
-    this._mpos = await this._xsltProcessor.getResource({
-      type: 'xml',
-      encoding: 'utf8',
+    this._mpos = await this._xsltProcessor.parse({
       text: window.atob(this._mscore.mposXML),
     });
-    (<any[]>(
-      this._xsltProcessor.XPath.evaluate('//events/event', this._mpos)
-    )).forEach((measure, i) => {
-      const timestamp = parseInt(measure.getAttribute('position'));
-      if (i > 0) {
-        this._timemap![i - 1].duration =
-          timestamp - this._timemap![i - 1].timestamp;
-      }
-      this._timemap!.push({
-        measure: i,
-        timestamp,
-        duration: 0,
-      });
-    });
+    (<any[]>this._xsltProcessor.query('//events/event', this._mpos)).forEach(
+      (measure, i) => {
+        const timestamp = parseInt(measure.getAttribute('position'));
+        if (i > 0) {
+          this._timemap![i - 1].duration =
+            timestamp - this._timemap![i - 1].timestamp;
+        }
+        this._timemap!.push({
+          measure: i,
+          timestamp,
+          duration: 0,
+        });
+      },
+    );
 
     // Compute last measure duration by getting total duration minus last measure onset.
     this._timemap.last().duration =

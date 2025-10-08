@@ -1,6 +1,5 @@
 import { unzip } from 'unzipit';
 import type { IXSLTProcessor } from '../interfaces/IXSLTProcessor';
-import { SaxonJSAdapter } from '../adapters/SaxonJSAdapter';
 
 export type MusicXmlParseQuery = Record<string, string>;
 export type MusicXmlParseResult = {
@@ -10,43 +9,40 @@ export type MusicXmlParseResult = {
 
 export async function parseMusicXml(
   musicXmlOrBuffer: ArrayBuffer | string,
+  xsltProcessor: IXSLTProcessor,
   queries?: MusicXmlParseQuery,
-  xsltProcessor?: IXSLTProcessor,
 ): Promise<MusicXmlParseResult> {
   if (musicXmlOrBuffer instanceof ArrayBuffer) {
     // Decode the buffer and try it as an uncompressed document.
     const musicXml = new TextDecoder().decode(musicXmlOrBuffer);
     try {
-      return await _parseUncompressed(musicXml, queries, xsltProcessor);
+      return await _parseUncompressed(musicXml, xsltProcessor, queries,);
     } catch {
       // Do nothing: just keep going.
     }
 
     // Try the buffer as a compressed document.
-    return await _parseCompressed(musicXmlOrBuffer, queries, xsltProcessor);
+    return await _parseCompressed(xsltProcessor, musicXmlOrBuffer, queries,);
   } else {
     // A string is assumed to be an uncompressed document.
-    return await _parseUncompressed(musicXmlOrBuffer, queries, xsltProcessor);
+    return await _parseUncompressed(musicXmlOrBuffer, xsltProcessor, queries,);
   }
 }
 
 async function _parseCompressed(
+  xsltProcessor: IXSLTProcessor,
   mxml: ArrayBuffer,
   queries?: MusicXmlParseQuery,
-  xsltProcessor?: IXSLTProcessor,
 ): Promise<MusicXmlParseResult> {
-  const saxon = xsltProcessor || new SaxonJSAdapter();
   const { entries } = await unzip(mxml);
 
   // Extract rootfile from META-INF/container.xml.
   const decoder = new TextDecoder();
   const containerBuf = await entries['META-INF/container.xml'].arrayBuffer();
-  const doc = await saxon.getResource({
-    type: 'xml',
-    encoding: 'utf8',
+  const doc = await xsltProcessor.parse({
     text: decoder.decode(containerBuf),
   });
-  const rootFile = saxon.XPath.evaluate('//rootfile[1]/@full-path', doc);
+  const rootFile = xsltProcessor.query('//rootfile[1]/@full-path', doc);
   if (!rootFile) {
     throw new Error(
       '[parseMusicXml] Invalid compressed MusicXML file does not contain rootfile/@full-path.',
@@ -55,21 +51,18 @@ async function _parseCompressed(
 
   // Parse root document as MusicXML.
   const rootBuf = await entries[rootFile.value].arrayBuffer();
-  return _parseUncompressed(decoder.decode(rootBuf), queries, xsltProcessor);
+  return _parseUncompressed(decoder.decode(rootBuf), xsltProcessor, queries,);
 }
 
 async function _parseUncompressed(
   musicXml: string,
+  xsltProcessor: IXSLTProcessor,
   queries?: MusicXmlParseQuery,
-  xsltProcessor?: IXSLTProcessor,
 ): Promise<MusicXmlParseResult> {
-  const saxon = xsltProcessor || new SaxonJSAdapter();
-  const doc = await saxon.getResource({
-    type: 'xml',
-    encoding: 'utf8',
+  const doc = await xsltProcessor.parse({
     text: musicXml,
   });
-  const valid = saxon.XPath.evaluate(
+  const valid = xsltProcessor.query(
     'boolean(//score-partwise | //score-timewise)',
     doc,
   );
@@ -78,7 +71,7 @@ async function _parseUncompressed(
       '[parseMusicXml] Invalid MusicXML file contains neither score-partwise nor score-timewise.',
     );
   }
-  const version = saxon.XPath.evaluate(
+  const version = xsltProcessor.query(
     '//score-partwise/@version | //score-timewise/@version',
     doc,
   ) ?? {
@@ -92,7 +85,7 @@ async function _parseUncompressed(
   if (queries)
     for (const k in queries) {
       try {
-        const result = saxon.XPath.evaluate(queries[k], doc);
+        const result = xsltProcessor.query(queries[k], doc);
         if (result) {
           parseResult.queries[k] = {
             query: queries[k],

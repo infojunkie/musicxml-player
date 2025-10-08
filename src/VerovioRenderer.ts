@@ -13,8 +13,7 @@ import { assertIsDefined } from './helpers';
  */
 export class VerovioRenderer
   extends VerovioRendererBase
-  implements ISheetRenderer
-{
+  implements ISheetRenderer {
   protected _vrv?: VerovioToolkitFixed;
   protected _vrvOptions: VerovioOptionsFixed = {};
 
@@ -83,7 +82,8 @@ export class VerovioRenderer
     );
   }
 
-  onEvent(): void {
+  // WARNING unused parameter type
+  onEvent(type: string): void {
     this._refresh();
     this._move(
       this._currentLocation.index,

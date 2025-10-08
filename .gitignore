@@ -37,6 +37,8 @@ pnpmfile.js
 *.sf3
 !GeneralUserGS.sf3
 *.sef.json
+# Don't ignore the sef.json files in the fixtures directory
+!src/__tests__/fixtures/*.sef.json
 
 # Editor-specific files
 .projections.json

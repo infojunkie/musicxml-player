@@ -1,9 +1,7 @@
 import createVerovioModule from 'verovio/wasm';
 import type { IMIDIConverter, MeasureTimemap } from './interfaces/IMIDIConverter';
-import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 import type { PlayerOptions } from './Player';
 import type { VerovioOptionsFixed, VerovioToolkitFixed } from './VerovioTypes';
-import { SaxonJSAdapter } from './adapters/SaxonJSAdapter';
 import { VerovioConverterBase } from './VerovioConverterBase';
 import {
   assertIsDefined,
@@ -28,9 +26,8 @@ export class VerovioConverter
   protected _timemap: MeasureTimemap = [];
   protected _midi?: ArrayBuffer;
   protected _options: VerovioOptionsFixed;
-  protected _xsltProcessor: IXSLTProcessor;
 
-  constructor(options?: VerovioOptionsFixed, xsltProcessor?: IXSLTProcessor) {
+  constructor(options?: VerovioOptionsFixed) {
     super();
     this._options = {
       ...{
@@ -39,7 +36,6 @@ export class VerovioConverter
       },
       ...options,
     };
-    this._xsltProcessor = xsltProcessor || new SaxonJSAdapter();
   }
 
   async initialize(
@@ -59,7 +55,7 @@ export class VerovioConverter
     this._timemap = await parseMusicXmlTimemap(
       musicXml,
       options.timemapXslUri,
-      this._xsltProcessor,
+      options.xsltProcessor,
     );
     // this._timemap = VerovioConverterBase._parseTimemap(
     //   this._vrv.renderToTimemap({ includeMeasures: true, includeRests: true })
@@ -70,7 +66,7 @@ export class VerovioConverter
     const unrolled = await unrollMusicXml(
       musicXml,
       options.unrollXslUri,
-      this._xsltProcessor,
+      options.xsltProcessor,
     );
     this._vrv.loadData(unrolled);
     this._midi = atoab(this._vrv.renderToMIDI());
