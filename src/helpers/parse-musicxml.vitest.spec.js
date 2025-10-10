@@ -1,3 +1,4 @@
+/* @vitest-environment jsdom */
 import { parseMusicXml } from './parse-musicxml.ts';
 
 describe('parseMusicXml (vitest)', () => {
