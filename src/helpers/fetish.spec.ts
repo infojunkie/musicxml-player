@@ -15,7 +15,7 @@ function jsonOk() {
   return Promise.resolve(mockResponse);
 }
 
-describe('fetish (vitest)', () => {
+describe('fetish', () => {
   let fetchMock;
 
   beforeEach(() => {

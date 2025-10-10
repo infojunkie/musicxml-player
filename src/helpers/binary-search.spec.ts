@@ -1,6 +1,6 @@
 import { binarySearch } from './binary-search';
 
-describe('binary-search (vitest)', () => {
+describe('binary-search', () => {
   it('should correctly search', () => {
     // https://stackoverflow.com/a/29018745/209184
     const ar = [

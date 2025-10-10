@@ -1,7 +1,7 @@
 /* @vitest-environment jsdom */
 import { parseMusicXml } from './parse-musicxml';
 
-describe('parseMusicXml (vitest)', () => {
+describe('parseMusicXml', () => {
   it('correctly parses uncompressed MusicXML', async () => {
     await expect(
       parseMusicXml(
