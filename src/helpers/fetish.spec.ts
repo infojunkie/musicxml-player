@@ -1,4 +1,4 @@
-import { fetish } from './fetish.ts';
+import { fetish } from './fetish';
 
 function jsonNotOk() {
   const mockResponse = new Response('not found', {

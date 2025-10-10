@@ -1,5 +1,5 @@
 /* @vitest-environment jsdom */
-import { parseMusicXml } from './parse-musicxml.ts';
+import { parseMusicXml } from './parse-musicxml';
 
 describe('parseMusicXml (vitest)', () => {
   it('correctly parses uncompressed MusicXML', async () => {

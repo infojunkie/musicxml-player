@@ -29,7 +29,8 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "types": [
-      "webmidi"
+      "webmidi",
+      "vitest/globals"
     ],
     // Output settings.
     "sourceMap": true,
