@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { parseMusicXml } from './parse-musicxml.ts';
 
 describe('parseMusicXml (vitest)', () => {

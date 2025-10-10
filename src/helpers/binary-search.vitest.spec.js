@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { binarySearch } from './binary-search.ts';
 
 describe('binary-search (vitest)', () => {
