@@ -7,25 +7,33 @@ setupMocks();
 
 describe('SaxonJS regression', () => {
   const xsltProcessor = new SaxonJSProcessor();
+  const baiao_miranda_MusicXml = '../fixtures/baiao-miranda.musicxml';
+
+  // no types are sometimes better than this nonsense
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    // A spy so we can inspect console errors and assert against their messages
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
+  });
 
   describe('parseMusicxmlTimemap', () => {
-    const baiao_miranda_MusicXml = '../fixtures/test_simple_music_XML.xml';
-    // TODO document this
-    const timemap_uri = new URL('../fixtures/test-timemap.xsl', import.meta.url).toString();
+    // Use simple XSL fixture for timemap tests
+    const timemap_uri = new URL('test-timemap.xsl', import.meta.url).toString();
 
     describe('parseMusicXmlTimemap', () => {
-      it('should maintain SaxonJS compatibility with fixtures data', async () => {
-        const realTimemapJson = await serve('../fixtures/baiao-miranda.timemap.json');
-        // Mock the call to return the real-world expected timemap JSON
-        const transformSpy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue({
-          principalResult: realTimemapJson,
-        });
+      it('should maintain SaxonJS compatibility', async () => {
+        // Load XML content from filesystem for a realistic input
         const xmlText = await serve(baiao_miranda_MusicXml);
 
         const result = await parseMusicXmlTimemap(xmlText, timemap_uri, xsltProcessor);
 
-        // Load the expected timemap from fixtures for regression comparison
-        const expectedTimemap = JSON.parse(await serve('../fixtures/baiao-miranda.timemap.json'));
+        // Assert console.error was not called
+        expect(consoleErrorSpy).not.toHaveBeenCalled();
 
         // Test the timemap data structure contract
         expect(Array.isArray(result)).toBe(true);
@@ -38,31 +46,9 @@ describe('SaxonJS regression', () => {
         expect(typeof firstMeasure.measure).toBe('number');
         expect(typeof firstMeasure.timestamp).toBe('number');
         expect(typeof firstMeasure.duration).toBe('number');
-
-        // Regression check: Verify the structure matches the expected format from the author's data
-        expect(result.length).toBe(expectedTimemap.length);
-        result.forEach((measure, index) => {
-          expect(measure).toHaveProperty('measure', expectedTimemap[index].measure);
-          expect(measure).toHaveProperty('timestamp');
-          expect(measure).toHaveProperty('duration');
-        });
-
-        // Cleanup
-        transformSpy.mockRestore();
       });
-
+      // @see https://www.saxonica.com/saxonjs/documentation3/index.html#!api/transform/error-handling
       describe('handles malformed XML', () => {
-        // TODO Documentation
-        let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
-
-        beforeEach(() => {
-          consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
-        });
-
-        afterEach(() => {
-          consoleErrorSpy.mockRestore();
-        });
-
         it('should return empty array when XSL file is missing', async () => {
           const missing_xls = "nonexistent.xsl";
 
@@ -70,13 +56,15 @@ describe('SaxonJS regression', () => {
 
           expect(result).toEqual([]);
           expect(consoleErrorSpy)
-            .toHaveBeenCalledWith("[parseMusicXmlTimemap] XError:Get failure http://localhost:3000/nonexistent.xsl; code:FODC0002");
+            .toHaveBeenCalledWith(
+              // stupid regex to hide my local path
+              expect.stringMatching(/^\[parseMusicXmlTimemap\] Error: ENOENT: no such file or directory, open '.*nonexistent\.xsl'$/)
+            );
         });
-
         it('should return empty array when timemapXslUri produces invalid JSON', async () => {
-          const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue({ principalResult: 'not-json' } as any);
+          const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue({ principalResult: 'not-json' });
 
-          const result = await parseMusicXmlTimemap(baiao_miranda_MusicXml, timemap_uri, xsltProcessor);
+          const result = await parseMusicXmlTimemap(baiao_miranda_MusicXml, "not-json", xsltProcessor);
 
           expect(result).toEqual([]);
           expect(consoleErrorSpy)
@@ -100,7 +88,7 @@ describe('SaxonJS regression', () => {
           const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue({ principalResult: '<invalid-xml>' } as any);
           const invalidXml = '<invalid-xml>';
 
-          const result = await parseMusicXmlTimemap(invalidXml, 'test-timemap.xsl', xsltProcessor);
+          const result = await parseMusicXmlTimemap(invalidXml, 'invalid-xml.xsl', xsltProcessor);
 
           expect(result).toEqual([]);
           expect(consoleErrorSpy)
@@ -112,36 +100,17 @@ describe('SaxonJS regression', () => {
   });
 
   describe('unrollMusicxml', () => {
-    // Silently ignore console errors from SaxonJS when the internals catch an exception
-    let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
-    let unhandledHandler: (reason: unknown) => void;
-
-    beforeAll(() => {
-      consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
-      unhandledHandler = () => { };
-      process.on('unhandledRejection', unhandledHandler);
-    });
-
-    afterAll(() => {
-      process.off('unhandledRejection', unhandledHandler);
-      consoleErrorSpy.mockRestore();
-    });
-
-
     describe('unrollMusicXml', () => {
-      const baiao_miranda_MusicXml = '../fixtures/baiao-miranda.musicxml';
-      it('should maintain SaxonJS compatibility with fixtures data', async () => {
-        // Prefer local unroll XSL/SEF via mocks; fall back to stubbed result
-        // TODO use real world unroll XSL
-        const unroll_uri = new URL('../fixtures/test-unroll.xsl', import.meta.url).href;
+      it('should maintain SaxonJS compatibility', async () => {
+        const unroll_uri = new URL('unroll.sef.json', import.meta.url).href;
 
         // Load XML content from filesystem for a realistic input
         const xmlText = await serve(baiao_miranda_MusicXml);
-        // Stub transform to produce a minimally changed XML that remains valid
-        const transformSpy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue({
-          principalResult: xmlText.replace('<score-partwise', '<score-partwise '),
-        });
+
         const result = await unrollMusicXml(xmlText, unroll_uri, xsltProcessor);
+
+        // Assert console.error was not called
+        expect(consoleErrorSpy).not.toHaveBeenCalled();
 
         // Test the unrolled MusicXML data structure contract
         expect(typeof result).toBe('string');
@@ -157,10 +126,10 @@ describe('SaxonJS regression', () => {
         // Verify it's still valid MusicXML structure (basic regex)
         expect(result).toMatch(/<score-partwise[\s\S]*<\/score-partwise>/);
 
-        transformSpy.mockRestore();
+        // transformSpy.mockRestore();
       });
-
-      describe('gracefully handles malformed XML', () => {
+      // @see https://www.saxonica.com/saxonjs/documentation3/index.html#!api/transform/error-handling
+      describe('handles malformed XML', () => {
         // force this spy type to avoid a type error.
         let spy: any;
         beforeEach(() => {
@@ -190,5 +159,4 @@ describe('SaxonJS regression', () => {
     });
   });
 });
-
 

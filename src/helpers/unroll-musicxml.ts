@@ -11,6 +11,8 @@ export async function unrollMusicXml(
   try {
     const unroll = await xsltProcessor.transform(
       {
+        // WARNING the network dependency is here
+        // we should consider using stylesheetText instead
         stylesheetLocation: unrollXslUri,
         sourceText: musicXml,
         destination: 'serialized',
