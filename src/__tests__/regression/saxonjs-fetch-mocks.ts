@@ -30,6 +30,13 @@ export function setupMocks(): void {
     body: await serve('../fixtures/test-timemap.xsl'),
   }));
 
+  // Serve an XSL that intentionally produces invalid JSON for parsing failure tests
+  fetchMock.mockIf((req) => req.url.endsWith('invalid-timemap.xsl'), async () => ({
+    status: 200,
+    headers: { 'Content-Type': 'application/xml' },
+    body: await serve('../fixtures/invalid-timemap.xsl'),
+  }));
+
   fetchMock.mockIf((req) => req.url.endsWith('unroll.xsl'), async () => ({
     status: 200,
     headers: { 'Content-Type': 'application/xml' },
@@ -43,6 +50,13 @@ export function setupMocks(): void {
     body: await serve('../fixtures/test-unroll.xsl'),
   }));
 
+  // Serve an existing but invalid JSON file to trigger JSON.parse failures
+  fetchMock.mockIf((req) => req.url.endsWith('invalid-sef.json'), async () => ({
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+    body: await serve('../fixtures/invalid-sef.json'),
+  }));
+
   // @ts-ignore
   fetchMock.mockReject(() => new Error('Unexpected fetch'));
 
@@ -54,6 +68,9 @@ export function setupMocks(): void {
     }
     if (href.endsWith('test-timemap.xsl')) {
       return { text: await serve('../fixtures/test-timemap.xsl'), mediaType: 'application/xml' };
+    }
+    if (href.endsWith('invalid-timemap.xsl')) {
+      return { text: await serve('../fixtures/invalid-timemap.xsl'), mediaType: 'application/xml' };
     }
     if (href.endsWith('unroll.xsl')) {
       return { text: await serve('../fixtures/test-unroll.xsl'), mediaType: 'application/xml' };

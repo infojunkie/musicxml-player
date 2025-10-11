@@ -52,19 +52,14 @@ describe('SaxonJS regression', () => {
       });
 
       describe('handles malformed XML', () => {
-        // Silently ignore console errors from SaxonJS when the internals catch an exception
+        // TODO Documentation
         let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
-        let unhandledHandler: (reason: unknown) => void;
 
-        beforeAll(() => {
-          consoleErrorSpy = vi.spyOn(console, 'error')
-          // .mockImplementation(() => { });
-          // unhandledHandler = () => { };
-          // process.on('unhandledRejection', unhandledHandler);
+        beforeEach(() => {
+          consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
         });
 
-        afterAll(() => {
-          // process.off('unhandledRejection', unhandledHandler);
+        afterEach(() => {
           consoleErrorSpy.mockRestore();
         });
 
@@ -74,34 +69,43 @@ describe('SaxonJS regression', () => {
           const result = await parseMusicXmlTimemap(baiao_miranda_MusicXml, missing_xls, xsltProcessor);
 
           expect(result).toEqual([]);
-          expect(consoleErrorSpy).toHaveBeenCalled();
+          expect(consoleErrorSpy)
+            .toHaveBeenCalledWith("[parseMusicXmlTimemap] XError:Get failure http://localhost:3000/nonexistent.xsl; code:FODC0002");
         });
 
-        it('should return empty array when timemapXslUri parsing fails', async () => {
-          const invalid_json = 'not json'
+        it('should return empty array when timemapXslUri produces invalid JSON', async () => {
+          const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue({ principalResult: 'not-json' } as any);
 
-          const result = await parseMusicXmlTimemap(baiao_miranda_MusicXml, invalid_json, xsltProcessor);
+          const result = await parseMusicXmlTimemap(baiao_miranda_MusicXml, timemap_uri, xsltProcessor);
 
           expect(result).toEqual([]);
-          expect(consoleErrorSpy).toHaveBeenCalled();
+          expect(consoleErrorSpy)
+            .toHaveBeenCalledWith("[parseMusicXmlTimemap] SyntaxError: Unexpected token 'o', \"not-json\" is not valid JSON");
+          spy.mockRestore();
         });
 
         it('should handle empty input gracefully', async () => {
+          const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue({ principalResult: '' } as any);
           const invalidXml = '';
 
           const result = await parseMusicXmlTimemap(invalidXml, 'test-timemap.xsl', xsltProcessor);
 
           expect(result).toEqual([]);
-          expect(consoleErrorSpy).toHaveBeenCalled();
+          expect(consoleErrorSpy)
+            .toHaveBeenCalledWith("[parseMusicXmlTimemap] SyntaxError: Unexpected end of JSON input");
+          spy.mockRestore();
         });
 
         it('should handle malformed XML gracefully', async () => {
+          const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue({ principalResult: '<invalid-xml>' } as any);
           const invalidXml = '<invalid-xml>';
 
           const result = await parseMusicXmlTimemap(invalidXml, 'test-timemap.xsl', xsltProcessor);
 
           expect(result).toEqual([]);
-          expect(consoleErrorSpy).toHaveBeenCalled();
+          expect(consoleErrorSpy)
+            .toHaveBeenCalledWith("[parseMusicXmlTimemap] SyntaxError: Unexpected token '<', \"<invalid-xml>\" is not valid JSON");
+          spy.mockRestore();
         });
       });
     });
