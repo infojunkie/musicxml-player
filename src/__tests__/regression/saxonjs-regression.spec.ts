@@ -1,9 +1,9 @@
-import { parseMusicXmlTimemap } from '../../helpers/parse-musicxml-timemap';
-import { unrollMusicXml } from '../../helpers/unroll-musicxml';
 import { SaxonJSProcessor } from '../../SaxonJSProcessor';
-import { setupMocks, serve } from './saxonjs-fetch-mocks';
+import { parseMusicXmlTimemap } from '../../helpers/parse-musicxml-timemap';
+import { setupSaxonMocks, serve } from './saxonjs-fetch-mocks';
+import { unrollMusicXml } from '../../helpers/unroll-musicxml';
 
-setupMocks();
+setupSaxonMocks();
 
 describe('SaxonJS regression', () => {
   const xsltProcessor = new SaxonJSProcessor();
