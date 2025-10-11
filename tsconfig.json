@@ -3,14 +3,12 @@
     // Transpilation settings.
     "module": "es2020",
     "target": "es6",
-
     // Module settings.
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "isolatedModules": false,
     "moduleResolution": "node",
     "resolveJsonModule": false,
-
     // Strictness and quality settings.
     "alwaysStrict": true,
     "exactOptionalPropertyTypes": true,
@@ -23,22 +21,31 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "strict": true,
-
     // Type-checking settings.
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "types": ["webmidi"],
-
+    "types": [
+      "webmidi",
+      "vitest/globals"
+    ],
     // Output settings.
     "sourceMap": true,
-
     // Type declaration settings.
     "declaration": true,
     "declarationDir": "./build/types",
     "declarationMap": true,
-    "rootDir": "./src",
+    "rootDir": "./src"
   },
-  "include": ["./src/**/*.ts"],
-  "exclude": ["./src/**/*.spec.ts", "./src/**/*.test.ts", "./src/helpers/spessasynth_processor.ts"],
+  "include": [
+    "./src/**/*.ts"
+  ],
+  "exclude": [
+    "./src/**/*.spec.{ts,js}",
+    "./src/**/*.test.{ts,js}",
+    "./src/helpers/spessasynth_processor.ts"
+  ]
 }
