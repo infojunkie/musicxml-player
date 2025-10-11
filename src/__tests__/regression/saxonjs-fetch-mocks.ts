@@ -43,6 +43,7 @@ export function setupMocks(): void {
     body: await serve('../fixtures/test-unroll.xsl'),
   }));
 
+  // @ts-ignore
   fetchMock.mockReject(() => new Error('Unexpected fetch'));
 
   const originalGetResource = SaxonJS.getResource;
