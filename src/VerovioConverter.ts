@@ -3,7 +3,7 @@ import type { IMIDIConverter, MeasureTimemap } from './interfaces/IMIDIConverter
 import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 import type { PlayerOptions } from './Player';
 import type { VerovioOptionsFixed, VerovioToolkitFixed } from './VerovioTypes';
-import { SaxonJSAdapter } from './adapters/SaxonJSAdapter';
+import { SaxonJSProcessor } from './SaxonJSProcessor';
 import { VerovioConverterBase } from './VerovioConverterBase';
 import { VerovioToolkit } from 'verovio/esm';
 import { assertIsDefined, atoab, unrollMusicXml, parseMusicXmlTimemap } from './helpers';
@@ -29,7 +29,7 @@ export class VerovioConverter extends VerovioConverterBase implements IMIDIConve
       },
       ...options,
     };
-    this._xsltProcessor = xsltProcessor || new SaxonJSAdapter();
+    this._xsltProcessor = xsltProcessor || new SaxonJSProcessor();
   }
 
   async initialize(musicXml: string, options: Required<PlayerOptions>): Promise<void> {

@@ -4,7 +4,7 @@ import type { IMIDIConverter } from './interfaces/IMIDIConverter';
 import type { ISheetRenderer } from './interfaces/ISheetRenderer';
 import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 import { BasicMIDI } from 'spessasynth_core';
-import { SaxonJSAdapter } from './adapters/SaxonJSAdapter';
+import { SaxonJSProcessor } from './SaxonJSProcessor';
 import { WorkletSynthesizer as Synthetizer, Sequencer } from 'spessasynth_lib';
 import { midiMessageTypes } from 'spessasynth_core';
 import {
@@ -119,7 +119,7 @@ const DEFAULT_PLAYER_OPTIONS = {
   velocity: 1,
   horizontal: false,
   followCursor: true,
-  xsltProcessor: new SaxonJSAdapter(),
+  xsltProcessor: new SaxonJSProcessor(),
 }
 
 export class Player {

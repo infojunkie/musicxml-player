@@ -1,7 +1,7 @@
 import type { IMIDIConverter, MeasureTimemap } from './interfaces/IMIDIConverter';
 import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 import { PlayerOptions } from './Player';
-import { SaxonJSAdapter } from './adapters/SaxonJSAdapter';
+import { SaxonJSProcessor } from './SaxonJSProcessor';
 import { assertIsDefined, fetish, parseMusicXmlTimemap } from './helpers';
 
 /**
@@ -24,7 +24,7 @@ export class MmaConverter implements IMIDIConverter {
     xsltProcessor?: IXSLTProcessor,
   ) {
     this._uri = uri.endsWith('/') ? uri.slice(0, -1) : uri;
-    this._xsltProcessor = xsltProcessor || new SaxonJSAdapter();
+    this._xsltProcessor = xsltProcessor || new SaxonJSProcessor();
   }
 
   async initialize(musicXml: string, options: Required<PlayerOptions>): Promise<void> {

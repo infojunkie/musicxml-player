@@ -1,16 +1,16 @@
 import chai, { expect } from '@esm-bundle/chai';
 import chaiAsPromised from '@esm-bundle/chai-as-promised';
 import { parseMusicXmlTimemap } from '../../helpers/parse-musicxml-timemap';
-import { SaxonJSAdapter } from '../../adapters/SaxonJSAdapter';
+import { SaxonJSProcessor } from '../../SaxonJSProcessor';
 
 chai.use(chaiAsPromised);
 
 // Regression test suite to detect changes in SaxonJS API behavior
 describe('parse-musicxml-timemap regression', () => {
-  const xsltProcessor = new SaxonJSAdapter();
+  const xsltProcessor = new SaxonJSProcessor();
   // Use real-world data from the author's repository
-  const baiao_miranda_MusicXml = '../demo/data/baiao-miranda.musicxml';
-  const baiao_miranda_Timemap = '../demo/data/baiao-miranda.timemap.json';
+  const baiao_miranda_MusicXml = '../../demo/data/baiao-miranda.musicxml';
+  const baiao_miranda_Timemap = '../../demo/data/baiao-miranda.timemap.json';
 
   describe('parseMusicXmlTimemap', () => {
 

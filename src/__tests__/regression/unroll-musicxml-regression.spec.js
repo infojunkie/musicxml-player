@@ -1,15 +1,15 @@
 import chai, { expect } from '@esm-bundle/chai';
 import chaiAsPromised from '@esm-bundle/chai-as-promised';
 import { unrollMusicXml } from '../../helpers/unroll-musicxml';
-import { SaxonJSAdapter } from '../../adapters/SaxonJSAdapter';
+import { SaxonJSProcessor } from '../../SaxonJSProcessor';
 
 chai.use(chaiAsPromised);
 
 // Regression test suite to detect changes in SaxonJS API behavior
 describe('unroll-musicxml regression', () => {
-  const xsltProcessor = new SaxonJSAdapter();
+  const xsltProcessor = new SaxonJSProcessor();
   // Use real-world data from the author's repository
-  const baiao_miranda_MusicXml = '../demo/data/baiao-miranda.musicxml';
+  const baiao_miranda_MusicXml = '../../demo/data/baiao-miranda.musicxml';
   
   describe('unrollMusicXml', () => {
 

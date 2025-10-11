@@ -1,6 +1,6 @@
 import { unzip } from 'unzipit';
 import type { IXSLTProcessor } from '../interfaces/IXSLTProcessor';
-import { SaxonJSAdapter } from '../adapters/SaxonJSAdapter';
+import { SaxonJSProcessor } from '../SaxonJSProcessor';
 
 export type MusicXmlParseQuery = Record<string, string>;
 export type MusicXmlParseResult = {
@@ -35,7 +35,7 @@ async function _parseCompressed(
   queries?: MusicXmlParseQuery,
   xsltProcessor?: IXSLTProcessor,
 ): Promise<MusicXmlParseResult> {
-  const saxon = xsltProcessor || new SaxonJSAdapter();
+  const saxon = xsltProcessor || new SaxonJSProcessor();
   const { entries } = await unzip(mxml);
 
   // Extract rootfile from META-INF/container.xml.
@@ -63,7 +63,7 @@ async function _parseUncompressed(
   queries?: MusicXmlParseQuery,
   xsltProcessor?: IXSLTProcessor,
 ): Promise<MusicXmlParseResult> {
-  const saxon = xsltProcessor || new SaxonJSAdapter();
+  const saxon = xsltProcessor || new SaxonJSProcessor();
   const doc = await saxon.getResource({
     type: 'xml',
     encoding: 'utf8',

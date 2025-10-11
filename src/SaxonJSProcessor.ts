@@ -1,10 +1,10 @@
-import SaxonJS from '../saxon-js/SaxonJS3.rt';
-import type { IXSLTProcessor } from '../interfaces/IXSLTProcessor';
+import SaxonJS from './saxon-js/SaxonJS3.rt';
+import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 
 /**
  * Concrete implementation of IXSLTProcessor using the actual SaxonJS library
  */
-export class SaxonJSAdapter implements IXSLTProcessor {
+export class SaxonJSProcessor implements IXSLTProcessor {
   async getResource(options: {
     type: 'xml';
     encoding: string;
@@ -30,3 +30,5 @@ export class SaxonJSAdapter implements IXSLTProcessor {
     return await SaxonJS.transform(options, mode);
   }
 }
+
+
