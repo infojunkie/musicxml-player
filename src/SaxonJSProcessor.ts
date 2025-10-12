@@ -25,6 +25,11 @@ export class SaxonJSProcessor implements IXSLTProcessor {
       destination: 'serialized' | 'replaceBody' | 'appendToBody' | 'prependToBody' | 'raw' | 'document' | 'application' | 'file' | 'stdout';
       stylesheetParams?: Record<string, any>;
     },
+    // WARNING
+    // type mismatch between SaxonJS3.rt.d.ts and SaxonJSProcessor.ts
+    // do we want execution or mode ?
+    // cf: src/saxon-js/SaxonJS3.rt.d.ts line 166
+    // cf: src/__tests__/regression/saxonjs-fetch-mocks.ts line 25
     mode: 'sync' | 'async'
   ): Promise<{ principalResult: string }> {
     return await SaxonJS.transform(options, mode);

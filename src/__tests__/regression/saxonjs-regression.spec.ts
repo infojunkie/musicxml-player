@@ -32,7 +32,7 @@ describe('SaxonJS regression', () => {
 
         const result = await parseMusicXmlTimemap(xmlText, timemap_uri, xsltProcessor);
 
-        // Assert console.error was not called
+        // Catch console.error ahead of time so we know why the rest fails.
         expect(consoleErrorSpy).not.toHaveBeenCalled();
 
         // Test the timemap data structure contract

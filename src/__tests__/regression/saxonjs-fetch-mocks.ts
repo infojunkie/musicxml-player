@@ -1,6 +1,7 @@
 import SaxonJS from '../../saxon-js/SaxonJS3.rt';
 import { fileURLToPath } from 'url';
 import { readFile } from 'fs/promises';
+import type { TransformationOptions } from '../../saxon-js/SaxonJS3.rt'
 
 /**
  * Read a test fixture relative to this module and return its UTF-8 text.
@@ -21,8 +22,13 @@ export const serve = async (relative_url: string): Promise<string> => {
  */
 export function setupSaxonMocks(): void {
 
+  // WARNING
+  // Cannot use the actual type definition from SaxonJS3.rt.d.ts because of mismatched signatures
+  // do we want execution or mode ?
+  // cf: src/saxon-js/SaxonJS3.rt.d.ts line 166
+  // cf: src/SaxonJSProcessor.ts line 29
   const originalTransform = SaxonJS.transform as unknown as (
-    options: any,
+    options: TransformationOptions,
     mode?: 'sync' | 'async'
   ) => Promise<any> | any;
 
@@ -31,47 +37,64 @@ export function setupSaxonMocks(): void {
    * @param url absolute URL to the SEF (e.g., 'http://localhost:3000/src/__tests__/fixtures/unroll.sef.json')
    * @returns SEF JSON text if recognized, otherwise null
    */
-  const resolveSefFixtureText = async (url: string): Promise<string | null> => {
-    const filename = url.split('/').pop() || '';
-    if (!filename) return null;
+  const serveFixture = async (url: string): Promise<string> => {
+    const filename = url.slice(url.lastIndexOf('/') + 1);
+
+    if (!filename) {
+      throw new Error(`serveFixture: could not extract a filename from ${url}`);
+    };
+
+    // The developer has the responsibility to ensure the fixture exists
     return serve('../fixtures/' + filename.toLowerCase());
   };
 
   /**
    * Intercept SaxonJS.transform to:
    * - Return a minimal JSON directly when 'test-timemap.xsl' is requested
-   * - Inject SEF JSON via `stylesheetText`, set base URI, and preload text resources
+   * - Inject SEF JSON via `stylesheetText`, set base URI, and preload text resources.
    * @param options original SaxonJS.transform options; we may replace `stylesheetLocation` with `stylesheetText`
    * @param mode 'sync' | 'async' execution mode passed through unchanged
    */
   SaxonJS.transform = (async (options: any, mode?: 'sync' | 'async') => {
-    const loc: string | undefined = options?.stylesheetLocation;
-    if (typeof loc === 'string') {
-      // Short-circuit simple test XSL by returning a minimal, valid JSON timemap
-      if (/test-timemap\.xsl$/i.test(loc)) {
-        const principalResult = '[{"measure":1,"timestamp":0,"duration":1000}]';
-        return { principalResult };
-      }
-      const text = await resolveSefFixtureText(loc);
-      if (text) {
-        // Base URI used by SaxonJS to resolve relative resources in the stylesheet
-        const base = loc.slice(0, loc.lastIndexOf('/') + 1);
-        // Additional text resources made available to `unparsed-text()` calls
-        const textResourcePool: Record<string, string> = {};
-        // Preload sibling resource used by timemap flows via unparsed-text('unroll.sef.json')
-        textResourcePool[`${base}unroll.sef.json`] = await serve('../fixtures/unroll.sef.json');
-        textResourcePool['unroll.sef.json'] = textResourcePool[`${base}unroll.sef.json`];
-        const patched = { ...options, stylesheetText: text };
-        delete (patched as any).stylesheetLocation;
-        (patched as any).stylesheetBaseURI = base;
-        (patched as any).textResourcePool = {
-          ...(options?.textResourcePool || {}),
-          ...textResourcePool,
-        };
-        return originalTransform(patched, mode);
-      }
+    const stylesheet_location: string | undefined = options?.stylesheetLocation;
+    // return with the default implementation
+    // as no stylesheet location was requested
+    if (typeof stylesheet_location !== "string") {
+      return originalTransform(options, mode);
     }
-    return originalTransform(options, mode);
+
+    // Short-circuit simple test XSL by returning a minimal JSON timemap.
+    if (/test-timemap\.xsl$/i.test(stylesheet_location)) {
+      const principalResult = await serveFixture('test-timemap.json')
+      return { principalResult };
+    }
+
+    const stylesheet_text = await serveFixture(stylesheet_location);
+
+    // basepath is used by SaxonJS to resolve relative resources in the stylesheet
+    const basepath = stylesheet_location.slice(0, stylesheet_location.lastIndexOf('/') + 1);
+
+    // Additional text resources made available to `unparsed-text()` calls
+    const textResourcePool: Record<string, string> = {};
+    // Preload the 'unroll.sef.json' text so Saxon can resolve both:
+    // - absolute URI: `${basepath}unroll.sef.json`
+    // - relative name: 'unroll.sef.json'
+    const preloadedUnrollName = 'unroll.sef.json';
+    const preloadedUnrollUrl = `${basepath}${preloadedUnrollName}`;
+    const preloadedUnrollText = await serveFixture(preloadedUnrollName) as string;
+    textResourcePool[preloadedUnrollUrl] = preloadedUnrollText;
+    textResourcePool[preloadedUnrollName] = preloadedUnrollText;
+
+
+
+    const patched = { ...options, stylesheetText: stylesheet_text };
+    delete (patched as any).stylesheetLocation;
+    (patched as any).stylesheetBaseURI = basepath;
+    (patched as any).textResourcePool = {
+      ...(options?.textResourcePool || {}),
+      ...textResourcePool,
+    };
+    return originalTransform(patched, mode);
   }) as any;
 }
 
