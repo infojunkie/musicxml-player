@@ -1,7 +1,7 @@
 import SaxonJS from '../../saxon-js/SaxonJS3.rt';
+import type { TransformationOptions } from '../../saxon-js/SaxonJS3.rt'
 import { fileURLToPath } from 'url';
 import { readFile } from 'fs/promises';
-import type { TransformationOptions } from '../../saxon-js/SaxonJS3.rt'
 
 /**
  * Read a test fixture relative to this module and return its UTF-8 text.
@@ -9,13 +9,13 @@ import type { TransformationOptions } from '../../saxon-js/SaxonJS3.rt'
  * @param relative_url relative URL (from this file) to a fixture, e.g. '../fixtures/unroll.sef.json'
  * @returns file contents as UTF-8 string
  */
-export const serve = async (relative_url: string): Promise<string> => {
+export async function serve(relative_url: string): Promise<string> {
   const url = new URL(relative_url, import.meta.url);
   return readFile(fileURLToPath(url), 'utf8');
 };
 
 /**
- * Install SaxonJS test-time overrides:
+ * SaxonJS test-time overrides:
  * - Inline SEF packages via `stylesheetText` to avoid network fetches
  * - Provide a tiny JSON for `test-timemap.xsl` to keep the contract stable
  * - Seed `textResourcePool` and `stylesheetBaseURI` so `unparsed-text()` sibling lookups resolve
@@ -34,10 +34,10 @@ export function setupSaxonMocks(): void {
 
   /**
    * Map a SEF URL to the corresponding local fixture content.
-   * @param url absolute URL to the SEF (e.g., 'http://localhost:3000/src/__tests__/fixtures/unroll.sef.json')
+   * @param url absolute URL or filename of a SEF (e.g., 'http://localhost:3000/src/__tests__/fixtures/unroll.sef.json' or 'unroll.sef.json')
    * @returns SEF JSON text if recognized, otherwise null
    */
-  const serveFixture = async (url: string): Promise<string> => {
+  async function serveFixture(url: string): Promise<string> {
     const filename = url.slice(url.lastIndexOf('/') + 1);
 
     if (!filename) {
@@ -63,37 +63,31 @@ export function setupSaxonMocks(): void {
       return originalTransform(options, mode);
     }
 
-    // Short-circuit simple test XSL by returning a minimal JSON timemap.
+    // Short-circuit simple timemap by returning a minimal JSON timemap we own.
     if (/test-timemap\.xsl$/i.test(stylesheet_location)) {
       const principalResult = await serveFixture('test-timemap.json')
       return { principalResult };
     }
 
-    const stylesheet_text = await serveFixture(stylesheet_location);
+    // Serve the requested stylesheet fixture
+    const stylesheetText = await serveFixture(stylesheet_location);
 
-    // basepath is used by SaxonJS to resolve relative resources in the stylesheet
-    const basepath = stylesheet_location.slice(0, stylesheet_location.lastIndexOf('/') + 1);
-
-    // Additional text resources made available to `unparsed-text()` calls
-    const textResourcePool: Record<string, string> = {};
-    // Preload the 'unroll.sef.json' text so Saxon can resolve both:
-    // - absolute URI: `${basepath}unroll.sef.json`
-    // - relative name: 'unroll.sef.json'
-    const preloadedUnrollName = 'unroll.sef.json';
-    const preloadedUnrollUrl = `${basepath}${preloadedUnrollName}`;
-    const preloadedUnrollText = await serveFixture(preloadedUnrollName) as string;
-    textResourcePool[preloadedUnrollUrl] = preloadedUnrollText;
-    textResourcePool[preloadedUnrollName] = preloadedUnrollText;
-
-
-
-    const patched = { ...options, stylesheetText: stylesheet_text };
-    delete (patched as any).stylesheetLocation;
-    (patched as any).stylesheetBaseURI = basepath;
-    (patched as any).textResourcePool = {
-      ...(options?.textResourcePool || {}),
-      ...textResourcePool,
+    // @see https://www.saxonica.com/saxonjs/documentation3/index.html#!api/transform
+    // paragraph 'Additional resources'
+    // property 'textResourcePool'
+    // Preloads the text of unroll.sef.json into SaxonJS’s textResourcePool so we have no network I/O.
+    const textResourcePool: Record<string, string> = {
+      // the key can be anything as long as it is unique
+      unroll: await serveFixture('unroll.sef.json'),
     };
+
+    const patched = {
+      ...options,
+      stylesheetText,
+      textResourcePool
+    };
+    // remove any stylesheetLocation entry so we can force SaxonJS to use what we provide in textResourcePool
+    delete (patched as any).stylesheetLocation;
     return originalTransform(patched, mode);
   }) as any;
 }
