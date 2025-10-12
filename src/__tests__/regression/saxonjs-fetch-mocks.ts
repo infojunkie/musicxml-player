@@ -9,9 +9,25 @@ import { readFile } from 'fs/promises';
  * @param relative_url relative URL (from this file) to a fixture, e.g. '../fixtures/unroll.sef.json'
  * @returns file contents as UTF-8 string
  */
-export async function serve(relative_url: string): Promise<string> {
+async function serve(relative_url: string): Promise<string> {
   const url = new URL(relative_url, import.meta.url);
   return readFile(fileURLToPath(url), 'utf8');
+};
+
+/**
+ * Map a SEF URL to the corresponding local fixture content.
+ * @param url absolute URL or filename of a SEF (e.g., 'http://localhost:3000/src/__tests__/fixtures/unroll.sef.json' or 'unroll.sef.json')
+ * @returns SEF JSON text if recognized, otherwise null
+ */
+export async function serveFixture(url: string): Promise<string> {
+  const filename = url.slice(url.lastIndexOf('/') + 1);
+
+  if (!filename) {
+    throw new Error(`serveFixture: could not extract a filename from ${url}`);
+  };
+
+  // The developer has the responsibility to ensure the fixture exists
+  return serve('../fixtures/' + filename.toLowerCase());
 };
 
 /**
@@ -32,21 +48,6 @@ export function setupSaxonMocks(): void {
     mode?: 'sync' | 'async'
   ) => Promise<any> | any;
 
-  /**
-   * Map a SEF URL to the corresponding local fixture content.
-   * @param url absolute URL or filename of a SEF (e.g., 'http://localhost:3000/src/__tests__/fixtures/unroll.sef.json' or 'unroll.sef.json')
-   * @returns SEF JSON text if recognized, otherwise null
-   */
-  async function serveFixture(url: string): Promise<string> {
-    const filename = url.slice(url.lastIndexOf('/') + 1);
-
-    if (!filename) {
-      throw new Error(`serveFixture: could not extract a filename from ${url}`);
-    };
-
-    // The developer has the responsibility to ensure the fixture exists
-    return serve('../fixtures/' + filename.toLowerCase());
-  };
 
   /**
    * Intercept SaxonJS.transform to:
