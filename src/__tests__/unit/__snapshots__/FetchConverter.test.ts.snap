@@ -1,0 +1,38 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FetchConverter > initializes with URIs (fetches midi and timemap JSON) 1`] = `
+{
+  "midiByteLength": 4,
+  "midiData": [
+    0,
+    1,
+    2,
+    3,
+  ],
+  "timemap": [
+    {
+      "duration": 1000,
+      "measure": 0,
+      "timestamp": 0,
+    },
+  ],
+  "timemapLength": 1,
+  "version": "@music-i18n/musicxml-player/FetchConverter v1.2.7",
+}
+`;
+
+exports[`FetchConverter > initializes with provided buffers (no fetch) and computes timemap via XSLT when timemap missing 1`] = `
+{
+  "midiByteLength": 4,
+  "midiData": [
+    0,
+    1,
+    2,
+    3,
+  ],
+  "timemap": [],
+  "timemapLength": 0,
+  "transformCalled": 0,
+  "version": "@music-i18n/musicxml-player/FetchConverter v1.2.7",
+}
+`;

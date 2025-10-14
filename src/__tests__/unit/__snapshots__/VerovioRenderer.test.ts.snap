@@ -1,0 +1,10 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`VerovioRenderer > snapshots renderer initialization and DOM structure 1`] = `
+{
+  "containerHTML": "<div id="page-0" class="sheet-page"><svg width="100%" viewBox="0 0 100 100"><g class="system" id="system1"><g id="m1" class="measure"></g></g></svg></div><div class="player-cursor"></div>",
+  "hasVerovioInstance": true,
+  "pageCount": 1,
+  "version": "verovio vX.Y.Z",
+}
+`;

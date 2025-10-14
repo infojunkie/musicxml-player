@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`OpenSheetMusicDisplayRenderer > snapshots OSMD renderer initialization and properties 1`] = `
+{
+  "containerHTML": "",
+  "hasOSMDInstance": true,
+  "version": "opensheetmusicdisplay vX.Y.Z",
+}
+`;

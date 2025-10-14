@@ -16,16 +16,16 @@ export async function parseMusicXml(
     // Decode the buffer and try it as an uncompressed document.
     const musicXml = new TextDecoder().decode(musicXmlOrBuffer);
     try {
-      return await _parseUncompressed(musicXml, xsltProcessor, queries,);
+      return await _parseUncompressed(musicXml, xsltProcessor, queries);
     } catch {
       // Do nothing: just keep going.
     }
 
     // Try the buffer as a compressed document.
-    return await _parseCompressed(xsltProcessor, musicXmlOrBuffer, queries,);
+    return await _parseCompressed(xsltProcessor, musicXmlOrBuffer, queries);
   } else {
     // A string is assumed to be an uncompressed document.
-    return await _parseUncompressed(musicXmlOrBuffer, xsltProcessor, queries,);
+    return await _parseUncompressed(musicXmlOrBuffer, xsltProcessor, queries);
   }
 }
 
@@ -51,7 +51,7 @@ async function _parseCompressed(
 
   // Parse root document as MusicXML.
   const rootBuf = await entries[rootFile.value].arrayBuffer();
-  return _parseUncompressed(decoder.decode(rootBuf), xsltProcessor, queries,);
+  return _parseUncompressed(decoder.decode(rootBuf), xsltProcessor, queries);
 }
 
 async function _parseUncompressed(

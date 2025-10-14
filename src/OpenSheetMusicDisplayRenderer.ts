@@ -1,5 +1,5 @@
 import { assertIsDefined } from './helpers';
-import type { ISheetRenderer } from './ISheetRenderer';
+import type { ISheetRenderer } from './interfaces/ISheetRenderer';
 import type {
   MeasureIndex,
   MillisecsTimestamp,

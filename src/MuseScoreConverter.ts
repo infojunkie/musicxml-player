@@ -3,18 +3,19 @@ import type { IMIDIConverter, MeasureTimemap } from './interfaces/IMIDIConverter
 import { MuseScoreDownloader, MuseScoreBase } from './MuseScoreBase';
 import { assertIsDefined } from './helpers';
 import type { PlayerOptions } from './Player';
+import { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 
 /**
  * Implementation of IMIDIConverter that uses MuseScore to generate the MIDI and timemap structures.
  */
 export class MuseScoreConverter
   extends MuseScoreBase
-  implements IMIDIConverter
-{
+  implements IMIDIConverter {
   constructor(
     downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>,
+    xsltProcessor: IXSLTProcessor,
   ) {
-    super(downloader);
+    super(downloader, xsltProcessor);
   }
 
   // INFO _xsltProcessor is _NOT_ required in as we don't make any call to parseMusicXmlTimemap

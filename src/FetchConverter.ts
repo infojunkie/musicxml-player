@@ -2,6 +2,7 @@ import pkg from '../package.json';
 import type { IMIDIConverter, MeasureTimemap } from './interfaces/IMIDIConverter';
 import { PlayerOptions } from './Player';
 import { assertIsDefined, fetish, parseMusicXmlTimemap } from './helpers';
+import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 
 /**
  * Implementation of IMIDIConverter that simply fetches given MIDI file and timemap JSON file URIs.
@@ -15,11 +16,15 @@ import { assertIsDefined, fetish, parseMusicXmlTimemap } from './helpers';
 export class FetchConverter implements IMIDIConverter {
   protected _timemap?: MeasureTimemap;
   protected _midi?: ArrayBuffer;
+  protected _xsltProcessor: IXSLTProcessor;
 
   constructor(
     protected _midiOrUri: ArrayBuffer | string,
+    protected xsltProcessor: IXSLTProcessor,
     protected _timemapOrUri?: MeasureTimemap | string,
-  ) { }
+  ) {
+    this._xsltProcessor = xsltProcessor;
+  }
 
   async initialize(
     musicXml: string,
@@ -32,10 +37,10 @@ export class FetchConverter implements IMIDIConverter {
     this._timemap =
       typeof this._timemapOrUri === 'undefined'
         ? await parseMusicXmlTimemap(
-            musicXml,
-            options.timemapXslUri,
-            this._xsltProcessor,
-          )
+          musicXml,
+          options.timemapXslUri,
+          this._xsltProcessor,
+        )
         : typeof this._timemapOrUri === 'string'
           ? <MeasureTimemap>await (await fetish(this._timemapOrUri)).json()
           : this._timemapOrUri;

@@ -122,8 +122,8 @@ const DEFAULT_PLAYER_OPTIONS = {
   velocity: 1,
   horizontal: false,
   followCursor: true,
-  xsltProcessor: new SaxonJSAdapter(),
-};
+  xsltProcessor: new SaxonJSProcessor(),
+}
 
 export class Player {
   /**
@@ -159,11 +159,11 @@ export class Player {
     try {
       const parseResult = await parseMusicXml(
         options.musicXml,
+        options.xsltProcessor,
         {
           title: '//work/work-title/text()',
           version: '//score-partwise/@version',
         },
-        options.xsltProcessor,
       );
       let musicXml = parseResult.musicXml;
       if (options.unroll) {
@@ -327,8 +327,16 @@ export class Player {
       // Update the cursors and listeners.
       const entry =
         this._options.converter.timemap[
-          index >= 0 ? index : Math.max(0, -index - 2)
+        index >= 0 ? index : Math.max(0, -index - 2)
         ];
+
+      // Guard against undefined entry
+      if (!entry) {
+        requestAnimationFrame(synchronizeMidi);
+        // FIXME Should we return or raise an error?
+        return;
+      }
+
       this._options.renderer.moveTo(
         entry.measure,
         entry.timestamp,

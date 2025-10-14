@@ -1,7 +1,5 @@
 import pkg from '../package.json';
 import { ISheetRenderer } from './interfaces/ISheetRenderer';
-// WARNING unused import PlayerState
-import { PlayerState, type MeasureIndex, type MillisecsTimestamp, type PlayerOptions } from './Player';
 import { TimeMapEntryFixed } from './VerovioTypes';
 import { VerovioRendererBase } from './VerovioRendererBase';
 import {
@@ -18,8 +16,7 @@ import { fetish } from './helpers';
  */
 export class VerovioStaticRenderer
   extends VerovioRendererBase
-  implements ISheetRenderer
-{
+  implements ISheetRenderer {
   constructor(
     protected _svgOrUris: Array<ArrayBuffer | string>,
     protected _eventsOrUri: TimeMapEntryFixed[] | string,

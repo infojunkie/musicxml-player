@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`VerovioStaticRenderer > snapshots static renderer initialization and DOM structure 1`] = `
+{
+  "containerHTML": "<div id="page-0" class="sheet-page">
+      <svg width="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <g class="system" id="system1">
+          <g id="m1" class="measure">
+            <rect x="10" y="10" width="80" height="20" fill="none" stroke="black"></rect>
+          </g>
+        </g>
+      </svg>
+    </div><div class="player-cursor" style="transform: translate(0px,0px); height: 0px;"></div>",
+  "measureCount": 1,
+  "pageCount": 1,
+  "systemCount": 1,
+  "version": "@music-i18n/musicxml-player/VerovioStaticRenderer v1.2.7",
+}
+`;

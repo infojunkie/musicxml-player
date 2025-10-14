@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MuseScoreRenderer > snapshots renderer initialization and DOM structure 1`] = `
+{
+  "containerHTML": "<div id="page-0"><svg width="800" height="600"></svg></div><div class="player-cursor"></div>",
+  "pageCount": 1,
+  "version": "@music-i18n/musicxml-player/MuseScoreRenderer v1.2.7",
+}
+`;

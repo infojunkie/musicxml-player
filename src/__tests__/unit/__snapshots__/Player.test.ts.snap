@@ -1,0 +1,52 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Player > Player instance methods > snapshots > snapshots player after playback operations 1`] = `
+{
+  "position": 0,
+  "rendererCalls": [
+    [
+      1,
+      1000,
+      500,
+    ],
+    [
+      0,
+      0,
+      0,
+    ],
+  ],
+  "state": 2,
+}
+`;
+
+exports[`Player > Player instance methods > snapshots > snapshots player creation and basic properties 1`] = `
+{
+  "duration": 1000,
+  "musicXml": "<?xml version="1.0" encoding="UTF-8"?>
+<score-partwise version="3.1">
+  <part-list>
+    <score-part id="P1"><part-name>Music</part-name></score-part>
+  </part-list>
+  <part id="P1">
+    <measure number="1">
+      <attributes>
+        <divisions>1</divisions>
+        <key><fifths>0</fifths></key>
+        <time><beats>4</beats><beat-type>4</beat-type></time>
+        <clef><sign>G</sign><line>2</line></clef>
+      </attributes>
+      <note><pitch><step>C</step><octave>4</octave></pitch><duration>1</duration><type>quarter</type></note>
+    </measure>
+  </part>
+</score-partwise>",
+  "position": 999,
+  "state": 0,
+  "title": "Test Title",
+  "version": {
+    "converter": "MockConverter v1.0.0",
+    "player": "@music-i18n/musicxml-player v1.2.7",
+    "renderer": "MockRenderer v1.0.0",
+    "sequencer": "spessasynth_lib v4.0.12",
+  },
+}
+`;

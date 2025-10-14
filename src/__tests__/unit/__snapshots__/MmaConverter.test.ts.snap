@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MmaConverter > posts to API, receives MIDI, computes timemap via XSLT 1`] = `
+{
+  "apiVersion": {
+    "name": "musicxml-midi",
+    "version": "1.0.0",
+  },
+  "midiByteLength": 4,
+  "midiData": [
+    0,
+    1,
+    2,
+    3,
+  ],
+  "timemap": [
+    {
+      "duration": 1000,
+      "measure": 0,
+      "timestamp": 0,
+    },
+  ],
+  "timemapLength": 1,
+  "transformCalled": 1,
+  "version": "musicxml-midi v1.0.0",
+}
+`;

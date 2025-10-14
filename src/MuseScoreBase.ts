@@ -67,8 +67,8 @@ export class MuseScoreBase {
   protected _timemap?: MeasureTimemap;
   protected _mpos?: object;
   // FIXME shoudl this parent class know about this property?
-  // Inject IXSLTProcessor via the MuseScoreBase constructor and assign this._xsltProcessor there. 
-  // Then remove the duplicated assignments from MuseScoreConverter.initialize and MuseScoreRenderer.initialize. 
+  // Inject IXSLTProcessor via the MuseScoreBase constructor and assign this._xsltProcessor there.
+  // Then remove the duplicated assignments from MuseScoreConverter.initialize and MuseScoreRenderer.initialize.
   // This centralizes ownership where it’s used, guarantees it’s set before _extract, and simplifies subclasses.
   protected _xsltProcessor!: IXSLTProcessor;
 
@@ -77,7 +77,9 @@ export class MuseScoreBase {
       | string
       | MuseScoreDownloader
       | ReturnType<MuseScoreDownloader>,
+    xsltProcessor: IXSLTProcessor,
   ) {
+    this._xsltProcessor = xsltProcessor;
   }
 
   protected async _extract(musicXml: string): Promise<void> {
@@ -126,6 +128,7 @@ export class MuseScoreBase {
     );
 
     // Compute last measure duration by getting total duration minus last measure onset.
+    // WARNING this is a polyfill added by opensheetmusicdisplay
     this._timemap.last().duration =
       this._mscore.metadata.duration * 1000 - this._timemap.last().timestamp;
   }

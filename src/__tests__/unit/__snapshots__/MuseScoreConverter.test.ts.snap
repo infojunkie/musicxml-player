@@ -1,0 +1,86 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MuseScoreConverter > snapshots converter initialization and properties 1`] = `
+{
+  "_downloader": [Function],
+  "_midi": ArrayBuffer [
+    0,
+    1,
+    2,
+    3,
+  ],
+  "_mpos": {
+    "__doc": "<xml/>",
+  },
+  "_mscore": {
+    "devinfo": {
+      "version": "4.0.0",
+    },
+    "metadata": {
+      "duration": 1,
+    },
+    "midi": "AAECAw==",
+    "mposXML": "PHhtbC8+",
+    "sposXML": "PHhtbC8+",
+    "svgs": [
+      "PHN2Zz48L3N2Zz4=",
+    ],
+  },
+  "_timemap": [
+    {
+      "duration": 1000,
+      "measure": 0,
+      "timestamp": 0,
+    },
+    {
+      "duration": 0,
+      "measure": 1,
+      "timestamp": 1000,
+    },
+  ],
+  "_xsltProcessor": {
+    "parse": [MockFunction spy] {
+      "calls": [
+        [
+          {
+            "text": "<xml/>",
+          },
+        ],
+      ],
+      "results": [
+        {
+          "type": "return",
+          "value": Promise {},
+        },
+      ],
+    },
+    "query": [MockFunction spy] {
+      "calls": [
+        [
+          "//events/event",
+          {
+            "__doc": "<xml/>",
+          },
+        ],
+      ],
+      "results": [
+        {
+          "type": "return",
+          "value": [
+            {
+              "getAttribute": [Function],
+            },
+            {
+              "getAttribute": [Function],
+            },
+          ],
+        },
+      ],
+    },
+    "transform": [MockFunction spy],
+  },
+  "midi": Any<ArrayBuffer>,
+  "timemap": Any<Array>,
+  "version": Any<String>,
+}
+`;

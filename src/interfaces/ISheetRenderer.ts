@@ -3,7 +3,7 @@ import type {
   MillisecsTimestamp,
   PlayerOptions,
   Player,
-} from './Player';
+} from '../Player';
 
 /**
  * Interface to a MusicXML sheet renderer.

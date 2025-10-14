@@ -9,6 +9,7 @@ import type {
 import { Cursor } from './Cursor';
 import { assertIsDefined, binarySearch } from './helpers';
 import pkg from '../package.json';
+import { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 
 // Constant to convert incoming coordinates in DPI into pixels.
 // @see https://github.com/musescore/MuseScore/blob/v4.4.2/src/engraving/dom/mscore.h#DPI
@@ -42,8 +43,9 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
 
   constructor(
     downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>,
+    xsltProcessor: IXSLTProcessor,
   ) {
-    super(downloader);
+    super(downloader, xsltProcessor);
     this._cursor = new Cursor();
   }
 
@@ -213,14 +215,14 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
     this._cursor.moveTo(
       this._segments[sindex].x * factor,
       this._segments[sindex].y * factor -
-        (this._measures[index].sy * factor) / 2 +
-        rectContainer.top,
+      (this._measures[index].sy * factor) / 2 +
+      rectContainer.top,
       this._measures[index].sy * factor * 2,
     );
   }
 
-  onResize(): void {}
-  onEvent(): void {}
+  onResize(): void { }
+  onEvent(): void { }
 
   get version(): string {
     return `${pkg.name}/MuseScoreRenderer v${pkg.version}`;

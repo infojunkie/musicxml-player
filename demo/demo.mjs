@@ -11,6 +11,7 @@ import {
   MmaConverter,
   FetchConverter,
   parseMusicXml,
+  SaxonJSProcessor,
 } from './build/musicxml-player.mjs';
 import {
   Playlist,
@@ -209,19 +210,20 @@ async function createRenderer(renderer, sheet, options) {
 
 async function createConverter(converter, sheet, groove) {
   const base = sheet.startsWith('http') || sheet.startsWith('data/') ? sheet : `data/${sheet}`;
+  const xsltProcessor = new SaxonJSProcessor();
   switch (converter) {
     case 'midi':
       const midi = base.replace(/\.\w+$/, '.mid');
       try {
         const timemap = base.replace(/\.\w+$/, '.timemap.json');
         await fetish(timemap, { method: 'HEAD' });
-        return new FetchConverter(midi, timemap);
+        return new FetchConverter(midi, xsltProcessor, timemap);
       }
       catch {
-        return new FetchConverter(midi);
+        return new FetchConverter(midi, xsltProcessor);
       }
     case 'vrv':
-      return new VerovioConverter({
+      return new VerovioConverter(xsltProcessor, {
         tuning: g_state.tuning
       });
     case 'mma':
@@ -229,11 +231,11 @@ async function createConverter(converter, sheet, groove) {
       if (groove !== DEFAULT_GROOVE) {
         parameters['globalGroove'] = groove;
       }
-      return new MmaConverter(window.location.href + 'mma/', parameters);
+      return new MmaConverter(window.location.href + 'mma/', xsltProcessor, parameters);
     case 'mscore':
-      return new MuseScoreConverter(base.replace(/\.\w+$/, '.mscore.json'));
+      return new MuseScoreConverter(base.replace(/\.\w+$/, '.mscore.json'), xsltProcessor);
     case 'vrvs':
-      return new VerovioStaticConverter(base.replace(/\.\w+$/, '.mid'), base.replace(/\.\w+$/, '.vrv.json'))
+      return new VerovioStaticConverter(base.replace(/\.\w+$/, '.mid'), base.replace(/\.\w+$/, '.vrv.json'), xsltProcessor)
   }
 }
 

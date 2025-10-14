@@ -1,0 +1,16 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`VerovioStaticConverter > snapshots static converter initialization with URIs 1`] = `
+{
+  "midiByteLength": 4,
+  "timemapLength": 1,
+  "timemapStructure": [
+    {
+      "duration": 1000,
+      "measure": 0,
+      "timestamp": 0,
+    },
+  ],
+  "version": "@music-i18n/musicxml-player/VerovioStaticConverter v1.2.7",
+}
+`;

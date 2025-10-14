@@ -1,6 +1,5 @@
 import createVerovioModule from 'verovio/wasm';
 import type { IMIDIConverter, MeasureTimemap } from './interfaces/IMIDIConverter';
-import type { PlayerOptions } from './Player';
 import type { VerovioOptionsFixed, VerovioToolkitFixed } from './VerovioTypes';
 import { VerovioConverterBase } from './VerovioConverterBase';
 import {
@@ -11,7 +10,7 @@ import {
 } from './helpers';
 import type { PlayerOptions } from './Player';
 import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
-import { SaxonJSAdapter } from './adapters/SaxonJSAdapter';
+import { VerovioToolkit } from 'verovio/esm';
 
 /**
  * Implementation of IMIDIConverter that uses Verovio to convert a MusicXML file to MIDI and timemap.
@@ -20,14 +19,17 @@ import { SaxonJSAdapter } from './adapters/SaxonJSAdapter';
  */
 export class VerovioConverter
   extends VerovioConverterBase
-  implements IMIDIConverter
-{
+  implements IMIDIConverter {
   protected _vrv?: VerovioToolkitFixed;
   protected _timemap: MeasureTimemap = [];
   protected _midi?: ArrayBuffer;
   protected _options: VerovioOptionsFixed;
+  protected _xsltProcessor: IXSLTProcessor;
 
-  constructor(options?: VerovioOptionsFixed) {
+  constructor(
+    xsltProcessor: IXSLTProcessor,
+    options?: VerovioOptionsFixed,
+  ) {
     super();
     this._options = {
       ...{
@@ -36,6 +38,7 @@ export class VerovioConverter
       },
       ...options,
     };
+    this._xsltProcessor = xsltProcessor;
   }
 
   async initialize(
