@@ -72,16 +72,18 @@ vi.mock('spessasynth_lib', () => {
 const mockParseMusicXml = vi.fn();
 const mockUnrollMusicXml = vi.fn();
 const mockFetish = vi.fn();
-const mockBinarySearch = vi.fn();
 const mockDebounce = vi.fn();
 
-vi.mock('../../helpers', () => ({
-  parseMusicXml: mockParseMusicXml,
-  unrollMusicXml: mockUnrollMusicXml,
-  fetish: mockFetish,
-  binarySearch: mockBinarySearch,
-  debounce: mockDebounce,
-}));
+vi.mock('../../helpers', async () => {
+  const actual: any = await vi.importActual('../../helpers');
+  return {
+    ...actual,
+    parseMusicXml: mockParseMusicXml,
+    unrollMusicXml: mockUnrollMusicXml,
+    fetish: mockFetish,
+    debounce: mockDebounce,
+  };
+});
 
 // Set up global mocks
 vi.stubGlobal('AudioContext', MockAudioContext);
@@ -106,13 +108,16 @@ describe('Player', () => {
     installArrayPolyfills();
 
     // Import Player after mocks are set up
-    vi.doMock('../../helpers', () => ({
-      parseMusicXml: mockParseMusicXml,
-      unrollMusicXml: mockUnrollMusicXml,
-      fetish: mockFetish,
-      binarySearch: mockBinarySearch,
-      debounce: mockDebounce,
-    }));
+    vi.doMock('../../helpers', async () => {
+      const actual: any = await vi.importActual('../../helpers');
+      return {
+        ...actual,
+        parseMusicXml: mockParseMusicXml,
+        unrollMusicXml: mockUnrollMusicXml,
+        fetish: mockFetish,
+        debounce: mockDebounce,
+      };
+    });
 
     // async factory method
     const playerModule = await import('../../Player');
@@ -146,7 +151,7 @@ describe('Player', () => {
     mockFetish.mockImplementation(() => Promise.resolve({
       arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8)),
     }));
-    mockBinarySearch.mockReturnValue(0);
+
     mockDebounce.mockImplementation((fn) => fn);
 
     // Create mocks using factory functions

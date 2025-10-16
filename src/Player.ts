@@ -330,13 +330,6 @@ export class Player {
         index >= 0 ? index : Math.max(0, -index - 2)
         ];
 
-      // Guard against undefined entry
-      if (!entry) {
-        requestAnimationFrame(synchronizeMidi);
-        // FIXME Should we return or raise an error?
-        return;
-      }
-
       this._options.renderer.moveTo(
         entry.measure,
         entry.timestamp,
