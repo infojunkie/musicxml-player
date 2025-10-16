@@ -18,10 +18,8 @@ export class MuseScoreConverter
     super(downloader, xsltProcessor);
   }
 
-  // INFO _xsltProcessor is _NOT_ required in as we don't make any call to parseMusicXmlTimemap
   async initialize(musicXml: string, options: Required<PlayerOptions>): Promise<void> {
-    // FIXME shoudl the parent class know about this property?
-    // Is it even used?
+    // FIXME should the parent class know about this property?
     this._xsltProcessor = this._xsltProcessor ?? options.xsltProcessor;
     return this._extract(musicXml);
   }

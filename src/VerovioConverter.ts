@@ -9,7 +9,6 @@ import {
   parseMusicXmlTimemap,
 } from './helpers';
 import type { PlayerOptions } from './Player';
-import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 import { VerovioToolkit } from 'verovio/esm';
 
 /**
@@ -24,10 +23,8 @@ export class VerovioConverter
   protected _timemap: MeasureTimemap = [];
   protected _midi?: ArrayBuffer;
   protected _options: VerovioOptionsFixed;
-  protected _xsltProcessor: IXSLTProcessor;
 
   constructor(
-    xsltProcessor: IXSLTProcessor,
     options?: VerovioOptionsFixed,
   ) {
     super();
@@ -38,7 +35,6 @@ export class VerovioConverter
       },
       ...options,
     };
-    this._xsltProcessor = xsltProcessor;
   }
 
   async initialize(

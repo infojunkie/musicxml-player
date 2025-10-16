@@ -19,7 +19,7 @@ export interface IXSLTProcessor {
    * Transform XML using XSLT
    */
   transform(
-    stylesheet: string, // is this the same as stylesheetLocation ?
+    stylesheet: string,
     source: string,
     params: Record<string, any>,
   ): Promise<string>;

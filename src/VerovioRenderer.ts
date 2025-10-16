@@ -82,7 +82,6 @@ export class VerovioRenderer
     );
   }
 
-  // WARNING unused parameter type
   onEvent(type: string): void {
     this._refresh();
     this._move(

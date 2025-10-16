@@ -57,10 +57,10 @@ describe('SaxonJS regression', () => {
         expect(result).toEqual([]);
         expect(consoleErrorSpy)
           .toHaveBeenCalledWith(
-            // WARNING this is fragile because the error is a file system error, not a network error
             expect.stringMatching(/^\[parseMusicXmlTimemap\] XError:No stylesheet supplied; code:SXJS0006/)
           );
       });
+
       it('should return empty array when timemapXslUri produces invalid JSON', async () => {
         const validMusicXml = await serveFixture('baiao-miranda.musicxml');
         const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue('not-json');
@@ -74,8 +74,7 @@ describe('SaxonJS regression', () => {
       });
 
       it('should handle empty input gracefully', async () => {
-        // WARNING Can we do without mocking principalResult ?
-        const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue({ principalResult: '' } as any);
+        const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue("");
         const emptyMusicXml = await serveFixture('empty.musicxml');
 
         const result = await parseMusicXmlTimemap(emptyMusicXml, 'test-timemap.xsl', xsltProcessor);
@@ -87,8 +86,7 @@ describe('SaxonJS regression', () => {
       });
 
       it('should handle malformed XML gracefully', async () => {
-        // WARNING Can we do without mocking principalResult ?
-        const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue({ principalResult: '<invalid-xml>' } as any);
+        const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue('<invalid-xml>');
         const invalidXml = await serveFixture('invalid.musicxml');
 
         const result = await parseMusicXmlTimemap(invalidXml, 'invalid-xml.xsl', xsltProcessor);
@@ -122,7 +120,6 @@ describe('SaxonJS regression', () => {
       expect(result.length).toBeGreaterThan(0);
       expect(result).not.toBe(xmlText); // The output is processed when it's different from the input
 
-      // INFO should we make sure it's valid XML? It's SaxonJS responsibility.
       // Basic XML structure assertions
       expect(result).toContain('<?xml version="1.0"'); // Should start with XML declaration
       expect(result).toContain('<score-partwise'); // Should contain MusicXML root

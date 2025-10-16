@@ -35,7 +35,7 @@
     "build:esm": "node esbuild.mjs --format=esm",
     "build:cjs": "node esbuild.mjs --format=cjs",
     "build:d.ts": "tsc --emitDeclarationOnly --outDir build/types",
-    "type-check": "tsc --noEmit",
+    "test:type": "tsc --noEmit",
     "demo:develop": "ws -d demo --rewrite '/mma/(.*) -> http://localhost:3000/$1' -p ${PORT:-8080}",
     "demo:server": "ws -d demo -p ${PORT:-8082} -z --log.format combined",
     "link": "run() { rm -rf node_modules/$1 && ln -s $(readlink -f $(npm root -g)/$1) node_modules/$1; }; run"

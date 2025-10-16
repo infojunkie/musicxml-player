@@ -79,7 +79,7 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
         page: parseInt(element.getAttribute('page')),
       };
     });
-    // INFO this function is not an async function
+
     const spos = await this._xsltProcessor.parse({
       text: window.atob(this._mscore.sposXML),
     });

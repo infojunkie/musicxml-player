@@ -71,8 +71,6 @@ vi.mock('spessasynth_lib', () => {
 // Mock the helper functions - use the same path as Player.ts
 const mockParseMusicXml = vi.fn();
 const mockUnrollMusicXml = vi.fn();
-// INFO should we mock fetish or fetch itself?
-// fetish is more real world
 const mockFetish = vi.fn();
 const mockBinarySearch = vi.fn();
 const mockDebounce = vi.fn();
@@ -133,7 +131,6 @@ describe('Player', () => {
     global.ResizeObserver = MockResizeObserver as any;
 
     // Reset all mocks to ensure clean state
-    // INFO not used??
     vi.clearAllMocks();
 
     // Setup mocks for helper functions after clearing

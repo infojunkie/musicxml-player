@@ -107,8 +107,7 @@ export class MuseScoreBase {
 
     // Parse and create the timemap.
     this._timemap = [];
-    // INFO _xsltProcessor is required by this parse function
-    // INFO this function is not an async function
+
     this._mpos = await this._xsltProcessor.parse({
       text: window.atob(this._mscore.mposXML),
     });

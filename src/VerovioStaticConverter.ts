@@ -14,8 +14,7 @@ import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
  */
 export class VerovioStaticConverter
   extends VerovioConverterBase
-  implements IMIDIConverter
-{
+  implements IMIDIConverter {
   protected _timemap?: MeasureTimemap;
   protected _midi?: ArrayBuffer;
   protected _xsltProcessor: IXSLTProcessor;
@@ -29,7 +28,6 @@ export class VerovioStaticConverter
     this._xsltProcessor = xsltProcessor || new SaxonJSProcessor();
   }
 
-  // INFO _xsltProcessor is required in parseMusicXmlTimemap
   async initialize(musicXml: string, options: Required<PlayerOptions>) {
     this._midi =
       typeof this._midiOrUri === 'string'
@@ -44,8 +42,8 @@ export class VerovioStaticConverter
         )
         : typeof this._timemapOrUri === 'string'
           ? VerovioConverterBase._parseTimemap(
-              await (await fetish(this._timemapOrUri)).json(),
-            )
+            await (await fetish(this._timemapOrUri)).json(),
+          )
           : VerovioConverterBase._parseTimemap(this._timemapOrUri);
   }
 
