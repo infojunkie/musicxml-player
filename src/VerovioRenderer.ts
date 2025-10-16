@@ -82,7 +82,7 @@ export class VerovioRenderer
     );
   }
 
-  onEvent(type: string): void {
+  onEvent(): void {
     this._refresh();
     this._move(
       this._currentLocation.index,

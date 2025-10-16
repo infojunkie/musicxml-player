@@ -1,4 +1,4 @@
-import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
+import type { PlayerOptions } from './Player';
 import type { MeasureTimemap } from './interfaces/IMIDIConverter';
 import { atoab, fetish } from './helpers';
 
@@ -66,23 +66,16 @@ export class MuseScoreBase {
   protected _midi?: ArrayBuffer;
   protected _timemap?: MeasureTimemap;
   protected _mpos?: object;
-  // FIXME shoudl this parent class know about this property?
-  // Inject IXSLTProcessor via the MuseScoreBase constructor and assign this._xsltProcessor there.
-  // Then remove the duplicated assignments from MuseScoreConverter.initialize and MuseScoreRenderer.initialize.
-  // This centralizes ownership where it’s used, guarantees it’s set before _extract, and simplifies subclasses.
-  protected _xsltProcessor!: IXSLTProcessor;
 
   constructor(
     protected _downloader:
       | string
       | MuseScoreDownloader
       | ReturnType<MuseScoreDownloader>,
-    xsltProcessor: IXSLTProcessor,
   ) {
-    this._xsltProcessor = xsltProcessor;
   }
 
-  protected async _extract(musicXml: string): Promise<void> {
+  protected async _extract(musicXml: string, options: Required<PlayerOptions>): Promise<void> {
     // Retrieve MuseScore metadata.
     // ...given a URL: Download the score media.
     if (typeof this._downloader === 'string') {
@@ -108,10 +101,10 @@ export class MuseScoreBase {
     // Parse and create the timemap.
     this._timemap = [];
 
-    this._mpos = await this._xsltProcessor.parse({
+    this._mpos = await options.xsltProcessor.parse({
       text: window.atob(this._mscore.mposXML),
     });
-    (<any[]>this._xsltProcessor.query('//events/event', this._mpos)).forEach(
+    (<any[]>options.xsltProcessor.query('//events/event', this._mpos)).forEach(
       (measure, i) => {
         const timestamp = parseInt(measure.getAttribute('position'));
         if (i > 0) {

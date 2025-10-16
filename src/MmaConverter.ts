@@ -1,7 +1,6 @@
 import type { IMIDIConverter, MeasureTimemap } from './interfaces/IMIDIConverter';
 import { PlayerOptions } from './Player';
 import { assertIsDefined, fetish, parseMusicXmlTimemap } from './helpers';
-import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 
 /**
  * Implementation of IMIDIConverter that queries the musicxml-midi API (@see https://github.com/infojunkie/musicxml-midi)
@@ -15,15 +14,12 @@ export class MmaConverter implements IMIDIConverter {
   protected _midi?: ArrayBuffer;
   protected _timemap?: MeasureTimemap;
   protected _uri;
-  protected _xsltProcessor: IXSLTProcessor;
 
   constructor(
     uri: string,
-    xsltProcessor: IXSLTProcessor,
     protected _parameters?: Record<string, string>,
   ) {
     this._uri = uri.endsWith('/') ? uri.slice(0, -1) : uri;
-    this._xsltProcessor = xsltProcessor;
   }
 
   async initialize(

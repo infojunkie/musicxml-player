@@ -9,7 +9,6 @@ import type {
 import { Cursor } from './Cursor';
 import { assertIsDefined, binarySearch } from './helpers';
 import pkg from '../package.json';
-import { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 
 // Constant to convert incoming coordinates in DPI into pixels.
 // @see https://github.com/musescore/MuseScore/blob/v4.4.2/src/engraving/dom/mscore.h#DPI
@@ -43,9 +42,8 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
 
   constructor(
     downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>,
-    xsltProcessor: IXSLTProcessor,
   ) {
-    super(downloader, xsltProcessor);
+    super(downloader);
     this._cursor = new Cursor();
   }
 
@@ -59,17 +57,16 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
     options: Required<PlayerOptions>,
   ): Promise<void> {
     this._container = container;
-    this._xsltProcessor = this._xsltProcessor ?? options.xsltProcessor;
 
     // Extract the metadata in the base class.
-    await this._extract(musicXml);
+    await this._extract(musicXml, options);
     assertIsDefined(this._mscore);
 
     // Store information we'll need later:
     // - Measures space positions
     // - Segments (musical events) space and time positions
     this._measures = (<any[]>(
-      this._xsltProcessor.query('//elements/element', this._mpos)
+      options.xsltProcessor.query('//elements/element', this._mpos)
     )).map((element) => {
       return {
         x: parseInt(element.getAttribute('x')) / DOTS_PER_PIXEL,
@@ -80,11 +77,11 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
       };
     });
 
-    const spos = await this._xsltProcessor.parse({
+    const spos = await options.xsltProcessor.parse({
       text: window.atob(this._mscore.sposXML),
     });
     this._segments = (<any[]>(
-      this._xsltProcessor.query('//elements/element', spos)
+      options.xsltProcessor.query('//elements/element', spos)
     )).map((element) => {
       return {
         x: parseInt(element.getAttribute('x')) / DOTS_PER_PIXEL,
@@ -97,7 +94,7 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
         measure: 0,
       };
     });
-    (<any[]>this._xsltProcessor.query('//events/event', spos)).forEach(
+    (<any[]>options.xsltProcessor.query('//events/event', spos)).forEach(
       (segment, i) => {
         const timestamp = parseInt(segment.getAttribute('position'));
         if (i > 0) {
