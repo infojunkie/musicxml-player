@@ -30,9 +30,15 @@ exports[`FetchConverter > initializes with provided buffers (no fetch) and compu
     2,
     3,
   ],
-  "timemap": [],
-  "timemapLength": 0,
-  "transformCalled": 0,
+  "timemap": [
+    {
+      "duration": 1000,
+      "measure": 0,
+      "timestamp": 0,
+    },
+  ],
+  "timemapLength": 1,
+  "transformCalled": 1,
   "version": "@music-i18n/musicxml-player/FetchConverter v1.2.7",
 }
 `;

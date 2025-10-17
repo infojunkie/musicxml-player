@@ -38,47 +38,6 @@ exports[`MuseScoreConverter > snapshots converter initialization and properties 
       "timestamp": 1000,
     },
   ],
-  "_xsltProcessor": {
-    "parse": [MockFunction spy] {
-      "calls": [
-        [
-          {
-            "text": "<xml/>",
-          },
-        ],
-      ],
-      "results": [
-        {
-          "type": "return",
-          "value": Promise {},
-        },
-      ],
-    },
-    "query": [MockFunction spy] {
-      "calls": [
-        [
-          "//events/event",
-          {
-            "__doc": "<xml/>",
-          },
-        ],
-      ],
-      "results": [
-        {
-          "type": "return",
-          "value": [
-            {
-              "getAttribute": [Function],
-            },
-            {
-              "getAttribute": [Function],
-            },
-          ],
-        },
-      ],
-    },
-    "transform": [MockFunction spy],
-  },
   "midi": Any<ArrayBuffer>,
   "timemap": Any<Array>,
   "version": Any<String>,

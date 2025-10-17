@@ -34,7 +34,7 @@ describe('MuseScoreConverter', () => {
     const media = createMuseScoreMedia();
     const downloader = () => media;
     const xsltProcessor = createMockXsltProcessor();
-    const conv = new MuseScoreConverter(downloader, xsltProcessor);
+    const conv = new MuseScoreConverter(downloader);
 
     await conv.initialize(SAMPLE_MUSICXML, {
       container: document.createElement('div'),
@@ -86,7 +86,7 @@ describe('MuseScoreConverter', () => {
     const media = createMuseScoreMedia();
     const downloader = () => media;
     const xsltProcessor = createMockXsltProcessor();
-    const conv = new MuseScoreConverter(downloader, xsltProcessor);
+    const conv = new MuseScoreConverter(downloader);
     await conv.initialize(SAMPLE_MUSICXML, {
       container: document.createElement('div'),
       musicXml: SAMPLE_MUSICXML,

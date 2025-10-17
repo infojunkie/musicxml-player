@@ -22,11 +22,8 @@ describe('FetchConverter', () => {
     let call = 0;
     withGlobalFetch(async () => responses[call++]);
 
-    const mockXsltProcessor = createMockXsltProcessor();
-
     const conv = new FetchConverter(
       'https://example.com/midi.mid',
-      mockXsltProcessor,
       'https://example.com/timemap.json',
     );
     await conv.initialize(SAMPLE_MUSICXML, {
@@ -64,7 +61,7 @@ describe('FetchConverter', () => {
     const midiBuf = createDummyMidiBuffer();
     const transform = vi.fn(async () => SAMPLE_TIMEMAP_JSON);
     const xslt = { ...mockXsltProcessor, transform } as any;
-    const conv = new FetchConverter(midiBuf, mockXsltProcessor);
+    const conv = new FetchConverter(midiBuf);
     await conv.initialize(SAMPLE_MUSICXML, {
       container: document.createElement('div'),
       musicXml: SAMPLE_MUSICXML,
