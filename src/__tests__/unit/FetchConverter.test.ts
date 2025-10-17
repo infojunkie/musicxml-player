@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { FetchConverter } from '../../FetchConverter';
 import {
   SAMPLE_MUSICXML,

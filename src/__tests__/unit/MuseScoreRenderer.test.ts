@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { MuseScoreRenderer } from '../../MuseScoreRenderer';
 import {
   SAMPLE_MUSICXML,
@@ -40,7 +40,7 @@ describe('MuseScoreRenderer', () => {
     const container = document.createElement('div');
 
     // Mock the moveTo method to avoid DOM issues
-    const moveToSpy = vi.spyOn(renderer, 'moveTo').mockImplementation(() => {});
+    const moveToSpy = vi.spyOn(renderer, 'moveTo').mockImplementation(() => { });
 
     await renderer.initialize(container, SAMPLE_MUSICXML, {
       container,
@@ -73,7 +73,7 @@ describe('MuseScoreRenderer', () => {
     const container = document.createElement('div');
 
     // Mock the moveTo method to avoid DOM issues
-    vi.spyOn(renderer, 'moveTo').mockImplementation(() => {});
+    vi.spyOn(renderer, 'moveTo').mockImplementation(() => { });
 
     await renderer.initialize(container, SAMPLE_MUSICXML, {
       container,
