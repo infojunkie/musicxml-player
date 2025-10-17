@@ -1,5 +1,8 @@
 import createVerovioModule from 'verovio/wasm';
-import type { IMIDIConverter, MeasureTimemap } from './interfaces/IMIDIConverter';
+import type {
+  IMIDIConverter,
+  MeasureTimemap,
+} from './interfaces/IMIDIConverter';
 import type { VerovioOptionsFixed, VerovioToolkitFixed } from './VerovioTypes';
 import { VerovioConverterBase } from './VerovioConverterBase';
 import {
@@ -18,15 +21,14 @@ import { VerovioToolkit } from 'verovio/esm';
  */
 export class VerovioConverter
   extends VerovioConverterBase
-  implements IMIDIConverter {
+  implements IMIDIConverter
+{
   protected _vrv?: VerovioToolkitFixed;
   protected _timemap: MeasureTimemap = [];
   protected _midi?: ArrayBuffer;
   protected _options: VerovioOptionsFixed;
 
-  constructor(
-    options?: VerovioOptionsFixed,
-  ) {
+  constructor(options?: VerovioOptionsFixed) {
     super();
     this._options = {
       ...{

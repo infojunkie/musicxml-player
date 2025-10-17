@@ -127,7 +127,7 @@ export class OpenSheetMusicDisplayRenderer implements ISheetRenderer {
     }
   }
 
-  onEvent(): void { }
+  onEvent(): void {}
 
   get version(): string {
     assertIsDefined(this._osmd);

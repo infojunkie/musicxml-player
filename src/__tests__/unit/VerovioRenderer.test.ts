@@ -17,7 +17,7 @@ describe('VerovioRenderer', () => {
   });
 
   it('initializes, renders SVGs and sets version', async () => {
-    const { ctor, mockToolkit } = mockVerovioModule();
+    const { ctor } = mockVerovioModule();
     const { VerovioToolkit } = await import('verovio/esm');
     (VerovioToolkit as any).mockImplementation(ctor);
 
@@ -63,7 +63,7 @@ describe('VerovioRenderer', () => {
   });
 
   it('snapshots renderer initialization and DOM structure', async () => {
-    const { ctor, mockToolkit } = mockVerovioModule();
+    const { ctor } = mockVerovioModule();
     const { VerovioToolkit } = await import('verovio/esm');
     (VerovioToolkit as any).mockImplementation(ctor);
 

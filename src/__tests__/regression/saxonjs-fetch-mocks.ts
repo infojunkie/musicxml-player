@@ -63,21 +63,21 @@ const testTimemapJson = `[
   }
 ]`;
 const unrollSefJson = JSON.stringify({
-  "version": "3.0",
-  "type": "stylesheet",
-  "name": "unroll",
-  "body": [
+  version: '3.0',
+  type: 'stylesheet',
+  name: 'unroll',
+  body: [
     {
-      "type": "template",
-      "match": "/*",
-      "body": []
-    }
+      type: 'template',
+      match: '/*',
+      body: [],
+    },
   ],
-  "params": {},
-  "variables": {},
-  "functions": {},
-  "keys": {},
-  "outputProperties": {}
+  params: {},
+  variables: {},
+  functions: {},
+  keys: {},
+  outputProperties: {},
 });
 
 /**
@@ -97,12 +97,12 @@ async function serve(relative_url: string): Promise<string> {
     // Add missing fixtures that tests expect
     '../fixtures/existent.xsl': '', // Empty string for non-existent file test
   };
-  
+
   const content = fixtureMap[relative_url];
   if (content === undefined) {
     throw new Error(`Fixture not found: ${relative_url}`);
   }
-  
+
   return content;
 }
 

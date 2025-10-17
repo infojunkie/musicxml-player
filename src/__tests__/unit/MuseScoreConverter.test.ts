@@ -33,7 +33,6 @@ describe('MuseScoreConverter', () => {
   it('initializes using provided media struct via function and builds timemap/midi', async () => {
     const media = createMuseScoreMedia();
     const downloader = () => media;
-    const xsltProcessor = createMockXsltProcessor();
     const conv = new MuseScoreConverter(downloader);
 
     await conv.initialize(SAMPLE_MUSICXML, {
@@ -85,7 +84,6 @@ describe('MuseScoreConverter', () => {
   it('snapshots converter initialization and properties', async () => {
     const media = createMuseScoreMedia();
     const downloader = () => media;
-    const xsltProcessor = createMockXsltProcessor();
     const conv = new MuseScoreConverter(downloader);
     await conv.initialize(SAMPLE_MUSICXML, {
       container: document.createElement('div'),

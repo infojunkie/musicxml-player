@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { VerovioStaticConverter } from '../../VerovioStaticConverter';
 import {
   SAMPLE_MUSICXML,
-  SAMPLE_TIMEMAP,
   createDummyMidiBuffer,
   withGlobalFetch,
   resetGlobals,
@@ -118,7 +117,7 @@ describe('VerovioStaticConverter', () => {
       version: conv.version,
       midiByteLength: conv.midi.byteLength,
       timemapLength: conv.timemap.length,
-      timemapStructure: conv.timemap.map(entry => ({
+      timemapStructure: conv.timemap.map((entry) => ({
         measure: entry.measure,
         timestamp: entry.timestamp,
         duration: entry.duration,

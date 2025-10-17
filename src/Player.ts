@@ -123,7 +123,7 @@ const DEFAULT_PLAYER_OPTIONS = {
   horizontal: false,
   followCursor: true,
   xsltProcessor: new SaxonJSProcessor(),
-}
+};
 
 export class Player {
   /**
@@ -327,7 +327,7 @@ export class Player {
       // Update the cursors and listeners.
       const entry =
         this._options.converter.timemap[
-        index >= 0 ? index : Math.max(0, -index - 2)
+          index >= 0 ? index : Math.max(0, -index - 2)
         ];
 
       this._options.renderer.moveTo(

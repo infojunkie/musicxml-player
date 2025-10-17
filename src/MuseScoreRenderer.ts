@@ -212,14 +212,14 @@ export class MuseScoreRenderer extends MuseScoreBase implements ISheetRenderer {
     this._cursor.moveTo(
       this._segments[sindex].x * factor,
       this._segments[sindex].y * factor -
-      (this._measures[index].sy * factor) / 2 +
-      rectContainer.top,
+        (this._measures[index].sy * factor) / 2 +
+        rectContainer.top,
       this._measures[index].sy * factor * 2,
     );
   }
 
-  onResize(): void { }
-  onEvent(): void { }
+  onResize(): void {}
+  onEvent(): void {}
 
   get version(): string {
     return `${pkg.name}/MuseScoreRenderer v${pkg.version}`;

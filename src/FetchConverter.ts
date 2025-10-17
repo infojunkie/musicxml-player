@@ -1,5 +1,8 @@
 import pkg from '../package.json';
-import type { IMIDIConverter, MeasureTimemap } from './interfaces/IMIDIConverter';
+import type {
+  IMIDIConverter,
+  MeasureTimemap,
+} from './interfaces/IMIDIConverter';
 import { PlayerOptions } from './Player';
 import { assertIsDefined, fetish, parseMusicXmlTimemap } from './helpers';
 
@@ -19,8 +22,7 @@ export class FetchConverter implements IMIDIConverter {
   constructor(
     protected _midiOrUri: ArrayBuffer | string,
     protected _timemapOrUri?: MeasureTimemap | string,
-  ) {
-  }
+  ) {}
 
   async initialize(
     musicXml: string,
@@ -33,10 +35,10 @@ export class FetchConverter implements IMIDIConverter {
     this._timemap =
       typeof this._timemapOrUri === 'undefined'
         ? await parseMusicXmlTimemap(
-          musicXml,
-          options.timemapXslUri,
-          options.xsltProcessor,
-        )
+            musicXml,
+            options.timemapXslUri,
+            options.xsltProcessor,
+          )
         : typeof this._timemapOrUri === 'string'
           ? <MeasureTimemap>await (await fetish(this._timemapOrUri)).json()
           : this._timemapOrUri;

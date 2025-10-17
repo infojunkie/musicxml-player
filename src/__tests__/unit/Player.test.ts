@@ -10,7 +10,7 @@ import {
   createMockRenderer,
   createMockConverter,
   createMockXsltProcessor,
-  SAMPLE_MUSICXML
+  SAMPLE_MUSICXML,
 } from '../mocks';
 
 // Mock the SpessaSynth dependencies at the top level because vi hoisting
@@ -20,18 +20,23 @@ vi.mock('spessasynth_core', () => {
     duration: 1.0,
     tempoChanges: [{ tempo: 120 }],
     timeDivision: 480,
-    tracks: [{
-      pushEvent: vi.fn(),
-    }],
+    tracks: [
+      {
+        pushEvent: vi.fn(),
+      },
+    ],
     flush: vi.fn(),
   };
 
   return {
-    BasicMIDI: Object.assign(vi.fn(() => mockBasicMIDI), {
-      fromArrayBuffer: vi.fn(() => mockBasicMIDI),
-    }),
+    BasicMIDI: Object.assign(
+      vi.fn(() => mockBasicMIDI),
+      {
+        fromArrayBuffer: vi.fn(() => mockBasicMIDI),
+      },
+    ),
     midiMessageTypes: {
-      controllerChange: 0xB0,
+      controllerChange: 0xb0,
     },
   };
 });
@@ -46,7 +51,7 @@ vi.mock('spessasynth_lib', () => {
     channelsAmount = 16;
     muteChannel = vi.fn();
 
-    constructor(context: AudioContext) {
+    constructor(_context: AudioContext) {
       // Mock constructor - don't try to create real AudioWorkletNode
       // The context parameter is ignored in the mock
     }
@@ -148,9 +153,11 @@ describe('Player', () => {
     });
 
     mockUnrollMusicXml.mockResolvedValue(SAMPLE_MUSICXML);
-    mockFetish.mockImplementation(() => Promise.resolve({
-      arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8)),
-    }));
+    mockFetish.mockImplementation(() =>
+      Promise.resolve({
+        arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8)),
+      }),
+    );
 
     mockDebounce.mockImplementation((fn) => fn);
 
@@ -180,8 +187,15 @@ describe('Player', () => {
         });
 
         // TODO a better way would be to assert that no errors were thrown
-        expect(mockConverter.initialize).toHaveBeenCalledWith(SAMPLE_MUSICXML, expect.any(Object));
-        expect(mockRenderer.initialize).toHaveBeenCalledWith(expect.any(HTMLElement), SAMPLE_MUSICXML, expect.any(Object));
+        expect(mockConverter.initialize).toHaveBeenCalledWith(
+          SAMPLE_MUSICXML,
+          expect.any(Object),
+        );
+        expect(mockRenderer.initialize).toHaveBeenCalledWith(
+          expect.any(HTMLElement),
+          SAMPLE_MUSICXML,
+          expect.any(Object),
+        );
         // Useless assertion
         expect(player).toBeInstanceOf(Player);
         expect(mockRenderer.player).toBe(player);
@@ -211,12 +225,14 @@ describe('Player', () => {
       });
 
       it('throws error when container not found', async () => {
-        await expect(Player.create({
-          container: 'non-existent-container',
-          musicXml: SAMPLE_MUSICXML,
-          renderer: mockRenderer,
-          converter: mockConverter,
-        })).rejects.toThrow('[Player.load] Failed to find container element.');
+        await expect(
+          Player.create({
+            container: 'non-existent-container',
+            musicXml: SAMPLE_MUSICXML,
+            renderer: mockRenderer,
+            converter: mockConverter,
+          }),
+        ).rejects.toThrow('[Player.load] Failed to find container element.');
       });
 
       it('uses default options when not provided', async () => {
@@ -248,25 +264,33 @@ describe('Player', () => {
       });
 
       it('handles converter initialization failure', async () => {
-        mockConverter.initialize.mockRejectedValue(new Error('Converter init failed'));
+        mockConverter.initialize.mockRejectedValue(
+          new Error('Converter init failed'),
+        );
 
-        await expect(Player.create({
-          container: 'test-container',
-          musicXml: SAMPLE_MUSICXML,
-          renderer: mockRenderer,
-          converter: mockConverter,
-        })).rejects.toThrow('Converter init failed');
+        await expect(
+          Player.create({
+            container: 'test-container',
+            musicXml: SAMPLE_MUSICXML,
+            renderer: mockRenderer,
+            converter: mockConverter,
+          }),
+        ).rejects.toThrow('Converter init failed');
       });
 
       it('handles renderer initialization failure', async () => {
-        mockRenderer.initialize.mockRejectedValue(new Error('Renderer init failed'));
+        mockRenderer.initialize.mockRejectedValue(
+          new Error('Renderer init failed'),
+        );
 
-        await expect(Player.create({
-          container: 'test-container',
-          musicXml: SAMPLE_MUSICXML,
-          renderer: mockRenderer,
-          converter: mockConverter,
-        })).rejects.toThrow('Renderer init failed');
+        await expect(
+          Player.create({
+            container: 'test-container',
+            musicXml: SAMPLE_MUSICXML,
+            renderer: mockRenderer,
+            converter: mockConverter,
+          }),
+        ).rejects.toThrow('Renderer init failed');
       });
     });
   });
@@ -346,31 +370,41 @@ describe('Player', () => {
       it('handles moveTo with no matching timemap entry', () => {
         // Test that moveTo throws when there are no matching timemap entries
         // The current timemap has entries for measures 0 and 1, so measure 999 should not match
-        expect(() => player.moveTo(999, 1000, 500)).toThrow('Cannot get last element of empty array');
+        expect(() => player.moveTo(999, 1000, 500)).toThrow(
+          'Cannot get last element of empty array',
+        );
       });
     });
 
     describe('setters', () => {
       it('sets repeat count', () => {
         // Test that the setter doesn't throw
-        expect(() => { player.repeat = 5; }).not.toThrow();
+        expect(() => {
+          player.repeat = 5;
+        }).not.toThrow();
       });
 
       it('sets mute state', () => {
         // Test that the setter doesn't throw
-        expect(() => { player.mute = true; }).not.toThrow();
+        expect(() => {
+          player.mute = true;
+        }).not.toThrow();
       });
 
       it('sets velocity', () => {
         // Test that the setter doesn't throw
-        expect(() => { player.velocity = 1.5; }).not.toThrow();
+        expect(() => {
+          player.velocity = 1.5;
+        }).not.toThrow();
       });
 
       it('sets MIDI output', () => {
         const mockOutput = {} as WebMidi.MIDIOutput;
 
         // Test that the setter doesn't throw
-        expect(() => { player.output = mockOutput; }).not.toThrow();
+        expect(() => {
+          player.output = mockOutput;
+        }).not.toThrow();
       });
     });
 

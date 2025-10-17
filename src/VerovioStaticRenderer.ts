@@ -16,7 +16,8 @@ import { fetish } from './helpers';
  */
 export class VerovioStaticRenderer
   extends VerovioRendererBase
-  implements ISheetRenderer {
+  implements ISheetRenderer
+{
   constructor(
     protected _svgOrUris: Array<ArrayBuffer | string>,
     protected _eventsOrUri: TimeMapEntryFixed[] | string,
@@ -77,7 +78,7 @@ export class VerovioStaticRenderer
     );
   }
 
-  onEvent(): void {
+  onEvent(_type: string): void {
     this._refresh();
     this.moveTo(
       this._currentLocation.index,

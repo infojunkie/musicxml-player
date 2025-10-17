@@ -7,7 +7,7 @@ export default defineConfig({
     globals: true,
     exclude: [
       ...configDefaults.exclude,
-      "demo/"
+      'demo/'
     ]
   }
 })

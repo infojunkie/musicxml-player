@@ -258,8 +258,8 @@ export class VerovioRendererBase {
         behavior: 'auto',
         left: Math.floor(
           rectMeasure.left -
-          this._cursorOffset +
-          Math.min(1.0, offset / duration) * rectMeasure.width,
+            this._cursorOffset +
+            Math.min(1.0, offset / duration) * rectMeasure.width,
         ),
       });
     }
@@ -268,10 +268,10 @@ export class VerovioRendererBase {
     assertIsDefined(this._currentScrollOffset);
     this._cursor.moveTo(
       this._currentScrollOffset +
-      (duration
-        ? rectMeasure.left +
-        Math.round(Math.min(1.0, offset / duration) * rectMeasure.width)
-        : rectNote.left),
+        (duration
+          ? rectMeasure.left +
+            Math.round(Math.min(1.0, offset / duration) * rectMeasure.width)
+          : rectNote.left),
       rectSystem.top,
       rectSystem.height,
     );

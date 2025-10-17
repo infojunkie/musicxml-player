@@ -13,7 +13,7 @@ describe('SaxonJS regression', () => {
     // setting up Saxon fetch mocks
     setupSaxonMocks();
     // A spy so we can inspect console errors and assert against their messages
-    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -28,7 +28,11 @@ describe('SaxonJS regression', () => {
       // saxonjs-fetch-mocks will short-circuit this and serve the file content from the filesystem
       const timemapUri = 'test-timemap.xsl';
 
-      const result = await parseMusicXmlTimemap(xmlText, timemapUri, xsltProcessor);
+      const result = await parseMusicXmlTimemap(
+        xmlText,
+        timemapUri,
+        xsltProcessor,
+      );
 
       // Catch console.error ahead of time so we know why the rest fails.
       expect(consoleErrorSpy).not.toHaveBeenCalled();
@@ -52,48 +56,72 @@ describe('SaxonJS regression', () => {
         const validMusicXml = await serveFixture('baiao-miranda.musicxml');
         const nonExistentXsl = 'non/existent.xsl';
 
-        const result = await parseMusicXmlTimemap(validMusicXml, nonExistentXsl, xsltProcessor);
+        const result = await parseMusicXmlTimemap(
+          validMusicXml,
+          nonExistentXsl,
+          xsltProcessor,
+        );
 
         expect(result).toEqual([]);
-        expect(consoleErrorSpy)
-          .toHaveBeenCalledWith(
-            expect.stringMatching(/^\[parseMusicXmlTimemap\] XError:No stylesheet supplied; code:SXJS0006/)
-          );
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          expect.stringMatching(
+            /^\[parseMusicXmlTimemap\] XError:No stylesheet supplied; code:SXJS0006/,
+          ),
+        );
       });
 
       it('should return empty array when timemapXslUri produces invalid JSON', async () => {
         const validMusicXml = await serveFixture('baiao-miranda.musicxml');
-        const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue('not-json');
+        const spy = vi
+          .spyOn(xsltProcessor, 'transform')
+          .mockResolvedValue('not-json');
 
-        const result = await parseMusicXmlTimemap(validMusicXml, 'not-json', xsltProcessor);
+        const result = await parseMusicXmlTimemap(
+          validMusicXml,
+          'not-json',
+          xsltProcessor,
+        );
 
         expect(result).toEqual([]);
-        expect(consoleErrorSpy)
-          .toHaveBeenCalledWith(expect.stringMatching(/^\[parseMusicXmlTimemap\] SyntaxError:/));
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          expect.stringMatching(/^\[parseMusicXmlTimemap\] SyntaxError:/),
+        );
         spy.mockRestore();
       });
 
       it('should handle empty input gracefully', async () => {
-        const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue("");
+        const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue('');
         const emptyMusicXml = await serveFixture('empty.musicxml');
 
-        const result = await parseMusicXmlTimemap(emptyMusicXml, 'test-timemap.xsl', xsltProcessor);
+        const result = await parseMusicXmlTimemap(
+          emptyMusicXml,
+          'test-timemap.xsl',
+          xsltProcessor,
+        );
 
         expect(result).toEqual([]);
-        expect(consoleErrorSpy)
-          .toHaveBeenCalledWith(expect.stringMatching(/^\[parseMusicXmlTimemap\] SyntaxError:/));
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          expect.stringMatching(/^\[parseMusicXmlTimemap\] SyntaxError:/),
+        );
         spy.mockRestore();
       });
 
       it('should handle malformed XML gracefully', async () => {
-        const spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue('<invalid-xml>');
+        const spy = vi
+          .spyOn(xsltProcessor, 'transform')
+          .mockResolvedValue('<invalid-xml>');
         const invalidXml = await serveFixture('invalid.musicxml');
 
-        const result = await parseMusicXmlTimemap(invalidXml, 'invalid-xml.xsl', xsltProcessor);
+        const result = await parseMusicXmlTimemap(
+          invalidXml,
+          'invalid-xml.xsl',
+          xsltProcessor,
+        );
 
         expect(result).toEqual([]);
-        expect(consoleErrorSpy)
-          .toHaveBeenCalledWith(expect.stringMatching(/^\[parseMusicXmlTimemap\] SyntaxError:/));
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          expect.stringMatching(/^\[parseMusicXmlTimemap\] SyntaxError:/),
+        );
         spy.mockRestore();
       });
     });
@@ -108,7 +136,11 @@ describe('SaxonJS regression', () => {
       const xmlText = await serveFixture('baiao-miranda.musicxml');
 
       // Mock the transform method to return a successful result
-      const _spy = vi.spyOn(xsltProcessor, 'transform').mockResolvedValue('<?xml version="1.0" encoding="UTF-8"?><score-partwise><part><measure><note><pitch><step>C</step><octave>4</octave></pitch></note></measure></part></score-partwise>');
+      const _spy = vi
+        .spyOn(xsltProcessor, 'transform')
+        .mockResolvedValue(
+          '<?xml version="1.0" encoding="UTF-8"?><score-partwise><part><measure><note><pitch><step>C</step><octave>4</octave></pitch></note></measure></part></score-partwise>',
+        );
 
       const result = await unrollMusicXml(xmlText, unrollUri, xsltProcessor);
 
@@ -136,7 +168,9 @@ describe('SaxonJS regression', () => {
       beforeEach(() => {
         // Force transform to reject
         // so our function's catch path runs without SaxonJS internals emitting rejections
-        spy = vi.spyOn(xsltProcessor, 'transform').mockRejectedValue(new Error('mocked transform failure'));
+        spy = vi
+          .spyOn(xsltProcessor, 'transform')
+          .mockRejectedValue(new Error('mocked transform failure'));
       });
       afterEach(() => {
         spy.mockRestore();
@@ -144,21 +178,26 @@ describe('SaxonJS regression', () => {
 
       it('should return original MusicXML when XSLT file is missing', async () => {
         const originalMusicXml = await serveFixture('baiao-miranda.musicxml');
-        await expect(unrollMusicXml(originalMusicXml, 'nonexistent.xsl', xsltProcessor)).resolves.toEqual(originalMusicXml);
+        await expect(
+          unrollMusicXml(originalMusicXml, 'nonexistent.xsl', xsltProcessor),
+        ).resolves.toEqual(originalMusicXml);
       });
 
       it('should handle empty input gracefully', async () => {
         const emptyInput = '';
         // test-unroll.xsl exists in the test fixtures
-        await expect(unrollMusicXml(emptyInput, 'test-unroll.xsl', xsltProcessor)).resolves.toEqual(emptyInput);
+        await expect(
+          unrollMusicXml(emptyInput, 'test-unroll.xsl', xsltProcessor),
+        ).resolves.toEqual(emptyInput);
       });
 
       it('should handle malformed XML gracefully', async () => {
         const invalidXml = await serveFixture('invalid.musicxml');
         // test-unroll.xsl exists in the test fixtures
-        await expect(unrollMusicXml(invalidXml, 'test-unroll.xsl', xsltProcessor)).resolves.toEqual(invalidXml);
+        await expect(
+          unrollMusicXml(invalidXml, 'test-unroll.xsl', xsltProcessor),
+        ).resolves.toEqual(invalidXml);
       });
     });
   });
 });
-

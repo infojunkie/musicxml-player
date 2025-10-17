@@ -1,4 +1,7 @@
-import type { IMIDIConverter, MeasureTimemap } from './interfaces/IMIDIConverter';
+import type {
+  IMIDIConverter,
+  MeasureTimemap,
+} from './interfaces/IMIDIConverter';
 import { PlayerOptions } from './Player';
 import { assertIsDefined, fetish, parseMusicXmlTimemap } from './helpers';
 

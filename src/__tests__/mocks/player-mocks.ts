@@ -53,7 +53,11 @@ export class MockAudioWorkletNode {
   channelCountMode = 'max' as ChannelCountMode;
   channelInterpretation = 'speakers' as ChannelInterpretation;
 
-  constructor(context: AudioContext, name: string, options?: AudioWorkletNodeOptions) {
+  constructor(
+    context: AudioContext,
+    _name: string,
+    _options?: AudioWorkletNodeOptions,
+  ) {
     this.context = context;
     // Mock the constructor behavior - don't throw any errors
   }
@@ -71,21 +75,24 @@ export class MockResizeObserver {
 }
 
 // Mock AbortController
-export const createMockAbortController = () => vi.fn().mockImplementation(() => ({
-  abort: vi.fn(),
-  signal: {},
-}));
+export const createMockAbortController = () =>
+  vi.fn().mockImplementation(() => ({
+    abort: vi.fn(),
+    signal: {},
+  }));
 
 // Mock requestAnimationFrame
-export const createMockRequestAnimationFrame = () => vi.fn((callback: FrameRequestCallback) => {
-  setTimeout(callback, 16); // Simulate 60fps
-  return 1;
-});
+export const createMockRequestAnimationFrame = () =>
+  vi.fn((callback: FrameRequestCallback) => {
+    setTimeout(callback, 16); // Simulate 60fps
+    return 1;
+  });
 
 // Mock URL
-export const createMockURL = () => vi.fn().mockImplementation(() => ({
-  createObjectURL: vi.fn(() => 'blob:mock-url'),
-}));
+export const createMockURL = () =>
+  vi.fn().mockImplementation(() => ({
+    createObjectURL: vi.fn(() => 'blob:mock-url'),
+  }));
 
 // Mock SpessaSynth Core
 export const createMockBasicMIDI = () => {
@@ -94,33 +101,29 @@ export const createMockBasicMIDI = () => {
     duration: 1.0,
     tempoChanges: [{ tempo: 120 }],
     timeDivision: 480,
-    tracks: [{
-      pushEvent: vi.fn(),
-    }],
+    tracks: [
+      {
+        pushEvent: vi.fn(),
+      },
+    ],
     flush: vi.fn(),
   };
 
   return {
-    BasicMIDI: Object.assign(vi.fn(() => mockBasicMIDI), {
-      fromArrayBuffer: vi.fn(() => mockBasicMIDI),
-    }),
+    BasicMIDI: Object.assign(
+      vi.fn(() => mockBasicMIDI),
+      {
+        fromArrayBuffer: vi.fn(() => mockBasicMIDI),
+      },
+    ),
     midiMessageTypes: {
-      controllerChange: 0xB0,
+      controllerChange: 0xb0,
     },
   };
 };
 
 // Mock SpessaSynth Lib
 export const createMockSpessaSynthLib = () => {
-  const mockSynthesizer = {
-    connect: vi.fn(),
-    soundBankManager: {
-      addSoundBank: vi.fn().mockResolvedValue(undefined),
-    },
-    channelsAmount: 16,
-    muteChannel: vi.fn(),
-  };
-
   const mockSequencer = {
     connectMIDIOutput: vi.fn(),
     loadNewSongList: vi.fn(),
@@ -140,7 +143,7 @@ export const createMockSpessaSynthLib = () => {
     channelsAmount = 16;
     muteChannel = vi.fn();
 
-    constructor(context: AudioContext) {
+    constructor(_context: AudioContext) {
       // Mock constructor - don't try to create real AudioWorkletNode
       // The context parameter is ignored in the mock
     }
@@ -160,21 +163,27 @@ export const createMockRenderer = (overrides = {}) => ({
   moveTo: vi.fn(),
   onResize: vi.fn(),
   onEvent: vi.fn(),
-  get version() { return 'MockRenderer v1.0.0'; },
+  get version() {
+    return 'MockRenderer v1.0.0';
+  },
   ...overrides,
 });
 
 // Mock Converter
 export const createMockConverter = (overrides = {}) => ({
   initialize: vi.fn().mockResolvedValue(undefined),
-  get midi() { return new ArrayBuffer(4); },
+  get midi() {
+    return new ArrayBuffer(4);
+  },
   get timemap() {
     return [
       { measure: 0, timestamp: 0, duration: 1000 },
       { measure: 1, timestamp: 1000, duration: 1000 },
     ];
   },
-  get version() { return 'MockConverter v1.0.0'; },
+  get version() {
+    return 'MockConverter v1.0.0';
+  },
   ...overrides,
 });
 

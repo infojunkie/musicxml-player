@@ -1,9 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { VerovioConverter } from '../../VerovioConverter';
 
-import {
-  createMockXsltProcessor,
-} from '../helpers/test-utils';
+import { createMockXsltProcessor } from '../helpers/test-utils';
 
 // Mock the verovio modules to prevent import errors
 vi.mock('verovio/wasm', () => ({ default: vi.fn(async () => ({})) }));
@@ -17,7 +15,7 @@ vi.mock('verovio/esm', () => ({
     getPageCount: vi.fn(() => 1),
     renderToSVG: vi.fn(() => '<svg></svg>'),
     getVersion: vi.fn(() => 'X.Y.Z'),
-  }))
+  })),
 }));
 
 describe('VerovioConverter', () => {
@@ -32,5 +30,4 @@ describe('VerovioConverter', () => {
     expect(conv.version.length).toBeGreaterThan(0);
     expect(Array.isArray(conv.timemap)).toBe(true);
   });
-
 });

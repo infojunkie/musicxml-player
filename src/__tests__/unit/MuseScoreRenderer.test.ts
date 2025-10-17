@@ -41,7 +41,7 @@ describe('MuseScoreRenderer', () => {
     const container = document.createElement('div');
 
     // Mock the moveTo method to avoid DOM issues
-    const moveToSpy = vi.spyOn(renderer, 'moveTo').mockImplementation(() => { });
+    const moveToSpy = vi.spyOn(renderer, 'moveTo').mockImplementation(() => {});
 
     await renderer.initialize(container, SAMPLE_MUSICXML, {
       container,
@@ -69,13 +69,12 @@ describe('MuseScoreRenderer', () => {
   });
 
   it('snapshots renderer initialization and DOM structure', async () => {
-    const xsltProcessor = createMockXsltProcessor();
     const media = createMuseScoreMedia();
-    const renderer = new MuseScoreRenderer(() => media, xsltProcessor);
+    const renderer = new MuseScoreRenderer(() => media);
     const container = document.createElement('div');
 
     // Mock the moveTo method to avoid DOM issues
-    const moveToSpy = vi.spyOn(renderer, 'moveTo').mockImplementation(() => { });
+    vi.spyOn(renderer, 'moveTo').mockImplementation(() => {});
 
     await renderer.initialize(container, SAMPLE_MUSICXML, {
       container,

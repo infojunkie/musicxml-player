@@ -13,7 +13,8 @@ import { assertIsDefined } from './helpers';
  */
 export class VerovioRenderer
   extends VerovioRendererBase
-  implements ISheetRenderer {
+  implements ISheetRenderer
+{
   protected _vrv?: VerovioToolkitFixed;
   protected _vrvOptions: VerovioOptionsFixed = {};
 

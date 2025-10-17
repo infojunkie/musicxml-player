@@ -9,11 +9,9 @@ export async function unrollMusicXml(
   xsltProcessor: IXSLTProcessor,
 ): Promise<string> {
   try {
-    const unroll = await xsltProcessor.transform(
-      unrollXslUri,
-      musicXml,
-      { renumberMeasures: true },
-    );
+    const unroll = await xsltProcessor.transform(unrollXslUri, musicXml, {
+      renumberMeasures: true,
+    });
     return unroll;
   } catch (error) {
     console.error(`[unrollMusicXml] ${error}`);

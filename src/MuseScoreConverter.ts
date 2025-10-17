@@ -1,5 +1,8 @@
 import pkg from '../package.json';
-import type { IMIDIConverter, MeasureTimemap } from './interfaces/IMIDIConverter';
+import type {
+  IMIDIConverter,
+  MeasureTimemap,
+} from './interfaces/IMIDIConverter';
 import { MuseScoreDownloader, MuseScoreBase } from './MuseScoreBase';
 import { assertIsDefined } from './helpers';
 import type { PlayerOptions } from './Player';
@@ -9,14 +12,18 @@ import type { PlayerOptions } from './Player';
  */
 export class MuseScoreConverter
   extends MuseScoreBase
-  implements IMIDIConverter {
+  implements IMIDIConverter
+{
   constructor(
     downloader: string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>,
   ) {
     super(downloader);
   }
 
-  async initialize(musicXml: string, options: Required<PlayerOptions>): Promise<void> {
+  async initialize(
+    musicXml: string,
+    options: Required<PlayerOptions>,
+  ): Promise<void> {
     return this._extract(musicXml, options);
   }
 

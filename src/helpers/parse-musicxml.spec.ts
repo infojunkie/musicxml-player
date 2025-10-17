@@ -45,7 +45,7 @@ describe('parseMusicXml', () => {
       </part>
     </score-partwise>
     `.trim(),
-        new SaxonJSProcessor,
+        new SaxonJSProcessor(),
       ),
     ).resolves.toBeDefined();
   });
@@ -57,7 +57,7 @@ describe('parseMusicXml', () => {
 THIS IS NOT MUSICXML
     `.trim(),
 
-        new SaxonJSProcessor,
+        new SaxonJSProcessor(),
       ),
     ).rejects.toBeDefined();
   });
@@ -87,7 +87,7 @@ THIS IS NOT MUSICXML
         </body>
         </html>
       `.trim(),
-        new SaxonJSProcessor,
+        new SaxonJSProcessor(),
       ),
     ).rejects.toBeDefined();
   });

@@ -1,7 +1,7 @@
 import type {
   MeasureIndex,
   MillisecsTimestamp,
-  PlayerOptions
+  PlayerOptions,
 } from '../Player';
 
 export type MeasureTimemapEntry = {

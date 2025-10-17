@@ -34,5 +34,3 @@ export class SaxonJSProcessor implements IXSLTProcessor {
     return result.principalResult;
   }
 }
-
-

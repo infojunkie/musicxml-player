@@ -6,9 +6,7 @@ export interface IXSLTProcessor {
   /**
    * Parse XML text into a document object
    */
-  parse(options: {
-    text: string;
-  }): Promise<any>;
+  parse(options: { text: string }): Promise<any>;
 
   /**
    * Evaluate XPath expression on a document

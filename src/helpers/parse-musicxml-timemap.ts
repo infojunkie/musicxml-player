@@ -10,11 +10,9 @@ export async function parseMusicXmlTimemap(
   xsltProcessor: IXSLTProcessor,
 ): Promise<MeasureTimemap> {
   try {
-    const timemap = await xsltProcessor.transform(
-      timemapXslUri,
-      musicXml,
-      { useSef: true },
-    );
+    const timemap = await xsltProcessor.transform(timemapXslUri, musicXml, {
+      useSef: true,
+    });
     return JSON.parse(timemap);
   } catch (error) {
     console.error(`[parseMusicXmlTimemap] ${error}`);

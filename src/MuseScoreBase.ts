@@ -72,10 +72,12 @@ export class MuseScoreBase {
       | string
       | MuseScoreDownloader
       | ReturnType<MuseScoreDownloader>,
-  ) {
-  }
+  ) {}
 
-  protected async _extract(musicXml: string, options: Required<PlayerOptions>): Promise<void> {
+  protected async _extract(
+    musicXml: string,
+    options: Required<PlayerOptions>,
+  ): Promise<void> {
     // Retrieve MuseScore metadata.
     // ...given a URL: Download the score media.
     if (typeof this._downloader === 'string') {
