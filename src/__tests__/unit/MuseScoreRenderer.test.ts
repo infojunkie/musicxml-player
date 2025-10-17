@@ -35,9 +35,8 @@ describe('MuseScoreRenderer', () => {
   });
 
   it('initializes and renders MuseScore pages from provided media', async () => {
-    const xsltProcessor = createMockXsltProcessor();
     const media = createMuseScoreMedia();
-    const renderer = new MuseScoreRenderer(() => media, xsltProcessor);
+    const renderer = new MuseScoreRenderer(() => media);
     const container = document.createElement('div');
 
     // Mock the moveTo method to avoid DOM issues

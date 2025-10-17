@@ -44,6 +44,7 @@
     "./src/**/*.ts"
   ],
   "exclude": [
+    "./src/__tests__/**",
     "./src/**/*.spec.{ts,js}",
     "./src/**/*.test.{ts,js}",
     "./src/helpers/spessasynth_processor.ts"

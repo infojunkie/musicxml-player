@@ -1,7 +1,8 @@
 import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill';
 import { build } from 'esbuild';
 import process from 'process';
-import metaUrlPlugin from "@chialab/esbuild-plugin-meta-url";
+import { copy } from 'esbuild-plugin-copy';
+//import metaUrlPlugin from "@chialab/esbuild-plugin-meta-url";
 
 // https://stackoverflow.com/a/69409483/209184
 const argv = key => {
@@ -32,9 +33,22 @@ const targets = {
 const format = argv('format') ?? 'esm';
 build({
   entryPoints: ['src/index.ts'],
-  plugins: [nodeModulesPolyfillPlugin(), /*metaUrlPlugin({
-    emit: format === 'esm'
-  })*/],
+  plugins: [
+    nodeModulesPolyfillPlugin(),
+    copy({
+      resolveFrom: 'cwd',
+      assets: [{
+        from: './node_modules/spessasynth_lib/dist/spessasynth_processor.min.js',
+        to: 'build/spessasynth_processor.js',
+      }, {
+        from: './node_modules/spessasynth_lib/dist/spessasynth_processor.min.js.map',
+        to: 'build/spessasynth_processor.js.map',
+      }],
+    }),
+    /*metaUrlPlugin({
+      emit: format === 'esm'
+    })*/
+  ],
   bundle: true,
   minify: true,
   sourcemap: true,

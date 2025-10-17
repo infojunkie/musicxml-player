@@ -18,6 +18,7 @@
     "@types/verovio": "^3.13.4",
     "@types/webmidi": "^2.1.0",
     "esbuild": "^0.25.9",
+    "esbuild-plugin-copy": "^2.1.1",
     "esbuild-plugins-node-modules-polyfill": "^1.6.8",
     "eslint": "^9.13.0",
     "jsdom": "^27.0.0",

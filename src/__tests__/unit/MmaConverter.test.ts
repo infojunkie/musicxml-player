@@ -32,9 +32,8 @@ describe('MmaConverter', () => {
       return responses[call++];
     });
 
-    const xsltProcessorMock = createMockXsltProcessor();
     const transform = vi.fn(async () => SAMPLE_TIMEMAP_JSON);
-    const conv = new MmaConverter('https://api.example.com', xsltProcessorMock);
+    const conv = new MmaConverter('https://api.example.com');
     await conv.initialize(SAMPLE_MUSICXML, {
       container: document.createElement('div'),
       musicXml: SAMPLE_MUSICXML,

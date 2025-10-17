@@ -1,8 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { VerovioConverter } from '../../VerovioConverter';
 
-import { createMockXsltProcessor } from '../helpers/test-utils';
-
 // Mock the verovio modules to prevent import errors
 vi.mock('verovio/wasm', () => ({ default: vi.fn(async () => ({})) }));
 vi.mock('verovio/esm', () => ({
@@ -20,8 +18,7 @@ vi.mock('verovio/esm', () => ({
 
 describe('VerovioConverter', () => {
   it('can be instantiated', () => {
-    const xsltProcessor = createMockXsltProcessor();
-    const conv = new VerovioConverter(xsltProcessor);
+    const conv = new VerovioConverter();
     expect(conv).toBeDefined();
     expect(conv).toBeInstanceOf(VerovioConverter);
     // Check that timemap is an array (even if empty initially)
