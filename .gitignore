@@ -42,3 +42,4 @@ pnpmfile.js
 
 # Editor-specific files
 .projections.json
+.vscode
