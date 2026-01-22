@@ -11,6 +11,7 @@ import {
   MmaConverter,
   FetchConverter,
   parseMusicXml,
+  SaxonJSProcessor,
 } from './build/musicxml-player.mjs';
 import {
   Playlist,
@@ -222,7 +223,7 @@ async function createConverter(converter, sheet, groove) {
       }
     case 'vrv':
       return new VerovioConverter({
-        tuning: g_state.tuning
+//        tuning: g_state.tuning
       });
     case 'mma':
       const parameters = {};
@@ -371,17 +372,19 @@ function handleSheetSelect(e) {
 
 async function handleFileBuffer(filename, buffer) {
   try {
-    const parseResult = await parseMusicXml(buffer);
+    const parseResult = await parseMusicXml(buffer, new SaxonJSProcessor());
     g_state.musicXml = parseResult.musicXml;
     g_state.params.set('sheet', filename);
     createPlayer();
   }
-  catch {
+  catch (error) {
+    console.error(error);
     try {
       const ireal = new TextDecoder().decode(buffer);
       populateSheets(ireal);
     }
     catch (error) {
+      console.error(error);
       document.getElementById('error').textContent = 'This file is not recognized as either MusicXML or iReal Pro.';
     }
   }

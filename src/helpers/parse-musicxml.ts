@@ -22,7 +22,7 @@ export async function parseMusicXml(
     }
 
     // Try the buffer as a compressed document.
-    return await _parseCompressed(xsltProcessor, musicXmlOrBuffer, queries);
+    return await _parseCompressed(musicXmlOrBuffer, xsltProcessor, queries);
   } else {
     // A string is assumed to be an uncompressed document.
     return await _parseUncompressed(musicXmlOrBuffer, xsltProcessor, queries);
@@ -30,8 +30,8 @@ export async function parseMusicXml(
 }
 
 async function _parseCompressed(
-  xsltProcessor: IXSLTProcessor,
   mxml: ArrayBuffer,
+  xsltProcessor: IXSLTProcessor,
   queries?: MusicXmlParseQuery,
 ): Promise<MusicXmlParseResult> {
   const { entries } = await unzip(mxml);

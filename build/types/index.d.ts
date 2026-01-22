@@ -9,6 +9,7 @@ export * from './VerovioConverter';
 export * from './VerovioRenderer';
 export * from './VerovioStaticConverter';
 export * from './VerovioStaticRenderer';
+export * from './SaxonJSProcessor';
 export * from './helpers';
 export * from './interfaces';
 //# sourceMappingURL=index.d.ts.map
