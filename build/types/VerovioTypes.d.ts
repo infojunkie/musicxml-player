@@ -17,5 +17,7 @@ export interface VerovioToolkitFixed extends VerovioToolkit {
 }
 export interface VerovioOptionsFixed extends VerovioOptions {
     tuning?: string;
+    expandAlways?: boolean;
+    expandNever?: boolean;
 }
 //# sourceMappingURL=VerovioTypes.d.ts.map

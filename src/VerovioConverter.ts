@@ -5,12 +5,7 @@ import type {
 } from './interfaces/IMIDIConverter';
 import type { VerovioOptionsFixed, VerovioToolkitFixed } from './VerovioTypes';
 import { VerovioConverterBase } from './VerovioConverterBase';
-import {
-  assertIsDefined,
-  atoab,
-  unrollMusicXml,
-  parseMusicXmlTimemap,
-} from './helpers';
+import { assertIsDefined, atoab } from './helpers';
 import type { PlayerOptions } from './Player';
 import { VerovioToolkit } from 'verovio/esm';
 
@@ -32,8 +27,9 @@ export class VerovioConverter
     super();
     this._options = {
       ...{
-        expand: 'expansion-repeat',
         midiNoCue: true,
+        xmlIdChecksum: true,
+        expandAlways: true,
       },
       ...options,
     };
@@ -41,7 +37,7 @@ export class VerovioConverter
 
   async initialize(
     musicXml: string,
-    options: Required<PlayerOptions>,
+    _options: Required<PlayerOptions>,
   ): Promise<void> {
     // Create Verovio toolkit and load MusicXML.
     const VerovioModule = await createVerovioModule();
@@ -52,24 +48,11 @@ export class VerovioConverter
     }
 
     // Build timemap.
-    // FIXME! Restore Verovio parsing when it's able to unroll a MusicXML score on its own.
-    this._timemap = await parseMusicXmlTimemap(
-      musicXml,
-      options.timemapXslUri,
-      options.xsltProcessor,
+    this._timemap = VerovioConverterBase._parseTimemap(
+      this._vrv.renderToTimemap({ includeMeasures: true, includeRests: true }),
     );
-    // this._timemap = VerovioConverterBase._parseTimemap(
-    //   this._vrv.renderToTimemap({ includeMeasures: true, includeRests: true })
-    // );
 
-    // Unroll score and render to MIDI.
-    // FIXME! No longer needed when Verovio is able to unroll a MusicXML score on its own.
-    const unrolled = await unrollMusicXml(
-      musicXml,
-      options.unrollXslUri,
-      options.xsltProcessor,
-    );
-    this._vrv.loadData(unrolled);
+    // Render to MIDI.
     this._midi = atoab(this._vrv.renderToMIDI());
   }
 

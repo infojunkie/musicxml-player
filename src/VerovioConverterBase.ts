@@ -1,5 +1,6 @@
 import { MeasureTimemap } from './interfaces/IMIDIConverter';
 import { TimeMapEntryFixed } from './VerovioTypes';
+import { assertIsDefined } from './helpers';
 
 export class VerovioConverterBase {
   /**
@@ -7,16 +8,30 @@ export class VerovioConverterBase {
    */
   protected static _parseTimemap(entries: TimeMapEntryFixed[]): MeasureTimemap {
     const timemap: MeasureTimemap = [];
+    const rendmap: Record<string, number> = {};
     let tstamp = 0;
     entries.forEach((event) => {
       // If starting a measure, add it to the timemap.
       if ('measureOn' in event) {
+        // Set the duration of previous measure.
         const i = timemap.length;
         if (i > 0) {
           timemap[i - 1].duration = event.tstamp - timemap[i - 1].timestamp;
         }
+
+        // Detect measure repetition and build repetition map.
+        const rend = event.measureOn.match(/([a-z0-9]+)(-rend(\d+))?/);
+        assertIsDefined(rend);
+        let mindex = Object.keys(rendmap).length;
+        if (rend[2] !== undefined) {
+          mindex = rendmap[rend[1]];
+        } else {
+          rendmap[rend[1]] = mindex;
+        }
+
+        // Add measure to the timemap.
         timemap.push({
-          measure: i,
+          measure: mindex,
           timestamp: event.tstamp,
           duration: 0,
         });

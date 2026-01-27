@@ -46,6 +46,7 @@ export class VerovioRenderer
         breaks: options.horizontal ? 'none' : 'smart',
         spacingNonLinear: options.horizontal ? 1.0 : 0.6,
         spacingLinear: options.horizontal ? 0.04 : 0.25,
+        expandNever: true,
       },
       ...this._vrvOptions,
     };

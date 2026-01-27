@@ -13,7 +13,7 @@ export declare class VerovioConverter extends VerovioConverterBase implements IM
     protected _midi?: ArrayBuffer;
     protected _options: VerovioOptionsFixed;
     constructor(options?: VerovioOptionsFixed);
-    initialize(musicXml: string, options: Required<PlayerOptions>): Promise<void>;
+    initialize(musicXml: string, _options: Required<PlayerOptions>): Promise<void>;
     get midi(): ArrayBuffer;
     get timemap(): MeasureTimemap;
     get version(): string;
