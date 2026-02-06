@@ -1,6 +1,6 @@
 {
   "name": "@music-i18n/musicxml-player",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "description": "A TypeScript component that loads and plays MusicXML files in the browser using Web Audio and Web MIDI.",
   "types": "./build/types/index.d.ts",
   "exports": {
@@ -31,17 +31,16 @@
     "vitest-fetch-mock": "^0.4.5"
   },
   "scripts": {
-    "test": "vitest run",
     "build": "./apply-patches.sh && npm run build:lint && npm run build:esm && npm run build:cjs && npm run build:d.ts",
     "build:lint": "eslint --fix {src/*.ts,src/**/*.ts} && prettier --write {src/*.ts,src/**/*.ts}",
     "build:esm": "node esbuild.mjs --format=esm",
     "build:cjs": "node esbuild.mjs --format=cjs",
     "build:d.ts": "tsc --emitDeclarationOnly --outDir build/types",
     "build:snap": "vitest --update",
+    "test": "vitest run",
     "test:type": "tsc --noEmit",
     "demo:develop": "ws -d demo --rewrite '/mma/(.*) -> http://localhost:3000/$1' -p ${PORT:-8080}",
-    "demo:server": "ws -d demo -p ${PORT:-8082} -z --log.format combined",
-    "link": "run() { rm -rf node_modules/$1 && ln -s $(readlink -f $(npm root -g)/$1) node_modules/$1; }; run"
+    "demo:server": "ws -d demo -p ${PORT:-8082} -z --log.format combined"
   },
   "repository": {
     "type": "git",

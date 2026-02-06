@@ -29,42 +29,21 @@ There are 3 bundled implementations of `IMidiConverter` in this module:
 - [Verovio](https://github.com/rism-digital/verovio), that generates a faithful rendition of the MusicXML score but lacks accompaniment generation.
 - It is also possible to hand-craft the MIDI and timemap files, and instruct the player to read those explicitly.
 
-# API usage
-At the moment, the only documentation available for the usage of the player is located in the [demo app](demo/demo.mjs).
+# Development
+At the moment, the only documentation available for the usage of the player is located in the [demo app](demo/demo.mjs) and the tests.
 
-# Tests
 This project uses Vitest for testing:
 - Unit tests run in Node.
-- Integration tests (that might rely on browser-like APIs) run with a jsdom environment. 
+- Integration tests (that might rely on browser-like APIs) run with a jsdom environment.
 Use the commands below to run all tests, a single file, or a single test in watch or non-watch mode.
 
-- All tests
 ```bash
 npm test
-```
-
-- Single file
-```bash
 npm test -- src/helpers/fetish.spec.ts
-```
-
-- Single test by name (pattern)
-```bash
 npm test -- -t "should throw if not ok"
-```
-
-- Watch mode (all tests)
-```bash
 npm test -- --watch
-```
-
-- Watch a single file
-```bash
 npm test -- src/helpers/fetish.spec.ts --watch
-```
-
-- Watch a single test in a file
-```bash
 npm test -- src/helpers/fetish.spec.ts -t "should throw if not ok" --watch
 ```
 
+When creating a new version, some tests will fail - run `npm run build:snap` to update the snapshots.
