@@ -44,9 +44,9 @@ exports[`Player > Player instance methods > snapshots > snapshots player creatio
   "title": "Test Title",
   "version": {
     "converter": "MockConverter v1.0.0",
-    "player": "@music-i18n/musicxml-player v1.3.6",
+    "player": "@music-i18n/musicxml-player v1.3.7",
     "renderer": "MockRenderer v1.0.0",
-    "sequencer": "spessasynth_lib v4.1.2",
+    "sequencer": "spessasynth_lib v4.1.3",
   },
 }
 `;
