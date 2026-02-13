@@ -11,9 +11,9 @@ export declare class VerovioConverter extends VerovioConverterBase implements IM
     protected _vrv?: VerovioToolkitFixed;
     protected _timemap: MeasureTimemap;
     protected _midi?: ArrayBuffer;
-    protected _options: VerovioOptionsFixed;
-    constructor(options?: VerovioOptionsFixed);
-    initialize(musicXml: string, _options: Required<PlayerOptions>): Promise<void>;
+    protected _vrvOptions: VerovioOptionsFixed;
+    constructor(vrvOptions?: VerovioOptionsFixed);
+    initialize(musicXml: string, _vrvOptions: Required<PlayerOptions>): Promise<void>;
     get midi(): ArrayBuffer;
     get timemap(): MeasureTimemap;
     get version(): string;

@@ -16,11 +16,33 @@ export interface ElementsAtTimeFixed {
 }
 
 export interface VerovioToolkitFixed extends VerovioToolkit {
+  /**
+   * Destroy the Verovio Toolkit instance
+   *
+   * @returns void
+   */
   destroy(): void;
 }
 
 export interface VerovioOptionsFixed extends VerovioOptions {
-  tuning?: string;
+  /**
+   * A custom tuning definition or filepath to apply to the MIDI output
+   *
+   * default: empty
+   */
+  tuningFile?: string;
+
+  /**
+   * Expand for all outputs, using selected, first, or generated expansion
+   *
+   * default: false
+   */
   expandAlways?: boolean;
+
+  /**
+   * Expand for no output, including MIDI and timemap
+   *
+   * default: Expand for no output, including MIDI and timemap
+   */
   expandNever?: boolean;
 }

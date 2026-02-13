@@ -21,28 +21,27 @@ export class VerovioConverter
   protected _vrv?: VerovioToolkitFixed;
   protected _timemap: MeasureTimemap = [];
   protected _midi?: ArrayBuffer;
-  protected _options: VerovioOptionsFixed;
+  protected _vrvOptions: VerovioOptionsFixed;
 
-  constructor(options?: VerovioOptionsFixed) {
+  constructor(vrvOptions?: VerovioOptionsFixed) {
     super();
-    this._options = {
+    this._vrvOptions = {
       ...{
         midiNoCue: true,
         xmlIdChecksum: true,
-        expandAlways: true,
       },
-      ...options,
+      ...vrvOptions,
     };
   }
 
   async initialize(
     musicXml: string,
-    _options: Required<PlayerOptions>,
+    _vrvOptions: Required<PlayerOptions>,
   ): Promise<void> {
     // Create Verovio toolkit and load MusicXML.
     const VerovioModule = await createVerovioModule();
     this._vrv = <VerovioToolkitFixed>new VerovioToolkit(VerovioModule);
-    this._vrv.setOptions(this._options);
+    this._vrv.setOptions(this._vrvOptions);
     if (!this._vrv.loadData(musicXml)) {
       throw new Error(`[VerovioConverter.initialize] Failed to load MusicXML.`);
     }

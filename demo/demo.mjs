@@ -223,7 +223,7 @@ async function createConverter(converter, sheet, groove) {
       }
     case 'vrv':
       return new VerovioConverter({
-//        tuning: g_state.tuning
+        tuningFile: g_state.tuning
       });
     case 'mma':
       const parameters = {};
@@ -450,6 +450,7 @@ function handleRepeatChange(e) {
 }
 
 async function handleTuningText(filename, tuning) {
+  console.log(tuning);
   g_state.tuning = tuning;
   createPlayer();
 }
