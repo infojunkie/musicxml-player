@@ -11,6 +11,6 @@ exports[`VerovioStaticConverter > snapshots static converter initialization with
       "timestamp": 0,
     },
   ],
-  "version": "@music-i18n/musicxml-player/VerovioStaticConverter v1.3.8",
+  "version": "@music-i18n/musicxml-player/VerovioStaticConverter v1.3.9",
 }
 `;
