@@ -116,7 +116,7 @@ export const createMockBasicMIDI = () => {
         fromArrayBuffer: vi.fn(() => mockBasicMIDI),
       },
     ),
-    midiMessageTypes: {
+    MIDIMessageTypes: {
       controllerChange: 0xb0,
     },
   };
@@ -134,14 +134,18 @@ export const createMockSpessaSynthLib = () => {
     loopCount: 1,
   };
 
+  // Mock MIDIChannel
+  class MockMIDIChannel {
+    setSystemParameter = vi.fn();
+  }
+
   // Mock WorkletSynthesizer as a proper constructor
   class MockWorkletSynthesizer {
     connect = vi.fn();
     soundBankManager = {
       addSoundBank: vi.fn().mockResolvedValue(undefined),
     };
-    channelsAmount = 16;
-    muteChannel = vi.fn();
+    midiChannels = Array<MockMIDIChannel>(16);
 
     constructor(_context: AudioContext) {
       // Mock constructor - don't try to create real AudioWorkletNode

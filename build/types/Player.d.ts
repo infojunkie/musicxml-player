@@ -113,6 +113,7 @@ export declare class Player {
     protected _duration: number;
     protected _state: PlayerState;
     protected _abortController: AbortController;
+    protected _audioNode?: AudioNode;
     protected constructor(_options: Required<PlayerOptions>, _sheet: HTMLElement, _parseResult: MusicXmlParseResult, _musicXml: string, _synthesizer: Synthetizer, _context: AudioContext);
     /**
      * Destroy the instance by freeing all resources and disconnecting observers.
@@ -138,6 +139,10 @@ export declare class Player {
      * Stop playback and rewind to start.
      */
     rewind(): void;
+    /**
+     * Connect an additional audio node to the synth.
+     */
+    connect(audioNode: AudioNode): void;
     /**
      * The version numbers of the player components.
      */
@@ -166,6 +171,10 @@ export declare class Player {
      * Current position of the player (ms).
      */
     get position(): number;
+    /**
+     * Audio context.
+     */
+    get context(): AudioContext;
     /**
      * Repeat count. A value of Infinity means loop forever.
      */

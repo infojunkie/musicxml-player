@@ -6,7 +6,7 @@ import type { IXSLTProcessor } from './interfaces/IXSLTProcessor';
 import { BasicMIDI } from 'spessasynth_core';
 import { SaxonJSProcessor } from './SaxonJSProcessor';
 import { WorkletSynthesizer as Synthetizer, Sequencer } from 'spessasynth_lib';
-import { midiMessageTypes } from 'spessasynth_core';
+import { MIDIMessageTypes } from 'spessasynth_core';
 import {
   binarySearch,
   parseMusicXml,
@@ -153,9 +153,6 @@ export class Player {
     container.appendChild(sheet);
 
     // Parse the incoming MusicXML and unroll it if needed.
-    // INFO  xsltProcessor is orchestred from here
-    // parseMusicXml and unrollMusicXml expect an instance of IXSLTProcessor
-    // converter and renderer expect an instance of IXSLTProcessor
     try {
       const parseResult = await parseMusicXml(
         options.musicXml,
@@ -176,7 +173,6 @@ export class Player {
 
       // Create the synth element.
       const context = new AudioContext();
-      //await context.audioWorklet.addModule(new URL('helpers/spessasynth_processor.ts', import.meta.url));
       await context.audioWorklet.addModule(
         new URL('spessasynth_processor.js', import.meta.url),
       );
@@ -188,10 +184,8 @@ export class Player {
       await synth.soundBankManager.addSoundBank(soundfont, 'main');
 
       // Initialize the various objects.
-      // It's too bad that constructors cannot be made async because that would simplify the code.
-      // INFO Keep looking into this
+      // FIXME!! It's too bad that constructors cannot be made async because that would simplify the code.
       await options.converter.initialize(musicXml, options);
-      // INFO This renders the music xml into the given HTMLElement
       await options.renderer.initialize(sheet, musicXml, options);
 
       // Finally, create the player instance.
@@ -208,6 +202,7 @@ export class Player {
   protected _duration: number;
   protected _state: PlayerState;
   protected _abortController: AbortController;
+  protected _audioNode?: AudioNode;
 
   protected constructor(
     protected _options: Required<PlayerOptions>,
@@ -263,6 +258,9 @@ export class Player {
       this._sequencer?.pause();
       this._options?.renderer?.destroy();
       this._abortController?.abort();
+      if (this._audioNode) {
+        this._synthesizer?.disconnect(this._audioNode);
+      }
     } catch (error) {
       console.error(`[Player.destroy] ${error}`);
     }
@@ -366,6 +364,14 @@ export class Player {
   }
 
   /**
+   * Connect an additional audio node to the synth.
+   */
+  connect(audioNode: AudioNode) {
+    this._audioNode = audioNode;
+    this._synthesizer?.connect(this._audioNode);
+  }
+
+  /**
    * The version numbers of the player components.
    */
   get version(): Record<string, string> {
@@ -423,6 +429,13 @@ export class Player {
   }
 
   /**
+   * Audio context.
+   */
+  get context(): AudioContext {
+    return this._context;
+  }
+
+  /**
    * Repeat count. A value of Infinity means loop forever.
    */
   set repeat(value: number) {
@@ -433,9 +446,9 @@ export class Player {
    * A flag to mute the player's MIDI output.
    */
   set mute(value: boolean) {
-    for (let i = 0; i < this._synthesizer.channelsAmount; i++) {
-      this._synthesizer.muteChannel(i, value);
-    }
+    this._synthesizer.midiChannels.forEach((channel) => {
+      channel.setSystemParameter('isMuted', value);
+    });
   }
 
   /**
@@ -470,7 +483,7 @@ export class Player {
     );
     midi.tracks[0].pushEvent({
       ticks,
-      statusByte: midiMessageTypes.controllerChange,
+      statusByte: MIDIMessageTypes.controllerChange,
       data: new Uint8Array([50, 0]),
     });
     midi.flush();

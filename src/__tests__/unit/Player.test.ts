@@ -35,7 +35,7 @@ vi.mock('spessasynth_core', () => {
         fromArrayBuffer: vi.fn(() => mockBasicMIDI),
       },
     ),
-    midiMessageTypes: {
+    MIDIMessageTypes: {
       controllerChange: 0xb0,
     },
   };
