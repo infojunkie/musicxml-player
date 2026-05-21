@@ -17,7 +17,7 @@ exports[`FetchConverter > initializes with URIs (fetches midi and timemap JSON) 
     },
   ],
   "timemapLength": 1,
-  "version": "@music-i18n/musicxml-player/FetchConverter v1.4.2",
+  "version": "@music-i18n/musicxml-player/FetchConverter v1.4.3",
 }
 `;
 
@@ -39,6 +39,6 @@ exports[`FetchConverter > initializes with provided buffers (no fetch) and compu
   ],
   "timemapLength": 1,
   "transformCalled": 1,
-  "version": "@music-i18n/musicxml-player/FetchConverter v1.4.2",
+  "version": "@music-i18n/musicxml-player/FetchConverter v1.4.3",
 }
 `;
