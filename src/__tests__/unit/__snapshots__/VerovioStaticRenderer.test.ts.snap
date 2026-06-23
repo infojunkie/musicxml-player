@@ -14,6 +14,6 @@ exports[`VerovioStaticRenderer > snapshots static renderer initialization and DO
   "measureCount": 1,
   "pageCount": 1,
   "systemCount": 1,
-  "version": "@music-i18n/musicxml-player/VerovioStaticRenderer v1.4.4",
+  "version": "@music-i18n/musicxml-player/VerovioStaticRenderer v1.4.5",
 }
 `;
