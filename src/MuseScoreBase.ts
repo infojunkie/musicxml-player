@@ -69,9 +69,7 @@ export class MuseScoreBase {
 
   constructor(
     protected _downloader:
-      | string
-      | MuseScoreDownloader
-      | ReturnType<MuseScoreDownloader>,
+      string | MuseScoreDownloader | ReturnType<MuseScoreDownloader>,
   ) {}
 
   protected async _extract(
