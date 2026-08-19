@@ -4,6 +4,6 @@ exports[`MuseScoreRenderer > snapshots renderer initialization and DOM structure
 {
   "containerHTML": "<div id="page-0"><svg width="800" height="600"></svg></div><div class="player-cursor"></div>",
   "pageCount": 1,
-  "version": "@music-i18n/musicxml-player/MuseScoreRenderer v1.5.0",
+  "version": "@music-i18n/musicxml-player/MuseScoreRenderer v1.5.1",
 }
 `;
